@@ -60,6 +60,7 @@ module Api
                 else
                   @ciudad = Ciudad.limit(10).where("nombre LIKE '%#{@valor}%'")
                 end
+                @ciudad = [*@ciudad]
             end
 
             #Le coloco los parametros que necesito de la ciudad para crearla y actualizarla

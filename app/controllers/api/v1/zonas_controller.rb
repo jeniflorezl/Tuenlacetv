@@ -16,10 +16,7 @@ module Api
 
             # POST /zonas
             def create
-                @city = City.first
-                @idcity= @city.id
                 @zona = Zona.new(zona_params)
-                @zona.ciudad_id = @idcity
                 if @zona.save 
                     render json: { status: :created }
                 else
@@ -50,23 +47,22 @@ module Api
 
             private
 
+            def set_zona
+                @zona = Zona.find(params[:id])
+            end
+
             # Me busca la zona por el id o el nombre
             def set_zona_buscar
                 @campo = params[:campo]
                 @valor = params[:valor]
                 if @campo == 'codigo'
-                    @zona = zona.find(params[:valor])
+                    @zona = Zona.find(params[:valor])
                 else
-                    @zona = zona.limit(10).where("nombre LIKE '%#{@valor}%'")
+                    @zona = Zona.limit(10).where("nombre LIKE '%#{@valor}%'")
                 end
-                
-            end
-
-            def set_zona
-                @zona = zona.find(params[:id])
+                @zona = [*@zona]
             end
                 
-
             #Le coloco los parametros que necesito de la zona para crearla y actualizarla
 
             def zona_params
