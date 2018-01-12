@@ -1,0 +1,2 @@
+class Nomenclatura < ApplicationRecord
+end

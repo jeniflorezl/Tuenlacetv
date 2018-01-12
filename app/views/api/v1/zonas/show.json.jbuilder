@@ -1,5 +1,6 @@
 json.array! @zona do |zona|
     json.id zona.id
-    json.id_ciudad zona.ciudad_id
+    json.ciudad zona.ciudad.nombre
     json.nombre zona.nombre
+    json.usuario zona.usuario
 end
