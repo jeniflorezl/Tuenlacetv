@@ -40,9 +40,10 @@
 #telefono2: '0', contacto: '', cuentaBancaria: '125667', cuentaContable: '', usuario: 'admin')
 #Servicio.create(nombre: 'TELEVISION', usuario: 'admin')
 #Servicio.create(nombre: 'INTERNET', usuario: 'admin')
-Concepto.create(servicio_id: 1, codigo: '001', nombre: 'SUSCRIPCION', porcentajeIva: '19',
-abreviatura: 'AFI', operacion: '+', usuario: 'admin')
-Concepto.create(servicio_id: 1, codigo: '002', nombre: 'MENSUALIDAD', porcentajeIva: '19',
-abreviatura: 'FAC', operacion: '+', usuario: 'admin')
-Concepto.create(servicio_id: 1, codigo: '003', nombre: 'PUNTO ADICIONAL', porcentajeIva: '19',
-abreviatura: 'ETV', operacion: '+', usuario: 'admin')
+#Concepto.create(servicio_id: 1, codigo: '001', nombre: 'SUSCRIPCION', porcentajeIva: '19',
+#abreviatura: 'AFI', operacion: '+', usuario: 'admin')
+#Concepto.create(servicio_id: 1, codigo: '002', nombre: 'MENSUALIDAD', porcentajeIva: '19',
+#abreviatura: 'FAC', operacion: '+', usuario: 'admin')
+#Concepto.create(servicio_id: 1, codigo: '003', nombre: 'PUNTO ADICIONAL', porcentajeIva: '19',
+#abreviatura: 'ETV', operacion: '+', usuario: 'admin')
+Plan.create(servicio_id: 1, nombre: 'Plan tv', usuario: 'admin')

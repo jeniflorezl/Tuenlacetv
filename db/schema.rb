@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180111233008) do
+ActiveRecord::Schema.define(version: 20180114181450) do
 
   create_table "bancos", force: :cascade do |t|
     t.varchar "nit", limit: 13
@@ -85,6 +85,15 @@ ActiveRecord::Schema.define(version: 20180111233008) do
     t.varchar "usuario", limit: 15, null: false
   end
 
+  create_table "planes", force: :cascade do |t|
+    t.bigint "servicio_id"
+    t.varchar "nombre", limit: 20, null: false
+    t.datetime "fechacre", default: -> { "getdate()" }
+    t.datetime "fechacam", default: -> { "getdate()" }
+    t.varchar "usuario", limit: 15, null: false
+    t.index ["servicio_id"], name: "index_planes_on_servicio_id"
+  end
+
   create_table "servicios", force: :cascade do |t|
     t.varchar "nombre", limit: 20, null: false
     t.datetime "fechacre", default: -> { "getdate()" }
@@ -120,5 +129,6 @@ ActiveRecord::Schema.define(version: 20180111233008) do
   add_foreign_key "ciudades", "paises"
   add_foreign_key "conceptos", "servicios"
   add_foreign_key "direcciones_zonas", "zonas"
+  add_foreign_key "planes", "servicios"
   add_foreign_key "zonas", "ciudades"
 end
