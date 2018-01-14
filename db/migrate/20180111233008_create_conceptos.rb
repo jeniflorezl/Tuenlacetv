@@ -5,7 +5,6 @@ class CreateConceptos < ActiveRecord::Migration[5.1]
       t.char :codigo, limit: 3, null:false
       t.varchar :nombre, limit: 20, null:false
       t.float :porcentajeIva, null:false
-      t.varchar :tipoDocumento, limit: 20, null:false
       t.varchar :abreviatura, limit: 20, null:false
       t.char :operacion, limit: 1, null:false
       t.datetime :fechacre

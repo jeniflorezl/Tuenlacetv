@@ -8,10 +8,10 @@
 #Pais.create(nombre: 'COLOMBIA', usuario: 'admin')
 #Pais.create(nombre: 'PANAMA', usuario: 'admin')
 #Pais.create(nombre: 'VENEZUELA', usuario: 'admin')
-Ciudad.create(pais_id: 1, nombre: 'MEDELLIN', codigo: '05001', usuario: 'admin')
-Ciudad.create(pais_id: 1, nombre: 'BOGOTA', codigo: '05001', usuario: 'admin')
-Ciudad.create(pais_id: 1, nombre: 'BUCARAMANGA', codigo: '05001', usuario: 'admin')
-Ciudad.create(pais_id: 1, nombre: 'PEREIRA', codigo: '05001', usuario: 'admin')
+#Ciudad.create(pais_id: 1, nombre: 'MEDELLIN', codigo: '05001', usuario: 'admin')
+#Ciudad.create(pais_id: 1, nombre: 'BOGOTA', codigo: '05001', usuario: 'admin')
+#Ciudad.create(pais_id: 1, nombre: 'BUCARAMANGA', codigo: '05001', usuario: 'admin')
+#Ciudad.create(pais_id: 1, nombre: 'PEREIRA', codigo: '05001', usuario: 'admin')
 #Company.create(tipo: '01', nit: '1236737382', nombre: 'ENLACE INFORMÁTICO', direccion: 'Calle 54A #43-23', 
 #telefono1: '4540312', telefono2: '', fax: '', contacto: '321342343', correo: 'enlaceinformatico@gmail.com',
 #regimen: '', actividade: '', contribuyente: '', resolucionCntv: '', representante: 'Jeniffer Flórez', 
@@ -32,9 +32,17 @@ Ciudad.create(pais_id: 1, nombre: 'PEREIRA', codigo: '05001', usuario: 'admin')
 #Barrio.create(zona_id: 3, nombre: 'TRAPICHE', usuario: 'admin')
 #Barrio.create(zona_id: 4, nombre: 'SANTA ANA', usuario: 'admin')
 #Barrio.create(zona_id: 5, nombre: 'BOSTON', usuario: 'admin')
-Banco.create(nit: '800226788', nombre: 'CAJA GENERAL', direccion: '', ciudad_id: 1, telefono1: '0',
-telefono2: '0', contacto: '', cuentaBancaria: '110505', cuentaContable: '', usuario: 'admin')
-Banco.create(nit: '900938640', nombre: 'PTO PAGO SUR', direccion: '', ciudad_id: 1, telefono1: '0',
-telefono2: '0', contacto: '', cuentaBancaria: '110455', cuentaContable: '', usuario: 'admin')
-Banco.create(nit: '860002964', nombre: 'PTO PAGO OESTE', direccion: '', ciudad_id: 1, telefono1: '0',
-telefono2: '0', contacto: '', cuentaBancaria: '125667', cuentaContable: '', usuario: 'admin')
+#Banco.create(nit: '800226788', nombre: 'CAJA GENERAL', direccion: '', ciudad_id: 1, telefono1: '0',
+#telefono2: '0', contacto: '', cuentaBancaria: '110505', cuentaContable: '', usuario: 'admin')
+#Banco.create(nit: '900938640', nombre: 'PTO PAGO SUR', direccion: '', ciudad_id: 1, telefono1: '0',
+#telefono2: '0', contacto: '', cuentaBancaria: '110455', cuentaContable: '', usuario: 'admin')
+#Banco.create(nit: '860002964', nombre: 'PTO PAGO OESTE', direccion: '', ciudad_id: 1, telefono1: '0',
+#telefono2: '0', contacto: '', cuentaBancaria: '125667', cuentaContable: '', usuario: 'admin')
+#Servicio.create(nombre: 'TELEVISION', usuario: 'admin')
+#Servicio.create(nombre: 'INTERNET', usuario: 'admin')
+Concepto.create(servicio_id: 1, codigo: '001', nombre: 'SUSCRIPCION', porcentajeIva: '19',
+abreviatura: 'AFI', operacion: '+', usuario: 'admin')
+Concepto.create(servicio_id: 1, codigo: '002', nombre: 'MENSUALIDAD', porcentajeIva: '19',
+abreviatura: 'FAC', operacion: '+', usuario: 'admin')
+Concepto.create(servicio_id: 1, codigo: '003', nombre: 'PUNTO ADICIONAL', porcentajeIva: '19',
+abreviatura: 'ETV', operacion: '+', usuario: 'admin')

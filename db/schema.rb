@@ -52,7 +52,6 @@ ActiveRecord::Schema.define(version: 20180111233008) do
     t.char "codigo", limit: 3, null: false
     t.varchar "nombre", limit: 20, null: false
     t.float "porcentajeIva", null: false
-    t.varchar "tipoDocumento", limit: 20, null: false
     t.varchar "abreviatura", limit: 20, null: false
     t.char "operacion", limit: 1, null: false
     t.datetime "fechacre", default: -> { "getdate()" }
