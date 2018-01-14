@@ -7,6 +7,7 @@ module Api
             # GET /zonas
             def index
                 @zonas = Zona.all
+                @ciudades = Ciudad.all
             end
 
             # GET /zonas/id

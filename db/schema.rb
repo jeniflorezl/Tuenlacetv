@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180114181450) do
+ActiveRecord::Schema.define(version: 20180114185807) do
 
   create_table "bancos", force: :cascade do |t|
     t.varchar "nit", limit: 13
@@ -101,6 +101,20 @@ ActiveRecord::Schema.define(version: 20180114181450) do
     t.varchar "usuario", limit: 15, null: false
   end
 
+  create_table "tarifas", force: :cascade do |t|
+    t.bigint "zona_id"
+    t.bigint "concepto_id"
+    t.bigint "plan_id"
+    t.money "valor", precision: 19, scale: 4, null: false
+    t.char "estado", limit: 1
+    t.datetime "fechacre", default: -> { "getdate()" }
+    t.datetime "fechacam", default: -> { "getdate()" }
+    t.varchar "usuario", limit: 15, null: false
+    t.index ["concepto_id"], name: "index_tarifas_on_concepto_id"
+    t.index ["plan_id"], name: "index_tarifas_on_plan_id"
+    t.index ["zona_id"], name: "index_tarifas_on_zona_id"
+  end
+
   create_table "tecnologias", force: :cascade do |t|
     t.varchar "nombre", limit: 20, null: false
     t.datetime "fechacre", default: -> { "getdate()" }
@@ -130,5 +144,8 @@ ActiveRecord::Schema.define(version: 20180114181450) do
   add_foreign_key "conceptos", "servicios"
   add_foreign_key "direcciones_zonas", "zonas"
   add_foreign_key "planes", "servicios"
+  add_foreign_key "tarifas", "conceptos"
+  add_foreign_key "tarifas", "planes"
+  add_foreign_key "tarifas", "zonas"
   add_foreign_key "zonas", "ciudades"
 end

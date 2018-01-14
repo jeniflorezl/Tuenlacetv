@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       resources :barrios
       resources :conceptos
       resources :planes
+      resources :tarifas
       get 'paises/:campo/:valor', to: 'paises#show'
       get 'ciudades/:campo/:valor', to: 'ciudades#show'
       get 'bancos/:campo/:valor', to: 'bancos#show'
@@ -15,6 +16,7 @@ Rails.application.routes.draw do
       get 'barrios/:campo/:valor', to: 'barrios#show'
       get 'conceptos/:campo/:valor', to: 'conceptos#show'
       get 'planes/:campo/:valor', to: 'planes#show'
+      get 'tarifas/:campo/:valor', to: 'tarifas#show'
     end
   end
 end

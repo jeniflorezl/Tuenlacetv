@@ -7,6 +7,7 @@ module Api
             # GET /planes
             def index
                 @planes = Plan.all
+                @servicios = Servicio.all
             end
 
             # GET /planes/id
@@ -59,7 +60,7 @@ module Api
                 if @campo == 'codigo'
                     @plan = Plan.find(params[:valor])
                 elsif @campo == 'servicio'
-                    @plan = Plan.limit(10).where("servicio_id='#{@valor}'")
+                    @plan = Plan.limit(10).where(servicio_id: @valor)
                 else
                     @plan = Plan.limit(10).where("nombre LIKE '%#{@valor}%'")
                 end

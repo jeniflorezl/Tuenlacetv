@@ -7,6 +7,7 @@ module Api
             # GET /bancos
             def index
                 @bancos = Banco.all
+                @ciudades = Ciudad.all
             end
 
             # GET /bancos/id

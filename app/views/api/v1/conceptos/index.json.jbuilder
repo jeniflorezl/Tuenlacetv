@@ -1,10 +1,19 @@
-json.array! @conceptos do |concepto|
-    json.id concepto.id
-    json.servicio concepto.servicio.nombre
-    json.codigo concepto.codigo
-    json.nombre concepto.nombre
-    json.porcentajeIva concepto.porcentajeIva
-    json.abreviatura concepto.abreviatura
-    json.operacion concepto.operacion
-    json.usuario concepto.usuario
+json.conceptos do
+    json.array! @conceptos do |concepto|
+        json.id concepto.id
+        json.servicio concepto.servicio.nombre
+        json.codigo concepto.codigo
+        json.nombre concepto.nombre
+        json.porcentajeIva concepto.porcentajeIva
+        json.abreviatura concepto.abreviatura
+        json.operacion concepto.operacion
+        json.usuario concepto.usuario
+    end
+end
+
+json.servicios do
+    json.array! @servicios do |servicio|
+        json.id servicio.id
+        json.nombre servicio.nombre
+    end
 end

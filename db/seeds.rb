@@ -46,4 +46,8 @@
 #abreviatura: 'FAC', operacion: '+', usuario: 'admin')
 #Concepto.create(servicio_id: 1, codigo: '003', nombre: 'PUNTO ADICIONAL', porcentajeIva: '19',
 #abreviatura: 'ETV', operacion: '+', usuario: 'admin')
-Plan.create(servicio_id: 1, nombre: 'Plan tv', usuario: 'admin')
+#Plan.create(servicio_id: 1, nombre: 'Plan tv', usuario: 'admin')
+Tarifa.create(zona_id: 1, concepto_id: 1, plan_id: 1, valor: '35000', estado: 'A', usuario: 'admin')
+Tarifa.create(zona_id: 2, concepto_id: 2, plan_id: 1, valor: '50000', estado: 'A', usuario: 'admin')
+Tarifa.create(zona_id: 3, concepto_id: 3, plan_id: 1, valor: '20000', estado: 'A', usuario: 'admin')
+Tarifa.create(zona_id: 4, concepto_id: 1, plan_id: 1, valor: '15000', estado: 'A', usuario: 'admin')

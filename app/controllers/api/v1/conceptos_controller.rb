@@ -7,6 +7,7 @@ module Api
             # GET /conceptos
             def index
                 @conceptos = Concepto.all
+                @servicios = Servicio.all
             end
 
             # GET /conceptos/id
@@ -53,16 +54,16 @@ module Api
                 @concepto = Concepto.find(params[:id])
             end
             
-            # Me busca el concepto por el id, la zona o el nombre
+            # Me busca el concepto por el id, servicio o el nombre
             def set_concepto_buscar
                 @campo = params[:campo]
                 @valor = params[:valor]
                 if @campo == 'codigo'
                     @concepto = Concepto.find(params[:valor])
                 elsif @campo == 'servicio'
-                    @concepto = Concepto.limit(10).where("servicio_id='#{@valor}'")
+                    @concepto = Concepto.limit(10).where(servicio_id: @valor)
                 else
-                    @concepto = Concepto.limit(10).where("#{@campo} LIKE '%#{@valor}%'")
+                    @concepto = Concepto.limit(10).where("nombre LIKE '%#{@valor}%'")
                 end
                 @concepto = [*@concepto]
             end
