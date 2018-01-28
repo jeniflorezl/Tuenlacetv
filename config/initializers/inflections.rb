@@ -126,6 +126,8 @@ ActiveSupport::Inflector.inflections do |inflect|
 
     inflect.irregular 'tipo_instalacion', 'tipo_instalaciones'
     inflect.irregular 'TipoInstalacion', 'TipoInstalaciones'
+    inflect.irregular 'tipo_documento', 'tipo_documentos'
+    inflect.irregular 'TipoDocumento', 'TipoDocumentos'
   
     # NOTA: es necesario indicar los dos modos (underscore y camelcase) porque el
     # método irregular no soporta expresiones regulares

@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  entidad: one
+  barrio: one
+  zona: one
+  tipo_instalacion: one
+  tecnologia: one
+  entidad: one
+
+two:
+  entidad: two
+  barrio: two
+  zona: two
+  tipo_instalacion: two
+  tecnologia: two
+  entidad: two

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180114185807) do
+ActiveRecord::Schema.define(version: 20180116212944) do
 
   create_table "bancos", force: :cascade do |t|
     t.varchar "nit", limit: 13
@@ -69,6 +69,23 @@ ActiveRecord::Schema.define(version: 20180114185807) do
     t.index ["zona_id"], name: "index_direcciones_zonas_on_zona_id"
   end
 
+  create_table "entidades", force: :cascade do |t|
+    t.bigint "funcion_id"
+    t.bigint "persona_id"
+    t.datetime "fechacre", default: -> { "getdate()" }
+    t.datetime "fechacam", default: -> { "getdate()" }
+    t.varchar "usuario", limit: 15, null: false
+    t.index ["funcion_id"], name: "index_entidades_on_funcion_id"
+    t.index ["persona_id"], name: "index_entidades_on_persona_id"
+  end
+
+  create_table "funciones", force: :cascade do |t|
+    t.varchar "nombre", limit: 20, null: false
+    t.datetime "fechacre", default: -> { "getdate()" }
+    t.datetime "fechacam", default: -> { "getdate()" }
+    t.varchar "usuario", limit: 15, null: false
+  end
+
   create_table "nomenclaturas", force: :cascade do |t|
     t.varchar "abreviatura", limit: 10, null: false
     t.varchar "descripcion", limit: 50
@@ -85,6 +102,30 @@ ActiveRecord::Schema.define(version: 20180114185807) do
     t.varchar "usuario", limit: 15, null: false
   end
 
+  create_table "personas", force: :cascade do |t|
+    t.bigint "tipo_documento_id"
+    t.varchar "documento", limit: 15, null: false
+    t.varchar "nombre1", limit: 50, null: false
+    t.varchar "nombre2", limit: 50
+    t.varchar "apellido1", limit: 50, null: false
+    t.varchar "apellido2", limit: 50
+    t.varchar "direccion", limit: 200
+    t.varchar "telefono1", limit: 20
+    t.varchar "telefono2", limit: 20
+    t.bigint "barrio_id"
+    t.bigint "zona_id"
+    t.varchar "correo", limit: 50
+    t.datetime "fechanac"
+    t.char "tipopersona", limit: 1, null: false
+    t.integer "estrato"
+    t.datetime "fechacre", default: -> { "getdate()" }
+    t.datetime "fechacam", default: -> { "getdate()" }
+    t.varchar "usuario", limit: 15, null: false
+    t.index ["barrio_id"], name: "index_personas_on_barrio_id"
+    t.index ["tipo_documento_id"], name: "index_personas_on_tipo_documento_id"
+    t.index ["zona_id"], name: "index_personas_on_zona_id"
+  end
+
   create_table "planes", force: :cascade do |t|
     t.bigint "servicio_id"
     t.varchar "nombre", limit: 20, null: false
@@ -92,6 +133,41 @@ ActiveRecord::Schema.define(version: 20180114185807) do
     t.datetime "fechacam", default: -> { "getdate()" }
     t.varchar "usuario", limit: 15, null: false
     t.index ["servicio_id"], name: "index_planes_on_servicio_id"
+  end
+
+  create_table "senales", force: :cascade do |t|
+    t.bigint "entidad_id"
+    t.varchar "contrato", limit: 20, null: false
+    t.varchar "direccion", limit: 200
+    t.varchar "urbanizacion", limit: 200
+    t.varchar "torre", limit: 20
+    t.varchar "apto", limit: 20
+    t.varchar "telefono1", limit: 20
+    t.varchar "telefono2", limit: 20
+    t.varchar "contacto", limit: 20
+    t.integer "estrato"
+    t.varchar "vivienda", limit: 15
+    t.varchar "observacion", limit: 200
+    t.bigint "barrio_id"
+    t.bigint "zona_id"
+    t.char "estado", limit: 1, null: false
+    t.datetime "fechacontrato", null: false
+    t.integer "televisores"
+    t.varchar "precinto", limit: 10
+    t.bigint "vendedor_id"
+    t.bigint "tipo_instalacion_id"
+    t.bigint "tecnologia_id"
+    t.varchar "tiposervicio", limit: 20
+    t.varchar "areainstalacion", limit: 20
+    t.datetime "fechacre", default: -> { "getdate()" }
+    t.datetime "fechacam", default: -> { "getdate()" }
+    t.varchar "usuario", limit: 15, null: false
+    t.index ["barrio_id"], name: "index_senales_on_barrio_id"
+    t.index ["entidad_id"], name: "index_senales_on_entidad_id"
+    t.index ["tecnologia_id"], name: "index_senales_on_tecnologia_id"
+    t.index ["tipo_instalacion_id"], name: "index_senales_on_tipo_instalacion_id"
+    t.index ["vendedor_id"], name: "index_senales_on_vendedor_id"
+    t.index ["zona_id"], name: "index_senales_on_zona_id"
   end
 
   create_table "servicios", force: :cascade do |t|
@@ -122,6 +198,13 @@ ActiveRecord::Schema.define(version: 20180114185807) do
     t.varchar "usuario", limit: 15, null: false
   end
 
+  create_table "tipo_documentos", force: :cascade do |t|
+    t.varchar "nombre", limit: 20, null: false
+    t.datetime "fechacre", default: -> { "getdate()" }
+    t.datetime "fechacam", default: -> { "getdate()" }
+    t.varchar "usuario", limit: 15, null: false
+  end
+
   create_table "tipo_instalaciones", force: :cascade do |t|
     t.varchar "nombre", limit: 20, null: false
     t.datetime "fechacre", default: -> { "getdate()" }
@@ -143,7 +226,18 @@ ActiveRecord::Schema.define(version: 20180114185807) do
   add_foreign_key "ciudades", "paises"
   add_foreign_key "conceptos", "servicios"
   add_foreign_key "direcciones_zonas", "zonas"
+  add_foreign_key "entidades", "funciones"
+  add_foreign_key "entidades", "personas"
+  add_foreign_key "personas", "barrios"
+  add_foreign_key "personas", "tipo_documentos"
+  add_foreign_key "personas", "zonas"
   add_foreign_key "planes", "servicios"
+  add_foreign_key "senales", "barrios"
+  add_foreign_key "senales", "entidades"
+  add_foreign_key "senales", "entidades", column: "vendedor_id"
+  add_foreign_key "senales", "tecnologias"
+  add_foreign_key "senales", "tipo_instalaciones"
+  add_foreign_key "senales", "zonas"
   add_foreign_key "tarifas", "conceptos"
   add_foreign_key "tarifas", "planes"
   add_foreign_key "tarifas", "zonas"

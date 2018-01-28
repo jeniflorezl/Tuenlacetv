@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  tipo_documento: one
+  barrio: one
+  zona: one
+
+two:
+  tipo_documento: two
+  barrio: two
+  zona: two
