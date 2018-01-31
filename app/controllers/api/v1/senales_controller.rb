@@ -1,7 +1,6 @@
 module Api
     module V1
         class SenalesController < ApplicationController
-            require 'json'
             before_action :set_senal_buscar, only: [:show]
             before_action :set_senal, only: [:update, :destroy]
 

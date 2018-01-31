@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180116212944) do
+ActiveRecord::Schema.define(version: 20180128211303) do
 
   create_table "bancos", force: :cascade do |t|
     t.varchar "nit", limit: 13
@@ -207,6 +207,16 @@ ActiveRecord::Schema.define(version: 20180116212944) do
 
   create_table "tipo_instalaciones", force: :cascade do |t|
     t.varchar "nombre", limit: 20, null: false
+    t.datetime "fechacre", default: -> { "getdate()" }
+    t.datetime "fechacam", default: -> { "getdate()" }
+    t.varchar "usuario", limit: 15, null: false
+  end
+
+  create_table "usuarios", force: :cascade do |t|
+    t.varchar "login", limit: 10, null: false
+    t.varchar "nombre", limit: 50, null: false
+    t.varchar "clave", limit: 15, null: false
+    t.char "nivel", limit: 1, null: false
     t.datetime "fechacre", default: -> { "getdate()" }
     t.datetime "fechacam", default: -> { "getdate()" }
     t.varchar "usuario", limit: 15, null: false
