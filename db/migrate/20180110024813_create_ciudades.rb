@@ -3,7 +3,8 @@ class CreateCiudades < ActiveRecord::Migration[5.1]
     create_table :ciudades do |t|
       t.references :pais, foreign_key: true
       t.varchar :nombre, limit: 80, null:false
-      t.char :codigo, limit: 5
+      t.char :codigoDane, limit: 5
+      t.char :codigoAlterno, limit: 5
       t.datetime :fechacre
       t.datetime :fechacam
       t.varchar :usuario, limit: 15, null:false

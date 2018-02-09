@@ -22,7 +22,6 @@ module Api
                 end
             
                 # POST /tarifas
-                # POST /tarifas.json
                 def create
                     @tarifa = Tarifa.new(tarifa_params)
                     if @tarifa.save 
@@ -33,7 +32,6 @@ module Api
                 end
             
                 # PATCH/PUT /tarifas/id
-                # PATCH/PUT /tarifas/id.json
                 def update
                     t = Time.now
                     @tarifa.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
@@ -45,7 +43,6 @@ module Api
                 end
             
                 # DELETE /tarifas/id
-                # DELETE /tarifas/id.json
                 def destroy
                     if @tarifa
                         @tarifa.destroy()

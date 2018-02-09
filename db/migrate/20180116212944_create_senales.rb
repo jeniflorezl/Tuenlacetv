@@ -2,6 +2,7 @@ class CreateSenales < ActiveRecord::Migration[5.1]
   def up
     create_table :senales do |t|
       t.references :entidad, foreign_key: true
+      t.references :servicio, foreign_key: true
       t.varchar :contrato, limit: 20, null:false
       t.varchar :direccion, limit: 200
       t.varchar :urbanizacion, limit: 200
