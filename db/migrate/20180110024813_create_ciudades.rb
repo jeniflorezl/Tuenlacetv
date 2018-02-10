@@ -10,24 +10,14 @@ class CreateCiudades < ActiveRecord::Migration[5.1]
       t.varchar :usuario, limit: 15, null:false
     end
     execute <<-SQL
-    ALTER TABLE ciudades
-      ADD CONSTRAINT DF_ciudades_fechacre  
-      DEFAULT (getdate()) FOR fechacre
-    ALTER TABLE ciudades
-      ADD CONSTRAINT DF_ciudades_fechacam  
-      DEFAULT (getdate()) FOR fechacam
+    ALTER TABLE ciudades 
+      ADD  DEFAULT (getdate()) FOR fechacre
+    ALTER TABLE ciudades 
+      ADD  DEFAULT (getdate()) FOR fechacam
     SQL
   end
 
   def down
-    execute <<-SQL
-    ALTER TABLE ciudades
-      DROP CONSTRAINT DF_ciudades_fechacre
-    ALTER TABLE ciudades
-      DROP CONSTRAINT DF_ciudades_fechacam
-    SQL
     drop_table :ciudades
   end
-
-
 end
