@@ -9,7 +9,9 @@ module Api
                 query = <<-SQL 
                 SELECT TOP(10) * FROM VwSenales;
                 SQL
-                @senales = ActiveRecord::Base.connection.select_all(query)
+                #@senales = ActiveRecord::Base.connection.select_all(query)
+                @senales = Senal.all
+                @servicios = Servicio.all
                 @barrios = Barrio.all
                 @zonas = Zona.all
                 @tarifas = Tarifa.all
@@ -17,6 +19,9 @@ module Api
                 @tecnologias = Tecnologia.all
                 @tipo_documentos = TipoDocumento.all
                 @funciones = Funcion.all
+                @estados = Estado.all
+                @vendedores = Entidad.where(funcion_id: 5)
+                @entidades = Entidad.all
             end
 
             # GET /senales/id
@@ -99,9 +104,9 @@ module Api
             #Le coloco los parametros que necesito de la persona y la señal para actualizarlos
 
             def senal_params
-                params.require(:senal).permit(:contrato, :direccion, :urbanizacion, 
+                params.require(:senal).permit(:contrato, servicio_id, :direccion, :urbanizacion, 
                 :torre, :apto, :telefono1, :telefono2, :contacto, :estrato, :vivienda, :observacion,
-                :barrio_id, :zona_id, :estado, :fechacontrato, :televisores, :precinto, :vendedor_id, 
+                :barrio_id, :zona_id, :estado_id, :fechacontrato, :televisores, :precinto, :vendedor_id, 
                 :tipo_instalacion_id, :tecnologia_id, :tiposervicio, :areainstalacion, :usuario)
             end 
 

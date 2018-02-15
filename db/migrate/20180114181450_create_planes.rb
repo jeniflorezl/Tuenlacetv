@@ -8,22 +8,14 @@ class CreatePlanes < ActiveRecord::Migration[5.1]
       t.varchar :usuario, limit: 15, null:false
     end
     execute <<-SQL
-    ALTER TABLE planes
-      ADD CONSTRAINT DF_planes_fechacre  
-      DEFAULT (getdate()) FOR fechacre
-    ALTER TABLE planes
-      ADD CONSTRAINT DF_planes_fechacam  
-      DEFAULT (getdate()) FOR fechacam
+    ALTER TABLE planes 
+      ADD  DEFAULT (getdate()) FOR fechacre
+    ALTER TABLE planes 
+      ADD  DEFAULT (getdate()) FOR fechacam
     SQL
   end
 
   def down
-    execute <<-SQL
-    ALTER TABLE planes
-      DROP CONSTRAINT DF_planes_fechacre
-    ALTER TABLE planes
-      DROP CONSTRAINT DF_planes_fechacam
-    SQL
     drop_table :planes
   end
 end

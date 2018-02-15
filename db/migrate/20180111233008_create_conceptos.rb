@@ -12,22 +12,14 @@ class CreateConceptos < ActiveRecord::Migration[5.1]
       t.varchar :usuario, limit: 15, null:false
     end
     execute <<-SQL
-    ALTER TABLE conceptos
-      ADD CONSTRAINT DF_conceptos_fechacre  
-      DEFAULT (getdate()) FOR fechacre
-    ALTER TABLE conceptos
-      ADD CONSTRAINT DF_conceptos_fechacam  
-      DEFAULT (getdate()) FOR fechacam
+    ALTER TABLE conceptos 
+      ADD  DEFAULT (getdate()) FOR fechacre
+    ALTER TABLE conceptos 
+      ADD  DEFAULT (getdate()) FOR fechacam
     SQL
   end
 
   def down
-    execute <<-SQL
-    ALTER TABLE conceptos
-      DROP CONSTRAINT DF_conceptos_fechacre
-    ALTER TABLE conceptos
-      DROP CONSTRAINT DF_conceptos_fechacam
-    SQL
     drop_table :conceptos
   end
 end

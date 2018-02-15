@@ -8,22 +8,14 @@ class CreateZonas < ActiveRecord::Migration[5.1]
       t.varchar :usuario, limit: 15, null:false
     end
     execute <<-SQL
-    ALTER TABLE zonas
-      ADD CONSTRAINT DF_zonas_fechacre  
-      DEFAULT (getdate()) FOR fechacre
-    ALTER TABLE zonas
-      ADD CONSTRAINT DF_zonas_fechacam  
-      DEFAULT (getdate()) FOR fechacam
+    ALTER TABLE zonas 
+      ADD  DEFAULT (getdate()) FOR fechacre
+    ALTER TABLE zonas 
+      ADD  DEFAULT (getdate()) FOR fechacam
     SQL
   end
 
   def down
-    execute <<-SQL
-    ALTER TABLE zonas
-      DROP CONSTRAINT DF_zonas_fechacre
-    ALTER TABLE zonas
-      DROP CONSTRAINT DF_zonas_fechacam
-    SQL
     drop_table :zonas
   end
 end

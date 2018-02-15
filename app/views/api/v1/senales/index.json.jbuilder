@@ -1,5 +1,73 @@
 json.senales do
-    json.merge! @senales
+    json.array! @senales do |senal|
+        json.id senal.entidad.id
+        json.servicio senal.servicio.nombre
+        json.tipo_documento senal.entidad.persona.tipo_documento.nombre
+        json.documento senal.entidad.persona.documento
+        json.nombre1 senal.entidad.persona.nombre1
+        json.nombre2 senal.entidad.persona.nombre2
+        json.apellido1 senal.entidad.persona.apellido1
+        json.apellido2 senal.entidad.persona.apellido2
+        json.direccionP senal.entidad.persona.direccion
+        json.telefono1P senal.entidad.persona.telefono1
+        json.telefono2P senal.entidad.persona.telefono2
+        json.barrioP senal.entidad.persona.barrio.nombre
+        json.zonaP senal.entidad.persona.zona.nombre
+        json.correo senal.entidad.persona.correo
+        json.fechanac senal.entidad.persona.fechanac
+        json.tipopersona senal.entidad.persona.tipopersona
+        json.estratoP senal.entidad.persona.estrato
+        json.contrato senal.contrato
+        json.direccion senal.direccion
+        json.urbanizacion senal.urbanizacion
+        json.torre senal.torre
+        json.telefono1 senal.telefono1
+        json.telefono2 senal.telefono2
+        json.contacto senal.contacto
+        json.estrato senal.estrato
+        json.vivienda senal.vivienda
+        json.barrio senal.barrio.nombre
+        json.zona senal.zona.nombre
+        json.estado senal.estado.nombre
+        json.fechacontrato senal.fechacontrato
+        json.televisores senal.televisores
+        json.precinto senal.precinto
+        json.vendedor do
+            json.array! @entidades do |entidad|
+                vendedor = senal.vendedor_id
+                if (vendedor == entidad.id)
+                    json.tipo_documento entidad.persona.tipo_documento.nombre
+                    json.documento entidad.persona.documento
+                    json.nombre1 entidad.persona.nombre1
+                    json.nombre2 entidad.persona.nombre2
+                    json.apellido1 entidad.persona.apellido1
+                    json.apellido2 entidad.persona.apellido2
+                    json.direccionP entidad.persona.direccion
+                    json.telefono1P entidad.persona.telefono1
+                    json.telefono2P entidad.persona.telefono2
+                    json.barrioP entidad.persona.barrio.nombre
+                    json.zonaP entidad.persona.zona.nombre
+                    json.correo entidad.persona.correo
+                    json.fechanac entidad.persona.fechanac
+                    json.tipopersona entidad.persona.tipopersona
+                    json.estratoP entidad.persona.estrato
+                end
+            end
+        end
+        json.tipo_instalacion senal.tipo_instalacion.nombre
+        json.tecnologia senal.tecnologia.nombre
+        json.tiposervicio senal.tiposervicio
+        json.areainstalacion senal.areainstalacion
+        json.funcion senal.entidad.funcion.nombre
+    end
+end
+
+json.servicios do
+    json.array! @servicios do |servicio|
+        json.id servicio.id
+        json.nombre servicio.nombre
+        json.usuario servicio.usuario
+    end
 end
 
 json.barrios do
@@ -61,5 +129,33 @@ json.funciones do
         json.id funciones.id
         json.nombre funciones.nombre
         json.usuario funciones.usuario
+    end
+end
+
+json.estados do
+    json.array! @estados do |estado|
+        json.id estado.id
+        json.nombre estado.nombre
+        json.usuario estado.usuario
+    end
+end
+
+json.vendedores do
+    json.array! @vendedores do |vendedor|
+        json.tipo_documento vendedor.persona.tipo_documento.nombre
+        json.documento vendedor.persona.documento
+        json.nombre1 vendedor.persona.nombre1
+        json.nombre2 vendedor.persona.nombre2
+        json.apellido1 vendedor.persona.apellido1
+        json.apellido2 vendedor.persona.apellido2
+        json.direccion vendedor.persona.direccion
+        json.telefono1 vendedor.persona.telefono1
+        json.telefono2 vendedor.persona.telefono2
+        json.barrio vendedor.persona.barrio.nombre
+        json.zona vendedor.persona.zona.nombre
+        json.correo vendedor.persona.correo
+        json.fechanac vendedor.persona.fechanac
+        json.tipopersona vendedor.persona.tipopersona
+        json.estrato vendedor.persona.estrato
     end
 end

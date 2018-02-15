@@ -10,6 +10,7 @@ module Api
                     @zonas = Zona.all
                     @conceptos = Concepto.all
                     @planes = Plan.all
+                    @estados = Estado.all
                 end
             
                 # GET /tarifas/id
@@ -79,7 +80,7 @@ module Api
 
                 #Le coloco los parametros que necesito de la tarifa para crearla y actualizarla
                 def tarifa_params
-                    params.require(:tarifa).permit(:zona_id, :concepto_id, :plan_id, :valor, :estado, 
+                    params.require(:tarifa).permit(:zona_id, :concepto_id, :plan_id, :valor, :estado_id, 
                     :usuario)
                 end 
         end

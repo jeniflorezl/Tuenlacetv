@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       resources :planes
       resources :tarifas
       resources :senales
+      resources :usuarios
       get 'paises/:campo/:valor', to: 'paises#show'
       get 'ciudades/:campo/:valor', to: 'ciudades#show'
       get 'bancos/:campo/:valor', to: 'bancos#show'
@@ -19,6 +20,11 @@ Rails.application.routes.draw do
       get 'planes/:campo/:valor', to: 'planes#show'
       get 'tarifas/:campo/:valor', to: 'tarifas#show'
       get 'senales/:campo/:valor', to: 'senales#show'
+      get 'usuarios/:campo/:valor', to: 'usuarios#show'
+      post 'usuarios/cambiar_password/:id', to: 'usuarios#cambiar_password'
+      post 'usuarios/resetear_password/:id', to: 'usuarios#resetear_password'
+      post 'signin', to: 'sesion#create'
+      delete 'signout', to: 'sesion#destroy'
     end
   end
 end

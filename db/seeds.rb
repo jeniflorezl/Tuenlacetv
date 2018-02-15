@@ -9,20 +9,10 @@
 Pais.create(nombre: 'COLOMBIA', usuario: 'admin')
 Pais.create(nombre: 'PANAMA', usuario: 'admin')
 Pais.create(nombre: 'VENEZUELA', usuario: 'admin')
-Ciudad.create(pais_id: 1, nombre: 'MEDELLIN', codigo: '05001', usuario: 'admin')
-Ciudad.create(pais_id: 1, nombre: 'BOGOTA', codigo: '05001', usuario: 'admin')
-Ciudad.create(pais_id: 1, nombre: 'BUCARAMANGA', codigo: '05001', usuario: 'admin')
-Ciudad.create(pais_id: 1, nombre: 'PEREIRA', codigo: '05001', usuario: 'admin')
-Company.create(tipo: '01', nit: '1236737382', nombre: 'ENLACE INFORMÁTICO', direccion: 'Calle 54A #43-23', 
-telefono1: '4540312', telefono2: '', fax: '', contacto: '321342343', correo: 'enlaceinformatico@gmail.com',
-regimen: '', actividade: '', contribuyente: '', resolucionCntv: '', representante: 'Jeniffer Flórez', 
-idciudad: 1, prefijo: '', titulo1: '', titulo2: '', logo: '', usuario: 'admin')
-Concept.create(descripcion: 'SUSCRIPCION', operacion: '+', clase: 'O', iva: 0, tipodoc: 'AFI', observa: '',
-usuario: 'admin')
-Concept.create(descripcion: 'MENSUALIDAD', operacion: '+', clase: 'P', iva: 0, tipodoc: 'FAC', observa: '',
-usuario: 'admin')
-Concept.create(descripcion: 'PUNTO ADICIONAL', operacion: '+', clase: 'O', iva: 0, tipodoc: 'ETV', observa: '',
-usuario: 'admin')
+Ciudad.create(pais_id: 1, nombre: 'MEDELLIN', codigoDane: '05001', codigoAlterno: '', usuario: 'admin')
+Ciudad.create(pais_id: 1, nombre: 'BOGOTA', codigoDane: '05001', codigoAlterno: '', usuario: 'admin')
+Ciudad.create(pais_id: 1, nombre: 'BUCARAMANGA', codigoDane: '05001', codigoAlterno: '', usuario: 'admin')
+Ciudad.create(pais_id: 1, nombre: 'PEREIRA', codigoDane: '05001', codigoAlterno: '', usuario: 'admin')
 Zona.create(ciudad_id: 1, nombre: 'ZONA GENERAL', usuario: 'admin')
 Zona.create(ciudad_id: 1, nombre: 'ZONA NORTE', usuario: 'admin')
 Zona.create(ciudad_id: 1, nombre: 'ZONA CENTRO', usuario: 'admin')
@@ -48,14 +38,35 @@ abreviatura: 'FAC', operacion: '+', usuario: 'admin')
 Concepto.create(servicio_id: 1, codigo: '003', nombre: 'PUNTO ADICIONAL', porcentajeIva: '19',
 abreviatura: 'ETV', operacion: '+', usuario: 'admin')
 Plan.create(servicio_id: 1, nombre: 'Plan tv', usuario: 'admin')
-Tarifa.create(zona_id: 1, concepto_id: 1, plan_id: 1, valor: '35000', estado: 'A', usuario: 'admin')
-Tarifa.create(zona_id: 2, concepto_id: 2, plan_id: 1, valor: '50000', estado: 'A', usuario: 'admin')
-Tarifa.create(zona_id: 3, concepto_id: 3, plan_id: 1, valor: '20000', estado: 'A', usuario: 'admin')
-Tarifa.create(zona_id: 4, concepto_id: 1, plan_id: 1, valor: '15000', estado: 'A', usuario: 'admin')
+=end
+Tarifa.create(zona_id: 1, concepto_id: 1, plan_id: 1, valor: '35000', estado_id: 1, usuario: 'admin')
+Tarifa.create(zona_id: 2, concepto_id: 2, plan_id: 1, valor: '50000', estado_id: 1, usuario: 'admin')
+Tarifa.create(zona_id: 3, concepto_id: 3, plan_id: 1, valor: '20000', estado_id: 1, usuario: 'admin')
+Tarifa.create(zona_id: 4, concepto_id: 1, plan_id: 1, valor: '15000', estado_id: 1, usuario: 'admin')
+=begin
 TipoDocumento.create(nombre: 'Cédula de Ciudadanía', usuario: 'admin')
 TipoDocumento.create(nombre: 'Cédula de Extranjería', usuario: 'admin')
 TipoDocumento.create(nombre: 'Pasaporte', usuario: 'admin')
 TipoDocumento.create(nombre: 'NIT', usuario: 'admin')
+Tecnologia.create(nombre: 'Análogo', usuario: 'admin')
+Tecnologia.create(nombre: 'Digital', usuario: 'admin')
+TipoInstalacion.create(nombre: 'Casa', usuario: 'admin')
+TipoInstalacion.create(nombre: 'Edificio', usuario: 'admin')
+TipoInstalacion.create(nombre: 'Hotel', usuario: 'admin')
+TipoInstalacion.create(nombre: 'Negocio', usuario: 'admin')
+Funcion.create(nombre: 'Suscriptor', usuario: 'admin')
+Funcion.create(nombre: 'Empleado', usuario: 'admin')
+Funcion.create(nombre: 'Proveedor', usuario: 'admin')
+Funcion.create(nombre: 'Cliente', usuario: 'admin')
+Funcion.create(nombre: 'Vendedor', usuario: 'admin')
+Funcion.create(nombre: 'Esal', usuario: 'admin')
+Funcion.create(nombre: 'Tecnico', usuario: 'admin')
+Funcion.create(nombre: 'Cobrador', usuario: 'admin')
+Estado.create(nombre: 'Activo', abreviatura: 'A', usuario: 'admin')
+Estado.create(nombre: 'Cortado', abreviatura: 'C', usuario: 'admin')
+Estado.create(nombre: 'Exentos', abreviatura: 'E', usuario: 'admin')
+Estado.create(nombre: 'Pendiente',  abreviatura: 'P', usuario: 'admin')
+Estado.create(nombre: 'Retirado', abreviatura: 'R', usuario: 'admin')
 Persona.create(tipo_documento_id: 1, documento: '1020470055', nombre1: 'JENIFFER', nombre2: '',
 apellido1: 'FLÓREZ', apellido2: 'LONDOÑO', direccion: 'Cra 47 #53-41', telefono1: '4540312', 
 telefono2: '', barrio_id: 1, zona_id: 1, correo: 'jeniferfl@gmail.com', fechanac: '13/07/1995', 
@@ -91,41 +102,41 @@ Entidad.create(funcion_id: 1, persona_id: 4, usuario: 'admin')
 Entidad.create(funcion_id: 7, persona_id: 5, usuario: 'admin')
 Entidad.create(funcion_id: 5, persona_id: 6, usuario: 'admin')
 Entidad.create(funcion_id: 5, persona_id: 7, usuario: 'admin')
-=end
-Senal.create(entidad_id: 1, contrato: '4789963', direccion: 'Calle 11 #24-23', urbanizacion: '', torre: '', 
+
+Senal.create(entidad_id: 1, servicio_id: 1, contrato: '4789963', direccion: 'Calle 11 #24-23', urbanizacion: '', torre: '', 
 apto: '', telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', observacion: '',
-barrio_id: 1, zona_id: 1, estado: 'A', fechacontrato: '01/01/2017', televisores: 2, 
+barrio_id: 1, zona_id: 1, estado_id: 1, fechacontrato: '01/01/2017', televisores: 2, 
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
 areainstalacion: 'urbana', usuario: 'admin')
-Senal.create(entidad_id: 2, contrato: '145665', direccion: 'Cr 47', urbanizacion: '', torre: '', 
+Senal.create(entidad_id: 2, servicio_id: 1, contrato: '145665', direccion: 'Cr 47', urbanizacion: '', torre: '', 
 apto: '', telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', observacion: '',
-barrio_id: 2, zona_id: 2, estado: 'A', fechacontrato: '01/01/2017', televisores: 2, 
+barrio_id: 2, zona_id: 2, estado_id: 1, fechacontrato: '01/01/2017', televisores: 2, 
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
 areainstalacion: 'urbana', usuario: 'admin')
-Senal.create(entidad_id: 3, contrato: '369669', direccion: 'Calle 8', urbanizacion: '', torre: '', 
+Senal.create(entidad_id: 3, servicio_id: 1, contrato: '369669', direccion: 'Calle 8', urbanizacion: '', torre: '', 
 apto: '', telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', observacion: '',
-barrio_id: 3, zona_id: 3, estado: 'A', fechacontrato: '01/01/2017', televisores: 2, 
+barrio_id: 3, zona_id: 3, estado_id: 1, fechacontrato: '01/01/2017', televisores: 2, 
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
 areainstalacion: 'urbana', usuario: 'admin')
-Senal.create(entidad_id: 4, contrato: '325856', direccion: 'Cr 45', urbanizacion: '', torre: '', 
+Senal.create(entidad_id: 4, servicio_id: 1, contrato: '325856', direccion: 'Cr 45', urbanizacion: '', torre: '', 
 apto: '', telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', observacion: '',
-barrio_id: 4, zona_id: 4, estado: 'A', fechacontrato: '01/01/2017', televisores: 2, 
+barrio_id: 4, zona_id: 4, estado_id: 1, fechacontrato: '01/01/2017', televisores: 2, 
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
 areainstalacion: 'urbana', usuario: 'admin')
-Senal.create(entidad_id: 5, contrato: '477586', direccion: 'Calle 11 #24-23', urbanizacion: '', torre: '', 
+Senal.create(entidad_id: 5, servicio_id: 1, contrato: '477586', direccion: 'Calle 11 #24-23', urbanizacion: '', torre: '', 
 apto: '', telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', observacion: '',
-barrio_id: 5, zona_id: 5, estado: 'A', fechacontrato: '01/01/2017', televisores: 2, 
+barrio_id: 5, zona_id: 5, estado_id: 1, fechacontrato: '01/01/2017', televisores: 2, 
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
 areainstalacion: 'urbana', usuario: 'admin')
-Senal.create(entidad_id: 7, contrato: '365899', direccion: 'Calle 11 #24-23', urbanizacion: '', torre: '', 
+Senal.create(entidad_id: 6, servicio_id: 1, contrato: '365899', direccion: 'Calle 11 #24-23', urbanizacion: '', torre: '', 
 apto: '', telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', observacion: '',
-barrio_id: 1, zona_id: 1, estado: 'A', fechacontrato: '01/01/2017', televisores: 2, 
+barrio_id: 1, zona_id: 1, estado_id: 1, fechacontrato: '01/01/2017', televisores: 2, 
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
 areainstalacion: 'urbana', usuario: 'admin')
 =begin
-Senal.create(entidad_id: 8, contrato: '147788', direccion: 'Calle 11 #24-23', urbanizacion: '', torre: '', 
+Senal.create(entidad_id: 8, servicio_id: 1, contrato: '147788', direccion: 'Calle 11 #24-23', urbanizacion: '', torre: '', 
 apto: '', telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', observacion: '',
-barrio_id: 2, zona_id: 2, estado: 'A', fechacontrato: '01/01/2017', televisores: 2, 
+barrio_id: 2, zona_id: 2, estado_id: 1, fechacontrato: '01/01/2017', televisores: 2, 
 precinto: '12321', vendedor_id: 6, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
 areainstalacion: 'urbana', usuario: 'admin')
 =end

@@ -1,7 +1,9 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  password_digest: MyString
+  entidad: one
+  ciudad: one
 
 two:
-  password_digest: MyString
+  entidad: two
+  ciudad: two

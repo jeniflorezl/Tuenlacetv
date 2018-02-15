@@ -15,22 +15,14 @@ class CreateBancos < ActiveRecord::Migration[5.1]
       t.varchar :usuario, limit: 15, null:false
     end
     execute <<-SQL
-    ALTER TABLE bancos
-      ADD CONSTRAINT DF_bancos_fechacre  
-      DEFAULT (getdate()) FOR fechacre
-    ALTER TABLE bancos
-      ADD CONSTRAINT DF_bancos_fechacam  
-      DEFAULT (getdate()) FOR fechacam
+    ALTER TABLE bancos 
+      ADD  DEFAULT (getdate()) FOR fechacre
+    ALTER TABLE bancos 
+      ADD  DEFAULT (getdate()) FOR fechacam
     SQL
   end
 
   def down
-    execute <<-SQL
-    ALTER TABLE bancos
-      DROP CONSTRAINT DF_bancos_fechacre
-    ALTER TABLE bancos
-      DROP CONSTRAINT DF_bancos_fechacam
-    SQL
     drop_table :bancos
   end
 end

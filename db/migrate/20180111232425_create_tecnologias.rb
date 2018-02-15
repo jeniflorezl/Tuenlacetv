@@ -7,22 +7,14 @@ class CreateTecnologias < ActiveRecord::Migration[5.1]
       t.varchar :usuario, limit: 15, null:false
     end
     execute <<-SQL
-    ALTER TABLE tecnologias
-      ADD CONSTRAINT DF_tecnologias_fechacre  
-      DEFAULT (getdate()) FOR fechacre
-    ALTER TABLE tecnologias
-      ADD CONSTRAINT DF_tecnologias_fechacam  
-      DEFAULT (getdate()) FOR fechacam
+    ALTER TABLE tecnologias 
+      ADD  DEFAULT (getdate()) FOR fechacre
+    ALTER TABLE tecnologias 
+      ADD  DEFAULT (getdate()) FOR fechacam
     SQL
   end
 
   def down
-    execute <<-SQL
-    ALTER TABLE tecnologias
-      DROP CONSTRAINT DF_tecnologias_fechacre
-    ALTER TABLE tecnologias
-      DROP CONSTRAINT DF_tecnologias_fechacam
-    SQL
     drop_table :tecnologias
   end
 end

@@ -5,7 +5,7 @@ json.tarifas do
         json.concepto tarifa.concepto.nombre
         json.plan tarifa.plan.nombre
         json.valor tarifa.valor
-        json.estado tarifa.estado
+        json.estado tarifa.estado.abreviatura
         json.usuario tarifa.usuario
     end
 end
@@ -38,6 +38,14 @@ json.planes do
         json.servicio plan.servicio.nombre
         json.nombre plan.nombre
         json.usuario plan.usuario
+    end
+end
+
+json.estados do
+    json.array! @estados do |estado|
+        json.id estado.id
+        json.nombre estado.nombre
+        json.usuario estado.usuario
     end
 end
 

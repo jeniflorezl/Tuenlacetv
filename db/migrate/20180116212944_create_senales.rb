@@ -16,7 +16,7 @@ class CreateSenales < ActiveRecord::Migration[5.1]
       t.varchar :observacion, limit: 200
       t.references :barrio, foreign_key: true
       t.references :zona, foreign_key: true
-      t.char :estado, limit: 1, null:false
+      t.references :estado, foreign_key: true
       t.datetime :fechacontrato, null:false
       t.integer :televisores      
       t.varchar :precinto, limit: 10
@@ -30,22 +30,14 @@ class CreateSenales < ActiveRecord::Migration[5.1]
       t.varchar :usuario, limit: 15, null:false
     end
     execute <<-SQL
-    ALTER TABLE senales
-      ADD CONSTRAINT DF_senales_fechacre 
-      DEFAULT (getdate()) FOR fechacre
-    ALTER TABLE senales
-      ADD CONSTRAINT DF_senales_fechacam  
-      DEFAULT (getdate()) FOR fechacam
+    ALTER TABLE senales 
+      ADD  DEFAULT (getdate()) FOR fechacre
+    ALTER TABLE senales 
+      ADD  DEFAULT (getdate()) FOR fechacam
     SQL
   end
 
   def down
-    execute <<-SQL
-    ALTER TABLE senales
-      DROP CONSTRAINT DF_senales_fechacre
-    ALTER TABLE senales
-      DROP CONSTRAINT DF_senales_fechacam
-    SQL
     drop_table :senales
   end
 end

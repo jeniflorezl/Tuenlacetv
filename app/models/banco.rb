@@ -1,4 +1,4 @@
 class Banco < ApplicationRecord
   belongs_to :ciudad
-  validates :nombre, :usuario, presence: true #obligatorio
+  validates :nombre, :ciudad, :usuario, presence: true #obligatorio
 end

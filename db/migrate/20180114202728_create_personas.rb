@@ -21,23 +21,14 @@ class CreatePersonas < ActiveRecord::Migration[5.1]
       t.varchar :usuario, limit: 15, null:false
     end
     execute <<-SQL
-    ALTER TABLE personas
-      ADD CONSTRAINT DF_personas_fechacre  
-      DEFAULT (getdate()) FOR fechacre
-    ALTER TABLE personas
-      ADD CONSTRAINT DF_personas_fechacam  
-      DEFAULT (getdate()) FOR fechacam
+    ALTER TABLE personas 
+      ADD  DEFAULT (getdate()) FOR fechacre
+    ALTER TABLE personas 
+      ADD  DEFAULT (getdate()) FOR fechacam
     SQL
   end
 
   def down
-    execute <<-SQL
-    ALTER TABLE personas
-      DROP CONSTRAINT DF_personas_fechacre
-    ALTER TABLE personas
-      DROP CONSTRAINT DF_personas_fechacam
-    SQL
     drop_table :personas
   end
-
 end

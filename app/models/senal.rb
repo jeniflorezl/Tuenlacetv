@@ -5,6 +5,8 @@ class Senal < ApplicationRecord
   belongs_to :tipo_instalacion
   belongs_to :tecnologia
   belongs_to :entidad
-  validates :contrato, :barrio_id, :zona_id, :estado, :fechacontrato, :vendedor_id, 
-  :tipo_instalacion_id, :tecnologia_id, :tiposervicio, :areainstalacion, :usuario, presence: true #obligatorio
+  belongs_to :servicio
+  belongs_to :estado
+  validates :contrato, :servicio, :barrio, :zona, :estado, :fechacontrato,  :tipo_instalacion, :tecnologia, 
+  :usuario, presence: true #obligatorio
 end

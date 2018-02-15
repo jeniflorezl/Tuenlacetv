@@ -10,7 +10,7 @@ default: &default
   adapter: sqlserver
   mode: dblib
   host: localhost
-  port: 50367
+  port: 62452
   username: TUENLACETV
   password: 1234
 

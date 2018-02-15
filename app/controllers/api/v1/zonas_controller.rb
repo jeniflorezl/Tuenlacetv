@@ -67,7 +67,7 @@ module Api
             #Le coloco los parametros que necesito de la zona para crearla y actualizarla
 
             def zona_params
-                params.require(:zona).permit(:ciudad_id, :nombre, :dirquejas, :usuario)
+                params.require(:zona).permit(:ciudad_id, :nombre, :usuario)
             end 
         end
     end

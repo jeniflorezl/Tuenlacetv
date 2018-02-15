@@ -5,5 +5,5 @@ class Zona < ApplicationRecord
   has_many :tarifas
   has_many :personas
   has_many :senales
-  validates :ciudad_id, :nombre, :dirquejas, :usuario, presence: true #obligatorio
+  validates :ciudad, :nombre, :usuario, presence: true #obligatorio
 end
