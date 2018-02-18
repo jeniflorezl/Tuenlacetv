@@ -113,7 +113,7 @@ module Api
             def persona_params
                 params.require(:persona).permit(:tipo_documento_id, :documento, :nombre1, :nombre2, 
                 :apellido1, :apellido2, :direccion, :telefono1, :telefono2, :barrio_id, :zona_id, 
-                :correo, :fechanac, :tipopersona, :estrato, :usuario)
+                :correo, :fechanac, :tipopersona, :estrato, :condicionfisica, :usuario)
             end
         end
     end

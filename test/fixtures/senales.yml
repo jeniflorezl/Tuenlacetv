@@ -2,16 +2,20 @@
 
 one:
   entidad: one
+  servicio: one
   barrio: one
   zona: one
+  estado: one
+  entidad: one
   tipo_instalacion: one
   tecnologia: one
-  entidad: one
 
 two:
   entidad: two
+  servicio: two
   barrio: two
   zona: two
+  estado: two
+  entidad: two
   tipo_instalacion: two
   tecnologia: two
-  entidad: two

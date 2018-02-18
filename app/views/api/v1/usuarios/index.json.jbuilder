@@ -3,5 +3,5 @@ json.array! @usuarios do |usuario|
     json.login usuario.login
     json.nombre usuario.nombre
     json.nivel usuario.nivel
-    json.usuario usuario.usuario
+    json.usuario usuario.user
 end

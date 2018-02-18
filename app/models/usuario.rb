@@ -2,15 +2,13 @@ class Usuario < ApplicationRecord
     # Con este método encriptamos al password y generamos el método "authenticate"
     has_secure_password
 
-    before_save :uppercase_nombre
+    before_save :uppercase
 
-    validates :login, :nombre, :password_digest, :nivel, :usuario, presence: true #obligatorio
+    validates :login, :nombre, :nivel, :user, presence: true #obligatorio
     validates :login, length: { maximum: 10, 
     message: "El nombre de usuario no puede ser mayor a 10 caracteres" }
-    validates :password, length: { maximum: 20, 
-    message: "La contraseña no puede ser mayor a 20 caracteres" }
-
-
+    validates :password, length: { maximum: 15, 
+    message: "La contraseña no puede ser mayor a 15 caracteres" }
 
     def generar_auth_token
         token = SecureRandom.hex
@@ -23,9 +21,9 @@ class Usuario < ApplicationRecord
     end
 
     def login_valido?(login, password)
-        usuario = Usuario.find_by(login: login)
-        if usuario && usuario.authenticate(password)
-            usuario
+        usuario1 = Usuario.find_by(login: login)
+        if usuario1 && usuario1.authenticate(password)
+            usuario1
         end
     end
 
@@ -39,7 +37,8 @@ class Usuario < ApplicationRecord
         end
     end
 
-    def uppercase_nombre
+    def uppercase
         self.nombre.upcase!
+        self.login.downcase!
     end
 end

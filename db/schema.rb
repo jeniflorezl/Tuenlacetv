@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180215220142) do
+ActiveRecord::Schema.define(version: 20180216011028) do
 
   create_table "bancos", force: :cascade do |t|
     t.varchar "nit", limit: 13
@@ -139,7 +139,7 @@ ActiveRecord::Schema.define(version: 20180215220142) do
     t.varchar "nombre2", limit: 50
     t.varchar "apellido1", limit: 50, null: false
     t.varchar "apellido2", limit: 50
-    t.varchar "direccion", limit: 200
+    t.varchar "direccion", limit: 200, null: false
     t.varchar "telefono1", limit: 20
     t.varchar "telefono2", limit: 20
     t.bigint "barrio_id"
@@ -148,6 +148,7 @@ ActiveRecord::Schema.define(version: 20180215220142) do
     t.datetime "fechanac"
     t.char "tipopersona", limit: 1, null: false
     t.integer "estrato"
+    t.char "condicionfisica", limit: 1, null: false
     t.datetime "fechacre", default: -> { "getdate()" }
     t.datetime "fechacam", default: -> { "getdate()" }
     t.varchar "usuario", limit: 15, null: false
@@ -169,7 +170,7 @@ ActiveRecord::Schema.define(version: 20180215220142) do
     t.bigint "entidad_id"
     t.bigint "servicio_id"
     t.varchar "contrato", limit: 20, null: false
-    t.varchar "direccion", limit: 200
+    t.varchar "direccion", limit: 200, null: false
     t.varchar "urbanizacion", limit: 200
     t.varchar "torre", limit: 20
     t.varchar "apto", limit: 20
@@ -183,6 +184,7 @@ ActiveRecord::Schema.define(version: 20180215220142) do
     t.bigint "zona_id"
     t.bigint "estado_id"
     t.datetime "fechacontrato", null: false
+    t.integer "permanencia"
     t.integer "televisores"
     t.varchar "precinto", limit: 10
     t.bigint "vendedor_id"
@@ -254,7 +256,7 @@ ActiveRecord::Schema.define(version: 20180215220142) do
     t.string "token"
     t.datetime "fechacre", default: -> { "getdate()" }
     t.datetime "fechacam", default: -> { "getdate()" }
-    t.varchar "usuario", limit: 15, null: false
+    t.varchar "user", limit: 15, null: false
   end
 
   create_table "zonas", force: :cascade do |t|

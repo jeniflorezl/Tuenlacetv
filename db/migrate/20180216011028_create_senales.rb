@@ -4,7 +4,7 @@ class CreateSenales < ActiveRecord::Migration[5.1]
       t.references :entidad, foreign_key: true
       t.references :servicio, foreign_key: true
       t.varchar :contrato, limit: 20, null:false
-      t.varchar :direccion, limit: 200
+      t.varchar :direccion, limit: 200, null:false
       t.varchar :urbanizacion, limit: 200
       t.varchar :torre, limit: 20
       t.varchar :apto, limit: 20
@@ -18,6 +18,7 @@ class CreateSenales < ActiveRecord::Migration[5.1]
       t.references :zona, foreign_key: true
       t.references :estado, foreign_key: true
       t.datetime :fechacontrato, null:false
+      t.integer :permanencia
       t.integer :televisores      
       t.varchar :precinto, limit: 10
       t.references :vendedor, foreign_key: { to_table: :entidades }
@@ -40,4 +41,5 @@ class CreateSenales < ActiveRecord::Migration[5.1]
   def down
     drop_table :senales
   end
+
 end

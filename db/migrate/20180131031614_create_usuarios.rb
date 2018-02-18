@@ -8,7 +8,7 @@ class CreateUsuarios < ActiveRecord::Migration[5.1]
       t.string :token
       t.datetime :fechacre
       t.datetime :fechacam
-      t.varchar :usuario, limit: 15, null:false
+      t.varchar :user, limit: 15, null:false
     end
     execute <<-SQL
     ALTER TABLE usuarios 

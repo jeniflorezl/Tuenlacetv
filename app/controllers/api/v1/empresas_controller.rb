@@ -6,19 +6,21 @@ module Api
 
             # GET /empresas
             def index
-                @empresas = empresa.all
+                @empresas = Empresa.all
                 @ciudades = Ciudad.all
+                @personas = Persona.all
+                @entidades = Entidad.all
             end
 
             # GET /empresas/id
             # GET /empresas/nit
-            # GET /empresas/nombre
+            # GET /empresas/razon social
             def show
             end
 
             # POST /empresas
             def create
-                @empresa = empresa.new(empresa_params)
+                @empresa = Empresa.new(empresa_params)
                 if @empresa.save 
                     render json: { status: :created }
                 else
@@ -50,7 +52,8 @@ module Api
             private
 
             def set_empresa
-                @empresa = empresa.find(params[:id])
+                @empresa = Empresa.find(params[:id])
+                @entidades = Entidad.all
             end
             
             # Me busca el empresa por el id, la zona o el nombre
@@ -58,9 +61,9 @@ module Api
                 @campo = params[:campo]
                 @valor = params[:valor]
                 if @campo == 'codigo'
-                    @empresa = empresa.find(params[:valor])
+                    @empresa = Empresa.find(params[:valor])
                 else
-                    @empresa = empresa.limit(10).where("#{@campo} LIKE '%#{@valor}%'")
+                    @empresa = Empresa.limit(10).where("#{@campo} LIKE '%#{@valor}%'")
                 end
                 @empresa = [*@empresa]
             end
@@ -69,8 +72,9 @@ module Api
             #Le coloco los parametros que necesito del empresa para crearlo y actualizarlo
 
             def empresa_params
-                params.require(:empresa).permit(:nit, :nombre, :direccion, :ciudad_id, :telefono1,
-                :telefono2, :contacto, :cuentaBancaria, :cuentaContable, :usuario)
+                params.require(:empresa).permit(:tipo, :nit, :razonsocial, :direccion, :telefono1,
+                :telefono2, :ciudad_id, :entidad_id, :logoempresa, :correo, :regimen, :contribuyente, 
+                :centrocosto, :usuario)
             end 
         end
     end

@@ -4,8 +4,10 @@ one:
   zona: one
   concepto: one
   plan: one
+  estado: one
 
 two:
   zona: two
   concepto: two
   plan: two
+  estado: two

@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       resources :tarifas
       resources :senales
       resources :usuarios
+      resources :empresas
       get 'paises/:campo/:valor', to: 'paises#show'
       get 'ciudades/:campo/:valor', to: 'ciudades#show'
       get 'bancos/:campo/:valor', to: 'bancos#show'
@@ -23,6 +24,7 @@ Rails.application.routes.draw do
       get 'usuarios/:campo/:valor', to: 'usuarios#show'
       post 'usuarios/cambiar_password/:id', to: 'usuarios#cambiar_password'
       post 'usuarios/resetear_password/:id', to: 'usuarios#resetear_password'
+      get 'empresas/:campo/:valor', to: 'empresas#show'
       post 'signin', to: 'sesion#create'
       delete 'signout', to: 'sesion#destroy'
     end

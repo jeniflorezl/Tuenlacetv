@@ -101,8 +101,8 @@ module Api
                 #Le coloco los parametros que necesito del usuario para crearlo y actualizarlo
                 # Reemplazamos :password_digest por :password y :password_confirmation
                 def usuario_params
-                    params.require(:usuario).permit(:login, :nombre, :password, :password_confirmation,
-                    :nivel, :token, :usuario)
+                    params.permit(:login, :nombre, :password, :password_confirmation,
+                    :nivel, :token, :user)
                 end 
         end
     end

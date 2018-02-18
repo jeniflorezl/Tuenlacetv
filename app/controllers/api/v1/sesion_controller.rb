@@ -4,11 +4,11 @@ module Api
             skip_before_action :require_login!, only: [:create]
 
             def create
-                usuario = Usuario.find_by(login: params[:login])
-                usuario ||= Usuario.new
+                usuario1 = Usuario.find_by(login: params[:login])
+                usuario1 ||= Usuario.new
 
-                if usuario.login_valido?(params[:login],params[:password])
-                    auth_token = usuario.generar_auth_token
+                if usuario1.login_valido?(params[:login],params[:password])
+                    auth_token = usuario1.generar_auth_token
                     render json: { auth_token: auth_token }
                 else
                     login_invalido
@@ -17,8 +17,8 @@ module Api
             end
 
             def destroy
-                usuario = current_user
-                usuario.invalidar_auth_token
+                usuario1 = current_user
+                usuario1.invalidar_auth_token
                 head :ok
             end
 

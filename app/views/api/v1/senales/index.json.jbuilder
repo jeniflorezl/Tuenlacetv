@@ -17,6 +17,7 @@ json.senales do
         json.fechanac senal.entidad.persona.fechanac
         json.tipopersona senal.entidad.persona.tipopersona
         json.estratoP senal.entidad.persona.estrato
+        json.condicion_fisica senal.entidad.persona.condicionfisica
         json.contrato senal.contrato
         json.direccion senal.direccion
         json.urbanizacion senal.urbanizacion
@@ -30,6 +31,7 @@ json.senales do
         json.zona senal.zona.nombre
         json.estado senal.estado.nombre
         json.fechacontrato senal.fechacontrato
+        json.permanencia senal.permanencia
         json.televisores senal.televisores
         json.precinto senal.precinto
         json.vendedor do

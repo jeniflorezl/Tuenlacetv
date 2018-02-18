@@ -7,7 +7,7 @@ class CreatePersonas < ActiveRecord::Migration[5.1]
       t.varchar :nombre2, limit: 50
       t.varchar :apellido1, limit: 50, null:false
       t.varchar :apellido2, limit: 50
-      t.varchar :direccion, limit: 200
+      t.varchar :direccion, limit: 200, null:false
       t.varchar :telefono1, limit: 20
       t.varchar :telefono2, limit: 20
       t.references :barrio, foreign_key: true
@@ -16,6 +16,7 @@ class CreatePersonas < ActiveRecord::Migration[5.1]
       t.datetime :fechanac
       t.char :tipopersona, limit: 1, null:false
       t.integer :estrato
+      t.char :condicionfisica, limit: 1, null:false
       t.datetime :fechacre
       t.datetime :fechacam
       t.varchar :usuario, limit: 15, null:false

@@ -80,6 +80,7 @@ module Api
 
                 #Le coloco los parametros que necesito de la tarifa para crearla y actualizarla
                 def tarifa_params
+                    puts params.require(:tarifa).inspect
                     params.require(:tarifa).permit(:zona_id, :concepto_id, :plan_id, :valor, :estado_id, 
                     :usuario)
                 end 

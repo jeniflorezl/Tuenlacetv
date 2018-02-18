@@ -38,12 +38,10 @@ abreviatura: 'FAC', operacion: '+', usuario: 'admin')
 Concepto.create(servicio_id: 1, codigo: '003', nombre: 'PUNTO ADICIONAL', porcentajeIva: '19',
 abreviatura: 'ETV', operacion: '+', usuario: 'admin')
 Plan.create(servicio_id: 1, nombre: 'Plan tv', usuario: 'admin')
-=end
 Tarifa.create(zona_id: 1, concepto_id: 1, plan_id: 1, valor: '35000', estado_id: 1, usuario: 'admin')
 Tarifa.create(zona_id: 2, concepto_id: 2, plan_id: 1, valor: '50000', estado_id: 1, usuario: 'admin')
 Tarifa.create(zona_id: 3, concepto_id: 3, plan_id: 1, valor: '20000', estado_id: 1, usuario: 'admin')
 Tarifa.create(zona_id: 4, concepto_id: 1, plan_id: 1, valor: '15000', estado_id: 1, usuario: 'admin')
-=begin
 TipoDocumento.create(nombre: 'Cédula de Ciudadanía', usuario: 'admin')
 TipoDocumento.create(nombre: 'Cédula de Extranjería', usuario: 'admin')
 TipoDocumento.create(nombre: 'Pasaporte', usuario: 'admin')
@@ -70,31 +68,32 @@ Estado.create(nombre: 'Retirado', abreviatura: 'R', usuario: 'admin')
 Persona.create(tipo_documento_id: 1, documento: '1020470055', nombre1: 'JENIFFER', nombre2: '',
 apellido1: 'FLÓREZ', apellido2: 'LONDOÑO', direccion: 'Cra 47 #53-41', telefono1: '4540312', 
 telefono2: '', barrio_id: 1, zona_id: 1, correo: 'jeniferfl@gmail.com', fechanac: '13/07/1995', 
-tipopersona: 'N', estrato: '3', usuario: 'admin')
+tipopersona: 'N', estrato: '3', condicionfisica: 'N', usuario: 'admin')
 Persona.create(tipo_documento_id: 1, documento: '7447852522', nombre1: 'ESTEFANIA', nombre2: '',
 apellido1: 'FLÓREZ', apellido2: 'LONDOÑO', direccion: 'Cra 47 #53-41', telefono1: '4540312', 
-telefono2: '', barrio_id: 2, zona_id: 2, correo: '', fechanac: '13/07/1995', 
-tipopersona: 'N', estrato: '3', usuario: 'admin')
+telefono2: '', barrio_id: 2, zona_id: 2, correo: 'jeniferfl@gmail.com', fechanac: '13/07/1995', 
+tipopersona: 'N', estrato: '3', condicionfisica: 'N', usuario: 'admin')
 Persona.create(tipo_documento_id: 1, documento: '4115288555', nombre1: 'WALTER', nombre2: '',
 apellido1: 'FLÓREZ', apellido2: 'VEGA', direccion: 'Cra 47 #53-41', telefono1: '4540312', 
-telefono2: '', barrio_id: 3, zona_id: 3, correo: '', fechanac: '13/07/1995', 
-tipopersona: 'N', estrato: '3', usuario: 'admin')
+telefono2: '', barrio_id: 3, zona_id: 3, correo: 'jeniferfl@gmail.com', fechanac: '13/07/1995', 
+tipopersona: 'N', estrato: '3', condicionfisica: 'N', usuario: 'admin')
 Persona.create(tipo_documento_id: 1, documento: '4125599866', nombre1: 'ELIANA', nombre2: '',
 apellido1: 'FLÓREZ', apellido2: 'VEGA', direccion: 'Cra 47 #53-41', telefono1: '4540312', 
-telefono2: '', barrio_id: 4, zona_id: 4, correo: '', fechanac: '13/07/1995', 
-tipopersona: 'N', estrato: '3', usuario: 'admin')
+telefono2: '', barrio_id: 4, zona_id: 4, correo: 'jeniferfl@gmail.com', fechanac: '13/07/1995', 
+tipopersona: 'N', estrato: '3', condicionfisica: 'N', usuario: 'admin')
 Persona.create(tipo_documento_id: 1, documento: '5858963322', nombre1: 'CARLOS', nombre2: '',
 apellido1: 'FLÓREZ', apellido2: 'VEGA', direccion: 'Cra 47 #53-41', telefono1: '4540312', 
-telefono2: '', barrio_id: 5, zona_id: 5, correo: '', fechanac: '13/07/1995', 
-tipopersona: 'N', estrato: '3', usuario: 'admin')
+telefono2: '', barrio_id: 5, zona_id: 5, correo: 'jeniferfl@gmail.com', fechanac: '13/07/1995', 
+tipopersona: 'N', estrato: '3', condicionfisica: 'N', usuario: 'admin')
 Persona.create(tipo_documento_id: 1, documento: '695221145', nombre1: 'PEDRO', nombre2: '',
 apellido1: 'FLÓREZ', apellido2: 'VEGA', direccion: 'Cra 47 #53-41', telefono1: '4540312', 
-telefono2: '', barrio_id: 1, zona_id: 1, correo: '', fechanac: '13/07/1995', 
-tipopersona: 'N', estrato: '3', usuario: 'admin')
+telefono2: '', barrio_id: 1, zona_id: 1, correo: 'jeniferfl@gmail.com', fechanac: '13/07/1995', 
+tipopersona: 'N', estrato: '3', condicionfisica: 'N', usuario: 'admin')
 Persona.create(tipo_documento_id: 1, documento: '215455269', nombre1: 'CAMILO', nombre2: '',
 apellido1: 'FLÓREZ', apellido2: 'VEGA', direccion: 'Cra 47 #53-41', telefono1: '4540312', 
-telefono2: '', barrio_id: 2, zona_id: 2, correo: '', fechanac: '13/07/1995', 
-tipopersona: 'N', estrato: '3', usuario: 'admin')
+telefono2: '', barrio_id: 2, zona_id: 2, correo: 'jeniferfl@gmail.com', fechanac: '13/07/1995', 
+tipopersona: 'N', estrato: '3', condicionfisica: 'N', usuario: 'admin')
+
 Entidad.create(funcion_id: 1, persona_id: 1, usuario: 'admin')
 Entidad.create(funcion_id: 1, persona_id: 2, usuario: 'admin')
 Entidad.create(funcion_id: 1, persona_id: 3, usuario: 'admin')
@@ -102,41 +101,43 @@ Entidad.create(funcion_id: 1, persona_id: 4, usuario: 'admin')
 Entidad.create(funcion_id: 7, persona_id: 5, usuario: 'admin')
 Entidad.create(funcion_id: 5, persona_id: 6, usuario: 'admin')
 Entidad.create(funcion_id: 5, persona_id: 7, usuario: 'admin')
-
 Senal.create(entidad_id: 1, servicio_id: 1, contrato: '4789963', direccion: 'Calle 11 #24-23', urbanizacion: '', torre: '', 
 apto: '', telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', observacion: '',
-barrio_id: 1, zona_id: 1, estado_id: 1, fechacontrato: '01/01/2017', televisores: 2, 
+barrio_id: 1, zona_id: 1, estado_id: 1, fechacontrato: '01/01/2017', permanencia: '', televisores: 2, 
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
 areainstalacion: 'urbana', usuario: 'admin')
 Senal.create(entidad_id: 2, servicio_id: 1, contrato: '145665', direccion: 'Cr 47', urbanizacion: '', torre: '', 
 apto: '', telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', observacion: '',
-barrio_id: 2, zona_id: 2, estado_id: 1, fechacontrato: '01/01/2017', televisores: 2, 
+barrio_id: 2, zona_id: 2, estado_id: 1, fechacontrato: '01/01/2017', permanencia: '', televisores: 2, 
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
 areainstalacion: 'urbana', usuario: 'admin')
 Senal.create(entidad_id: 3, servicio_id: 1, contrato: '369669', direccion: 'Calle 8', urbanizacion: '', torre: '', 
 apto: '', telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', observacion: '',
-barrio_id: 3, zona_id: 3, estado_id: 1, fechacontrato: '01/01/2017', televisores: 2, 
+barrio_id: 3, zona_id: 3, estado_id: 1, fechacontrato: '01/01/2017', permanencia: '', televisores: 2, 
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
 areainstalacion: 'urbana', usuario: 'admin')
 Senal.create(entidad_id: 4, servicio_id: 1, contrato: '325856', direccion: 'Cr 45', urbanizacion: '', torre: '', 
 apto: '', telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', observacion: '',
-barrio_id: 4, zona_id: 4, estado_id: 1, fechacontrato: '01/01/2017', televisores: 2, 
+barrio_id: 4, zona_id: 4, estado_id: 1, fechacontrato: '01/01/2017', permanencia: '', televisores: 2, 
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
 areainstalacion: 'urbana', usuario: 'admin')
 Senal.create(entidad_id: 5, servicio_id: 1, contrato: '477586', direccion: 'Calle 11 #24-23', urbanizacion: '', torre: '', 
 apto: '', telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', observacion: '',
-barrio_id: 5, zona_id: 5, estado_id: 1, fechacontrato: '01/01/2017', televisores: 2, 
+barrio_id: 5, zona_id: 5, estado_id: 1, fechacontrato: '01/01/2017', permanencia: '', televisores: 2, 
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
 areainstalacion: 'urbana', usuario: 'admin')
 Senal.create(entidad_id: 6, servicio_id: 1, contrato: '365899', direccion: 'Calle 11 #24-23', urbanizacion: '', torre: '', 
 apto: '', telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', observacion: '',
-barrio_id: 1, zona_id: 1, estado_id: 1, fechacontrato: '01/01/2017', televisores: 2, 
+barrio_id: 1, zona_id: 1, estado_id: 1, fechacontrato: '01/01/2017', permanencia: '', televisores: 2, 
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
 areainstalacion: 'urbana', usuario: 'admin')
-=begin
 Senal.create(entidad_id: 8, servicio_id: 1, contrato: '147788', direccion: 'Calle 11 #24-23', urbanizacion: '', torre: '', 
 apto: '', telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', observacion: '',
-barrio_id: 2, zona_id: 2, estado_id: 1, fechacontrato: '01/01/2017', televisores: 2, 
+barrio_id: 2, zona_id: 2, estado_id: 1, fechacontrato: '01/01/2017', permanencia: '', televisores: 2, 
 precinto: '12321', vendedor_id: 6, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
 areainstalacion: 'urbana', usuario: 'admin')
 =end
+
+Empresa.create(tipo: '01', nit: '900353347', razonsocial: 'enlace informatico s.a.s', direccion: 'cra 47 #53-41', 
+telefono1: '4540312', telefono2: '', ciudad_id: 2, entidad_id: 2, logoempresa: '', correo: 'gerencia@enlaceinformatico.com',
+regimen: 's', contribuyente: 's', centrocosto: '0001', fechacre: '15/02/2018', fechacam: '15/02/2018', usuario: 'admin')
