@@ -1,5 +1,6 @@
 class Banco < ApplicationRecord
   belongs_to :ciudad
+  belongs_to :usuario
 
   before_save :uppercase
 

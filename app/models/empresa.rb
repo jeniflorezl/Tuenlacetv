@@ -1,6 +1,7 @@
 class Empresa < ApplicationRecord
   belongs_to :ciudad
   belongs_to :entidad
+  belongs_to :usuario
 
   before_save :uppercase
 

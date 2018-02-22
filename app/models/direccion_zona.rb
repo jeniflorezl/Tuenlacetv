@@ -1,5 +1,6 @@
 class DireccionZona < ApplicationRecord
   belongs_to :zona
+  belongs_to :usuario
 
   before_save :uppercase
 

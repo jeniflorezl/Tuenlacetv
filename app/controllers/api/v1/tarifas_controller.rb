@@ -82,7 +82,7 @@ module Api
                 def tarifa_params
                     puts params.require(:tarifa).inspect
                     params.require(:tarifa).permit(:zona_id, :concepto_id, :plan_id, :valor, :estado_id, 
-                    :usuario)
+                    :usuario_id)
                 end 
         end
     end

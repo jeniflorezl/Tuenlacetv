@@ -4,9 +4,10 @@ class Senal < ApplicationRecord
   belongs_to :barrio
   belongs_to :zona
   belongs_to :estado
-  belongs_to :entidad
   belongs_to :tipo_instalacion
   belongs_to :tecnologia
+  belongs_to :entidad
+  belongs_to :usuario
 
   before_save :uppercase
 
@@ -22,5 +23,4 @@ class Senal < ApplicationRecord
     self.tiposervicio.upcase!
     self.areainstalacion.upcase!
   end
-
 end

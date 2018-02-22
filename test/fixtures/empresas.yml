@@ -1,9 +1,9 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  entidad: one
   ciudad: one
+  entidad: one
 
 two:
-  entidad: two
   ciudad: two
+  entidad: two

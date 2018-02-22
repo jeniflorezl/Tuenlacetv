@@ -2,6 +2,7 @@ class Persona < ApplicationRecord
   belongs_to :tipo_documento
   belongs_to :barrio
   belongs_to :zona
+  belongs_to :usuario
   has_many :entidades
 
   before_save :uppercase

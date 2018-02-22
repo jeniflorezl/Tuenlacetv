@@ -1,5 +1,6 @@
 class Concepto < ApplicationRecord
   belongs_to :servicio
+  belongs_to :usuario
   has_many :tarifas
 
   before_save :uppercase

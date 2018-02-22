@@ -70,7 +70,7 @@ module Api
             #Le coloco los parametros que necesito de la plan para crearla y actualizarla
 
             def plan_params
-                params.require(:plan).permit(:servicio_id, :nombre, :usuario)
+                params.require(:plan).permit(:servicio_id, :nombre, :usuario_id)
             end 
         end
     end

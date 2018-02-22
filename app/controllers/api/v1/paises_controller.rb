@@ -65,7 +65,7 @@ module Api
         #Le coloco los parametros que necesito del pais para crearlo y actualizarlo
 
         def pais_params
-          params.require(:pais).permit(:nombre, :usuario)
+          params.require(:pais).permit(:nombre, :usuario_id)
         end 
       end
     end

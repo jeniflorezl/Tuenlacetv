@@ -1,4 +1,5 @@
 class Pais < ApplicationRecord
+    belongs_to :usuario
     has_many :ciudades
 
     before_save :uppercase

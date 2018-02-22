@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  senal: one
+  concepto: one
+  tarifa: one
+
+two:
+  senal: two
+  concepto: two
+  tarifa: two

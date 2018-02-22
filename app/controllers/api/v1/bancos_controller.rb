@@ -70,7 +70,7 @@ module Api
 
             def banco_params
                 params.require(:banco).permit(:nit, :nombre, :direccion, :ciudad_id, :telefono1,
-                :telefono2, :contacto, :cuentaBancaria, :cuentaContable, :usuario)
+                :telefono2, :contacto, :cuentaBancaria, :cuentaContable, :usuario_id)
             end 
         end
     end

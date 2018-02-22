@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  entidad: one
+  documento: one
+  estado: one
+
+two:
+  entidad: two
+  documento: two
+  estado: two

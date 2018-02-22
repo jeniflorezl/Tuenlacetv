@@ -67,7 +67,7 @@ module Api
             #Le coloco los parametros que necesito de la ciudad para crearla y actualizarla
 
             def ciudad_params
-                params.require(:ciudad).permit(:pais_id, :nombre, :codigo, :usuario)
+                params.require(:ciudad).permit(:pais_id, :nombre, :codigo, :usuario_id)
             end 
         end
     end

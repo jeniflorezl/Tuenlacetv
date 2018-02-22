@@ -73,7 +73,7 @@ module Api
 
             def concepto_params
                 params.require(:concepto).permit(:servicio_id, :codigo, :nombre, :porcentajeIva, 
-                :abreviatura, :operacion,:usuario)
+                :abreviatura, :operacion,:usuario_id)
             end 
         end
     end

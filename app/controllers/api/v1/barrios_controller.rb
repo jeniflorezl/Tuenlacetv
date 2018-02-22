@@ -71,7 +71,7 @@ module Api
             #Le coloco los parametros que necesito del barrio para crearlo y actualizarlo
 
             def barrio_params
-                params.require(:barrio).permit(:zona_id, :nombre, :usuario)
+                params.require(:barrio).permit(:zona_id, :nombre, :usuario_id)
             end 
         end
     end

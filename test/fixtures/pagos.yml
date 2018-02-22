@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  entidad: one
+  documento: one
+  forma_pago: one
+  banco: one
+  entidad: one
+
+two:
+  entidad: two
+  documento: two
+  forma_pago: two
+  banco: two
+  entidad: two

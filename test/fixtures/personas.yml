@@ -2,10 +2,6 @@
 
 one:
   tipo_documento: one
-  barrio: one
-  zona: one
 
 two:
   tipo_documento: two
-  barrio: two
-  zona: two

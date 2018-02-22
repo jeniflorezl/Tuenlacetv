@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  senal: one
+  concepto: one
+  estado: one
+  entidad: one
+
+two:
+  senal: two
+  concepto: two
+  estado: two
+  entidad: two
