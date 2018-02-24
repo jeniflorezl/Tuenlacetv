@@ -9,5 +9,4 @@ json.array! @banco do |banco|
     json.contacto banco.contacto
     json.cuentaBancaria banco.cuentaBancaria
     json.cuentaContable banco.cuentaContable
-    json.usuario banco.usuario
 end

@@ -30,12 +30,11 @@ json.empresas do
                 end
             end
         end
-        json.logoempresa empresa.logoempresa
+        json.logo empresa.logo
         json.correo empresa.correo
         json.regimen empresa.regimen
         json.contribuyente empresa.contribuyente
         json.centrocosto empresa.centrocosto
-        json.usuario empresa.usuario
     end
 end
 
@@ -46,7 +45,6 @@ json.ciudades do
         json.nombre ciudad.nombre
         json.codigoDane ciudad.codigoDane
         json.codigoAlterno ciudad.codigoAlterno
-        json.usuario ciudad.usuario
     end
 end
 

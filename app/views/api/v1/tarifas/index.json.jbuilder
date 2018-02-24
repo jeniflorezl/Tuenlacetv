@@ -5,8 +5,7 @@ json.tarifas do
         json.concepto tarifa.concepto.nombre
         json.plan tarifa.plan.nombre
         json.valor tarifa.valor
-        json.estado tarifa.estado.abreviatura
-        json.usuario tarifa.usuario
+        json.estado tarifa.estado.nombre
     end
 end
 
@@ -15,7 +14,6 @@ json.zonas do
         json.id zona.id
         json.ciudad zona.ciudad.nombre
         json.nombre zona.nombre
-        json.usuario zona.usuario
     end
 end
 
@@ -28,7 +26,6 @@ json.conceptos do
         json.porcentajeIva concepto.porcentajeIva
         json.abreviatura concepto.abreviatura
         json.operacion concepto.operacion
-        json.usuario concepto.usuario
     end
 end
 
@@ -37,7 +34,6 @@ json.planes do
         json.id plan.id
         json.servicio plan.servicio.nombre
         json.nombre plan.nombre
-        json.usuario plan.usuario
     end
 end
 
@@ -45,7 +41,6 @@ json.estados do
     json.array! @estados do |estado|
         json.id estado.id
         json.nombre estado.nombre
-        json.usuario estado.usuario
     end
 end
 

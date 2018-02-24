@@ -7,7 +7,6 @@ json.conceptos do
         json.porcentajeIva concepto.porcentajeIva
         json.abreviatura concepto.abreviatura
         json.operacion concepto.operacion
-        json.usuario concepto.usuario
     end
 end
 

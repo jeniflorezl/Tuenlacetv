@@ -5,5 +5,4 @@ json.array! @tarifa do |tarifa|
     json.plan tarifa.plan.nombre
     json.valor tarifa.valor
     json.estado tarifa.estado.abreviatura
-    json.usuario tarifa.usuario
 end

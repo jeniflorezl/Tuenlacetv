@@ -3,7 +3,6 @@ json.zonas do
         json.id zona.id
         json.ciudad zona.ciudad.nombre
         json.nombre zona.nombre
-        json.usuario zona.usuario
     end
 end
 
@@ -14,6 +13,5 @@ json.ciudades do
         json.nombre ciudad.nombre
         json.codigoDane ciudad.codigoDane
         json.codigoAlterno ciudad.codigoAlterno
-        json.usuario ciudad.usuario
     end
 end

@@ -61,6 +61,24 @@ json.senales do
         json.tiposervicio senal.tiposervicio
         json.areainstalacion senal.areainstalacion
         json.funcion senal.entidad.funcion.nombre
+        json.info_internet do
+            json.array! @info_internet do |internet|
+                if (internet.senal_id == senal.id)
+                    json.direccionip internet.direccionip
+                    json.velocidad internet.velocidad
+                    json.mac1 internet.mac1
+                    json.mac2 internet.mac2
+                    json.serialm internet.serialm
+                    json.marcam internet.marcam
+                    json.mascarasub internet.mascarasub
+                    json.dns internet.dns
+                    json.gateway internet.gateway
+                    json.nodo internet.nodo
+                    json.clavewifi internet.clavewifi
+                    json.equipo internet.equipo
+                end
+            end
+        end
     end
 end
 
@@ -68,7 +86,6 @@ json.servicios do
     json.array! @servicios do |servicio|
         json.id servicio.id
         json.nombre servicio.nombre
-        json.usuario servicio.usuario
     end
 end
 
@@ -77,7 +94,6 @@ json.barrios do
         json.id barrio.id
         json.zona barrio.zona.nombre
         json.nombre barrio.nombre
-        json.usuario barrio.usuario
     end
 end
 
@@ -86,7 +102,6 @@ json.zonas do
         json.id zona.id
         json.ciudad zona.ciudad.nombre
         json.nombre zona.nombre
-        json.usuario zona.usuario
     end
 end
 
@@ -98,7 +113,6 @@ json.tarifas do
         json.plan tarifa.plan.nombre
         json.valor tarifa.valor
         json.estado tarifa.estado
-        json.usuario tarifa.usuario
     end
 end
 
@@ -106,7 +120,6 @@ json.tipo_instalaciones do
     json.array! @tipo_instalaciones do |tipo_instalacion|
         json.id tipo_instalacion.id
         json.nombre tipo_instalacion.nombre
-        json.usuario tipo_instalacion.usuario
     end
 end
 
@@ -114,7 +127,6 @@ json.tecnologias do
     json.array! @tecnologias do |tecnologias|
         json.id tecnologias.id
         json.nombre tecnologias.nombre
-        json.usuario tecnologias.usuario
     end
 end
 
@@ -122,7 +134,6 @@ json.tipo_documentos do
     json.array! @tipo_documentos do |tipo_documentos|
         json.id tipo_documentos.id
         json.nombre tipo_documentos.nombre
-        json.usuario tipo_documentos.usuario
     end
 end
 
@@ -130,7 +141,6 @@ json.funciones do
     json.array! @funciones do |funciones|
         json.id funciones.id
         json.nombre funciones.nombre
-        json.usuario funciones.usuario
     end
 end
 
@@ -138,7 +148,6 @@ json.estados do
     json.array! @estados do |estado|
         json.id estado.id
         json.nombre estado.nombre
-        json.usuario estado.usuario
     end
 end
 

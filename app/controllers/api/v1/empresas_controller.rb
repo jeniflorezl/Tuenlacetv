@@ -73,7 +73,7 @@ module Api
 
             def empresa_params
                 params.require(:empresa).permit(:tipo, :nit, :razonsocial, :direccion, :telefono1,
-                :telefono2, :ciudad_id, :entidad_id, :logoempresa, :correo, :regimen, :contribuyente, 
+                :telefono2, :ciudad_id, :entidad_id, :logo, :correo, :regimen, :contribuyente, 
                 :centrocosto, :usuario_id)
             end 
         end

@@ -4,5 +4,4 @@ json.array! @ciudad do |ciudad|
     json.nombre ciudad.nombre
     json.codigoDane ciudad.codigoDane
     json.codigoAlterno ciudad.codigoAlterno
-    json.usuario ciudad.usuario
 end

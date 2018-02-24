@@ -10,7 +10,6 @@ json.bancos do
         json.contacto banco.contacto
         json.cuentaBancaria banco.cuentaBancaria
         json.cuentaContable banco.cuentaContable
-        json.usuario banco.usuario
     end
 end
 
@@ -21,6 +20,5 @@ json.ciudades do
         json.nombre ciudad.nombre
         json.codigoDane ciudad.codigoDane
         json.codigoAlterno ciudad.codigoAlterno
-        json.usuario ciudad.usuario
     end
 end

@@ -6,7 +6,7 @@ class Usuario < ApplicationRecord
 
   before_save :uppercase
 
-  validates :login, :nombre, :nivel, :user, presence: true #obligatorio
+  validates :login, :nombre, :nivel, :estado, :tipoImpresora, :usuariocre, presence: true #obligatorio
   validates :login, length: { maximum: 10, 
   message: "El nombre de usuario no puede ser mayor a 10 caracteres" }
   validates :password, length: { maximum: 15, 

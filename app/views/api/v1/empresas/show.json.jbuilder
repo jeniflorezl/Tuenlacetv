@@ -30,11 +30,10 @@ json.empresas do
                 end
             end
         end
-        json.logoempresa empresa.logoempresa
+        json.logoempresa empresa.logo
         json.correo empresa.correo
         json.regimen empresa.regimen
         json.contribuyente empresa.contribuyente
         json.centrocosto empresa.centrocosto
-        json.usuario empresa.usuario
     end
 end
