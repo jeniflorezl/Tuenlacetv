@@ -152,7 +152,10 @@ ActiveSupport::Inflector.inflections do |inflect|
     inflect.irregular 'HistorialTarifa', 'HistorialTarifas'
     inflect.irregular 'nota_fact', 'notas_fact'
     inflect.irregular 'NotaFact', 'NotasFact'
-
+    inflect.irregular 'usuario_menu', 'usuario_menu'
+    inflect.irregular 'UsuarioMenu', 'UsuarioMenu'
+    inflect.irregular 'polit_permanencia', 'polit_permanencia'
+    inflect.irregular 'PolitPermanencia', 'PolitPermanencia'
   
     # NOTA: es necesario indicar los dos modos (underscore y camelcase) porque el
     # método irregular no soporta expresiones regulares

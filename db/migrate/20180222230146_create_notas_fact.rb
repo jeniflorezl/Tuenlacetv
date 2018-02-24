@@ -16,6 +16,12 @@ class CreateNotasFact < ActiveRecord::Migration[5.1]
       t.datetime :fechacam, null:false
       t.references :usuario, foreign_key: true, null:false
     end
+    execute <<-SQL
+    ALTER TABLE notas_fact 
+      ADD  DEFAULT (getdate()) FOR fechacre
+    ALTER TABLE notas_fact 
+      ADD  DEFAULT (getdate()) FOR fechacam
+    SQL
   end
 
   def down

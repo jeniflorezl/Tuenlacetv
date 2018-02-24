@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180222230146) do
+ActiveRecord::Schema.define(version: 20180223224100) do
 
   create_table "abonos", force: :cascade do |t|
     t.integer "pago_id", null: false
@@ -392,6 +392,17 @@ ActiveRecord::Schema.define(version: 20180222230146) do
     t.index ["usuario_id"], name: "index_nomenclaturas_on_usuario_id"
   end
 
+  create_table "notas", force: :cascade do |t|
+    t.bigint "senal_id", null: false
+    t.string "nota", limit: 300
+    t.datetime "fecha", null: false
+    t.datetime "fechacre", default: -> { "getdate()" }, null: false
+    t.datetime "fechacam", default: -> { "getdate()" }, null: false
+    t.bigint "usuario_id", null: false
+    t.index ["senal_id"], name: "index_notas_on_senal_id"
+    t.index ["usuario_id"], name: "index_notas_on_usuario_id"
+  end
+
   create_table "notas_fact", force: :cascade do |t|
     t.bigint "zona_id", null: false
     t.datetime "fechaElaboracion", null: false
@@ -404,8 +415,8 @@ ActiveRecord::Schema.define(version: 20180222230146) do
     t.string "nota2", limit: 100
     t.string "nota3", limit: 100
     t.string "nota4", limit: 100
-    t.datetime "fechacre", null: false
-    t.datetime "fechacam", null: false
+    t.datetime "fechacre", default: -> { "getdate()" }, null: false
+    t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
     t.index ["usuario_id"], name: "index_notas_fact_on_usuario_id"
     t.index ["zona_id"], name: "index_notas_fact_on_zona_id"
@@ -469,6 +480,16 @@ ActiveRecord::Schema.define(version: 20180222230146) do
     t.string "valor", limit: 100
   end
 
+  create_table "permanencias", force: :cascade do |t|
+    t.bigint "senal_id", null: false
+    t.datetime "fechaDcto", null: false
+    t.datetime "fechacre", default: -> { "getdate()" }, null: false
+    t.datetime "fechacam", default: -> { "getdate()" }, null: false
+    t.bigint "usuario_id", null: false
+    t.index ["senal_id"], name: "index_permanencias_on_senal_id"
+    t.index ["usuario_id"], name: "index_permanencias_on_usuario_id"
+  end
+
   create_table "personas", force: :cascade do |t|
     t.bigint "tipo_documento_id", null: false
     t.string "documento", limit: 15, null: false
@@ -518,6 +539,18 @@ ActiveRecord::Schema.define(version: 20180222230146) do
     t.index ["senal_id"], name: "index_plantilla_fact_on_senal_id"
     t.index ["tarifa_id"], name: "index_plantilla_fact_on_tarifa_id"
     t.index ["usuario_id"], name: "index_plantilla_fact_on_usuario_id"
+  end
+
+  create_table "polit_permanencia", force: :cascade do |t|
+    t.integer "permanencia", null: false
+    t.char "medida", limit: 1, null: false
+    t.string "cantidad1", limit: 5
+    t.string "cantidad2", limit: 5
+    t.string "cantidad3", limit: 5
+    t.datetime "fechacre", default: -> { "getdate()" }, null: false
+    t.datetime "fechacam", default: -> { "getdate()" }, null: false
+    t.bigint "usuario_id", null: false
+    t.index ["usuario_id"], name: "index_polit_permanencia_on_usuario_id"
   end
 
   create_table "registro_orden", force: :cascade do |t|
@@ -595,14 +628,6 @@ ActiveRecord::Schema.define(version: 20180222230146) do
     t.index ["usuario_id"], name: "index_servicios_on_usuario_id"
   end
 
-  create_table "sysdiagrams", primary_key: "diagram_id", id: :integer, force: :cascade do |t|
-    t.string "name", limit: 128, null: false
-    t.integer "principal_id", null: false
-    t.integer "version"
-    t.binary "definition"
-    t.index ["principal_id", "name"], name: "UK_principal_name", unique: true
-  end
-
   create_table "tarifas", force: :cascade do |t|
     t.bigint "zona_id", null: false
     t.bigint "concepto_id", null: false
@@ -671,6 +696,15 @@ ActiveRecord::Schema.define(version: 20180222230146) do
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
     t.index ["usuario_id"], name: "index_unidades_on_usuario_id"
+  end
+
+  create_table "usuario_menu", primary_key: ["modulo", "opcion", "usuario_id"], force: :cascade do |t|
+    t.varchar "modulo", limit: 50, null: false
+    t.varchar "opcion", limit: 50, null: false
+    t.bigint "usuario_id", null: false
+    t.char "ver", limit: 5, null: false
+    t.varchar "titulo", limit: 50
+    t.index ["usuario_id"], name: "index_usuario_menu_on_usuario_id"
   end
 
   create_table "usuarios", force: :cascade do |t|
@@ -784,6 +818,8 @@ ActiveRecord::Schema.define(version: 20180222230146) do
   add_foreign_key "mvto_rorden", "registro_orden"
   add_foreign_key "mvto_rorden", "usuarios"
   add_foreign_key "nomenclaturas", "usuarios"
+  add_foreign_key "notas", "senales"
+  add_foreign_key "notas", "usuarios"
   add_foreign_key "notas_fact", "usuarios"
   add_foreign_key "notas_fact", "zonas"
   add_foreign_key "ordenes", "conceptos"
@@ -799,6 +835,8 @@ ActiveRecord::Schema.define(version: 20180222230146) do
   add_foreign_key "pagos", "formas_pago"
   add_foreign_key "pagos", "usuarios"
   add_foreign_key "paises", "usuarios"
+  add_foreign_key "permanencias", "senales"
+  add_foreign_key "permanencias", "usuarios"
   add_foreign_key "personas", "barrios"
   add_foreign_key "personas", "tipo_documentos"
   add_foreign_key "personas", "usuarios"
@@ -809,6 +847,7 @@ ActiveRecord::Schema.define(version: 20180222230146) do
   add_foreign_key "plantilla_fact", "senales"
   add_foreign_key "plantilla_fact", "tarifas"
   add_foreign_key "plantilla_fact", "usuarios"
+  add_foreign_key "polit_permanencia", "usuarios"
   add_foreign_key "registro_orden", "usuarios"
   add_foreign_key "resoluciones", "empresas"
   add_foreign_key "resoluciones", "usuarios"
@@ -840,6 +879,7 @@ ActiveRecord::Schema.define(version: 20180222230146) do
   add_foreign_key "traslados", "zonas", column: "zonaAnt_id"
   add_foreign_key "traslados", "zonas", column: "zonaNue_id"
   add_foreign_key "unidades", "usuarios"
+  add_foreign_key "usuario_menu", "usuarios"
   add_foreign_key "usuarios", "estados"
   add_foreign_key "zonas", "ciudades"
   add_foreign_key "zonas", "usuarios"

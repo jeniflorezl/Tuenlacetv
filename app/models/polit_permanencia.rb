@@ -1,0 +1,2 @@
+class PolitPermanencia < ApplicationRecord
+end
