@@ -38,6 +38,5 @@ module Tuenlacetv
          methods: [:get, :post, :patch, :put, :delete, :options, :head]
       end
     end
-    
   end
 end

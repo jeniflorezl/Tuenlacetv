@@ -60,11 +60,6 @@ GEM
     jbuilder (2.7.0)
       activesupport (>= 4.2.0)
       multi_json (>= 1.2)
-    jwt (1.5.6)
-    knock (2.1.1)
-      bcrypt (~> 3.1)
-      jwt (~> 1.5)
-      rails (>= 4.2)
     loofah (2.1.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -133,12 +128,14 @@ DEPENDENCIES
   bcrypt!
   byebug
   jbuilder (~> 2.5)
-  knock
   puma (~> 3.7)
   rack-cors
   rails (~> 5.1.4)
   tiny_tds
   tzinfo-data
 
+RUBY VERSION
+   ruby 2.4.3p205
+
 BUNDLED WITH
-   1.16.0
+   1.16.1
