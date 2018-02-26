@@ -11,8 +11,8 @@ class Senal < ApplicationRecord
 
   before_save :uppercase
 
-  validates :entidad, :servicio, :contrato, :direccion, :telefono1, :barrio, :zona, :estado, :fechacontrato,  :tipo_instalacion, :tecnologia, 
-  :usuario, presence: true #obligatorio
+  validates :entidad, :servicio, :contrato, :direccion, :telefono1, :barrio, :zona, :estado, 
+  :fechacontrato,  :tipo_instalacion, :tecnologia, :tiposervicio, :usuario, presence: true #obligatorio
 
   def uppercase
     self.direccion.upcase!

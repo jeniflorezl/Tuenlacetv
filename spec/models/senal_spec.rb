@@ -80,6 +80,12 @@ RSpec.describe Senal, :type => :model do
     expect(senal.errors[:tecnologia]).to include("can't be blank")
   end
 
+  it "is invalid without a type of service" do
+    senal = Senal.new(tiposervicio: nil)
+    senal.valid?
+    expect(senal.errors[:tiposervicio]).to include("can't be blank")
+  end
+
   it "is invalid without an user" do
     senal = Senal.new(usuario_id: nil)
     senal.valid?
