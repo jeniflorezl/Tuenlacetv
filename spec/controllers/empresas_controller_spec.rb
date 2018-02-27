@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::PaisesController, type: :request do
+RSpec.describe Api::V1::EmpresasController, type: :request do
 
     describe 'GET index' do
       it 'ok' do
@@ -8,7 +8,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        get "http://localhost:3000/api/v1/paises", :headers => headers
+        get "http://localhost:3000/api/v1/empresas", :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -16,7 +16,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        get "http://localhost:3000/api/v1/paises", :headers => headers
+        get "http://localhost:3000/api/v1/empresas", :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -27,7 +27,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        post "http://localhost:3000/api/v1/paises", :params => '{ "nombre": "Uruguay", "usuario_id": 1 }', :headers => headers
+        post "http://localhost:3000/api/v1/empresas", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S", "contribuyente": "S", "centrocosto": "0001", "usuario_id": 1 }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -36,7 +36,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        post "http://localhost:3000/api/v1/paises", :params => '{ "nombre": "Uruguay" }', :headers => headers
+        post "http://localhost:3000/api/v1/empresas", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S" }', :headers => headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
@@ -44,7 +44,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        post "http://localhost:3000/api/v1/paises", :params => '{ "nombre": "Uruguay", "usuario_id": 1 }', :headers => headers
+        post "http://localhost:3000/api/v1/empresas", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S", "contribuyente": "S", "centrocosto": "0001", "usuario_id": 1 }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -55,7 +55,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        put "http://localhost:3000/api/v1/paises/1", :params => '{ "nombre": "Uruguay", "usuario_id": 1 }', :headers => headers
+        put "http://localhost:3000/api/v1/empresas/1", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S", "contribuyente": "S", "centrocosto": "0001", "usuario_id": 1 }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -64,7 +64,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        put "http://localhost:3000/api/v1/paises/30", :params => '{ "nombre": "Uruguay", "usuario_id": 1 }', :headers => headers
+        put "http://localhost:3000/api/v1/empresas/30", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S", "contribuyente": "S", "centrocosto": "0001", "usuario_id": 1 }', :headers => headers
         expect(response).to have_http_status(:not_found)
       end
 
@@ -72,27 +72,18 @@ RSpec.describe Api::V1::PaisesController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        put "http://localhost:3000/api/v1/paises/1", :params => '{ "nombre": "Uruguay", "usuario_id": 1 }', :headers => headers
+        put "http://localhost:3000/api/v1/empresas/1", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S", "contribuyente": "S", "centrocosto": "0001", "usuario_id": 1 }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
 
     describe 'DELETE delete' do
-      it 'ok if it is not foreign key' do
-        headers = { 
-          "Content-Type" => "application/json",
-          "Accept" => "application/json",
-          "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/paises/5", :headers => headers
-        expect(response).to have_http_status(:ok)
-      end
-
       it 'ok if it is foreign key' do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/paises/1", :headers => headers
+        delete "http://localhost:3000/api/v1/empresas/1", :headers => headers
         expect(response).to have_http_status(:bad_request)
       end
 
@@ -101,7 +92,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/paises/30", :headers => headers
+        delete "http://localhost:3000/api/v1/empresas/30", :headers => headers
         expect(response).to have_http_status(:not_found)
       end
 
@@ -109,7 +100,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        delete "http://localhost:3000/api/v1/paises/1", :headers => headers
+        delete "http://localhost:3000/api/v1/empresas/1", :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end

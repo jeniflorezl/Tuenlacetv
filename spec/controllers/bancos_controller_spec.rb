@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::PaisesController, type: :request do
+RSpec.describe Api::V1::BancosController, type: :request do
 
     describe 'GET index' do
       it 'ok' do
@@ -8,7 +8,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        get "http://localhost:3000/api/v1/paises", :headers => headers
+        get "http://localhost:3000/api/v1/bancos", :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -16,7 +16,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        get "http://localhost:3000/api/v1/paises", :headers => headers
+        get "http://localhost:3000/api/v1/bancos", :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -27,7 +27,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        post "http://localhost:3000/api/v1/paises", :params => '{ "nombre": "Uruguay", "usuario_id": 1 }', :headers => headers
+        post "http://localhost:3000/api/v1/bancos", :params => '{ "nit": "800226788", "nombre": "CAJA GENERAL", "direccion": "", "ciudad_id": 1, "telefono1": "0", "telefono2": "0", "contacto": "", "cuentaBancaria": "110505", "cuentaContable": "", "usuario_id": 1 }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -36,7 +36,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        post "http://localhost:3000/api/v1/paises", :params => '{ "nombre": "Uruguay" }', :headers => headers
+        post "http://localhost:3000/api/v1/bancos", :params => '{ "nit": "800226788" }', :headers => headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
@@ -44,7 +44,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        post "http://localhost:3000/api/v1/paises", :params => '{ "nombre": "Uruguay", "usuario_id": 1 }', :headers => headers
+        post "http://localhost:3000/api/v1/bancos", :params => '{ "nit": "800226788", "nombre": "CAJA GENERAL", "direccion": "", "ciudad_id": 1, "telefono1": "0", "telefono2": "0", "contacto": "", "cuentaBancaria": "110505", "cuentaContable": "", "usuario_id": 1 }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -55,7 +55,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        put "http://localhost:3000/api/v1/paises/1", :params => '{ "nombre": "Uruguay", "usuario_id": 1 }', :headers => headers
+        put "http://localhost:3000/api/v1/bancos/1", :params => '{ "nit": "800226788", "nombre": "CAJA GENERAL", "direccion": "", "ciudad_id": 1, "telefono1": "0", "telefono2": "0", "contacto": "", "cuentaBancaria": "110505", "cuentaContable": "", "usuario_id": 1 }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -64,7 +64,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        put "http://localhost:3000/api/v1/paises/30", :params => '{ "nombre": "Uruguay", "usuario_id": 1 }', :headers => headers
+        put "http://localhost:3000/api/v1/bancos/30", :params => '{ "nit": "800226788", "nombre": "CAJA GENERAL", "direccion": "", "ciudad_id": 1, "telefono1": "0", "telefono2": "0", "contacto": "", "cuentaBancaria": "110505", "cuentaContable": "", "usuario_id": 1 }', :headers => headers
         expect(response).to have_http_status(:not_found)
       end
 
@@ -72,7 +72,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        put "http://localhost:3000/api/v1/paises/1", :params => '{ "nombre": "Uruguay", "usuario_id": 1 }', :headers => headers
+        put "http://localhost:3000/api/v1/bancos/1", :params => '{ "nit": "800226788", "nombre": "CAJA GENERAL", "direccion": "", "ciudad_id": 1, "telefono1": "0", "telefono2": "0", "contacto": "", "cuentaBancaria": "110505", "cuentaContable": "", "usuario_id": 1 }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -83,7 +83,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/paises/5", :headers => headers
+        delete "http://localhost:3000/api/v1/bancos/3", :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -92,7 +92,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/paises/1", :headers => headers
+        delete "http://localhost:3000/api/v1/bancos/1", :headers => headers
         expect(response).to have_http_status(:bad_request)
       end
 
@@ -101,7 +101,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/paises/30", :headers => headers
+        delete "http://localhost:3000/api/v1/bancos/30", :headers => headers
         expect(response).to have_http_status(:not_found)
       end
 
@@ -109,7 +109,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        delete "http://localhost:3000/api/v1/paises/1", :headers => headers
+        delete "http://localhost:3000/api/v1/bancos/1", :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end

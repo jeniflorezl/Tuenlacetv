@@ -9,10 +9,10 @@ json.senales do
         json.apellido1 senal.entidad.persona.apellido1
         json.apellido2 senal.entidad.persona.apellido2
         json.direccionP senal.entidad.persona.direccion
-        json.telefono1P senal.entidad.persona.telefono1
-        json.telefono2P senal.entidad.persona.telefono2
         json.barrioP senal.entidad.persona.barrio.nombre
         json.zonaP senal.entidad.persona.zona.nombre
+        json.telefono1P senal.entidad.persona.telefono1
+        json.telefono2P senal.entidad.persona.telefono2
         json.correo senal.entidad.persona.correo
         json.fechanac senal.entidad.persona.fechanac
         json.tipopersona senal.entidad.persona.tipopersona
@@ -22,17 +22,20 @@ json.senales do
         json.direccion senal.direccion
         json.urbanizacion senal.urbanizacion
         json.torre senal.torre
+        json.apto senal.apto
+        json.barrio senal.barrio.nombre
+        json.zona senal.zona.nombre
         json.telefono1 senal.telefono1
         json.telefono2 senal.telefono2
         json.contacto senal.contacto
         json.estrato senal.estrato
         json.vivienda senal.vivienda
-        json.barrio senal.barrio.nombre
-        json.zona senal.zona.nombre
+        json.observacion senal.observacion
         json.estado senal.estado.nombre
         json.fechacontrato senal.fechacontrato
         json.permanencia senal.permanencia
         json.televisores senal.televisores
+        json.decos senal.decos
         json.precinto senal.precinto
         json.vendedor do
             json.array! @entidades do |entidad|
