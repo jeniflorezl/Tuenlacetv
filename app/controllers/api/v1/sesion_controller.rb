@@ -19,7 +19,7 @@ module Api
             def destroy
                 usuario1 = current_user
                 usuario1.invalidar_auth_token
-                head :ok
+                render json: { status: :deleted }
             end
 
             private
