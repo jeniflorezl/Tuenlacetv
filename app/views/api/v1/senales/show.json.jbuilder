@@ -1,1 +1,3 @@
-json.merge! @senal
+json.senales do
+    json.merge! @senal
+end
