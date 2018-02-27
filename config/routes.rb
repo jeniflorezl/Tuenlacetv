@@ -12,11 +12,16 @@ Rails.application.routes.draw do
       resources :senales
       resources :usuarios
       resources :empresas
-      get 'paises/:campo/:valor', to: 'paises#show'
+      get 'paises/:campo/:valor/:db', to: 'paises#show'
+      get 'paises/bd/:db', to: 'paises#index'
       get 'ciudades/:campo/:valor', to: 'ciudades#show'
+      get 'ciudades/bd/:db', to: 'ciudades#index'
       get 'bancos/:campo/:valor', to: 'bancos#show'
+      get 'bancos/bd/:db', to: 'ciudades#index'
       get 'zonas/:campo/:valor', to: 'zonas#show'
+      get 'zonas/bd/:db', to: 'ciudades#index'
       get 'barrios/:campo/:valor', to: 'barrios#show'
+      get 'barrios/bd/:db', to: 'ciudades#index'
       get 'conceptos/:campo/:valor', to: 'conceptos#show'
       get 'planes/:campo/:valor', to: 'planes#show'
       get 'tarifas/:campo/:valor', to: 'tarifas#show'

@@ -25,8 +25,7 @@ module Api
             private
 
                 def login_invalido
-                    render json: { errors: [ { detail:"Error con tu nombre 
-                    de usuario y/o contraseña" }]}, status: 401
+                    render json: { errors: [ { detail:"Error con tu nombre de usuario y/o contraseña" }]}, status: 401
                 end
         end
     end
