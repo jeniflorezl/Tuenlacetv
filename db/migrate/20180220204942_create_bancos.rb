@@ -2,7 +2,7 @@ class CreateBancos < ActiveRecord::Migration[5.1]
   def up
     create_table :bancos do |t|
       t.string :nit, limit: 13
-      t.varchar :nombre, limit: 40, null:false
+      t.varchar :nombre, limit: 80, null:false
       t.string :direccion, limit: 50
       t.references :ciudad, foreign_key: true, null:false
       t.string :telefono1, limit: 15

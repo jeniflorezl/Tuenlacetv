@@ -3,7 +3,7 @@ class CreateArticulos < ActiveRecord::Migration[5.1]
     create_table :articulos do |t|
       t.references :grupo, foreign_key: true, null:false
       t.char :codigo, limit: 3, null:false
-      t.varchar :nombre, limit: 20, null:false
+      t.varchar :nombre, limit: 50, null:false
       t.references :unidad, foreign_key: true, null:false
       t.money :preciomay
       t.money :preciodetal

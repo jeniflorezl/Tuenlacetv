@@ -1,7 +1,7 @@
 class CreateUsuarios < ActiveRecord::Migration[5.1]
   def up
     create_table :usuarios do |t|
-      t.string :login, limit: 10, null:false, unique:true
+      t.string :login, limit: 15, null:false, unique:true
       t.varchar :nombre, limit: 50, null:false
       t.string :password_digest
       t.string :token

@@ -1,7 +1,7 @@
 class CreateDocumentos < ActiveRecord::Migration[5.1]
   def up
     create_table :documentos do |t|
-      t.varchar :nombre, limit: 20, null:false
+      t.varchar :nombre, limit: 50, null:false
       t.char :abreviatura, limit: 3, null:false
       t.datetime :fechacre, null:false
       t.datetime :fechacam, null:false

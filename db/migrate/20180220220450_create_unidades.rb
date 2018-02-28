@@ -1,7 +1,7 @@
 class CreateUnidades < ActiveRecord::Migration[5.1]
   def up
     create_table :unidades do |t|
-      t.string :descripcion, limit: 50
+      t.string :descripcion, limit: 80
       t.char :unidad, limit: 3
       t.datetime :fechacre, null:false
       t.datetime :fechacam, null:false

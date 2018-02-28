@@ -1,7 +1,7 @@
 class CreateGrupos < ActiveRecord::Migration[5.1]
   def up
     create_table :grupos do |t|
-      t.string :descripcion, limit: 50
+      t.string :descripcion, limit: 80
       t.datetime :fechacre, null:false
       t.datetime :fechacam, null:false
       t.references :usuario, foreign_key: true, null:false

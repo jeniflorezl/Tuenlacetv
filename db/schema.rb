@@ -68,7 +68,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   create_table "articulos", force: :cascade do |t|
     t.bigint "grupo_id", null: false
     t.char "codigo", limit: 3, null: false
-    t.varchar "nombre", limit: 20, null: false
+    t.varchar "nombre", limit: 50, null: false
     t.bigint "unidad_id", null: false
     t.money "preciomay", precision: 19, scale: 4
     t.money "preciodetal", precision: 19, scale: 4
@@ -87,7 +87,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
 
   create_table "bancos", force: :cascade do |t|
     t.string "nit", limit: 13
-    t.varchar "nombre", limit: 40, null: false
+    t.varchar "nombre", limit: 80, null: false
     t.string "direccion", limit: 50
     t.bigint "ciudad_id", null: false
     t.string "telefono1", limit: 15
@@ -127,7 +127,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   create_table "conceptos", force: :cascade do |t|
     t.bigint "servicio_id", null: false
     t.char "codigo", limit: 3, null: false
-    t.varchar "nombre", limit: 20, null: false
+    t.varchar "nombre", limit: 50, null: false
     t.char "abreviatura", limit: 3, null: false
     t.float "porcentajeIva", null: false
     t.char "operacion", limit: 1, null: false
@@ -225,7 +225,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   end
 
   create_table "documentos", force: :cascade do |t|
-    t.varchar "nombre", limit: 20, null: false
+    t.varchar "nombre", limit: 50, null: false
     t.char "abreviatura", limit: 3, null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
@@ -312,7 +312,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   end
 
   create_table "formas_pago", force: :cascade do |t|
-    t.varchar "nombre", limit: 20, null: false
+    t.varchar "nombre", limit: 50, null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
@@ -320,7 +320,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   end
 
   create_table "funciones", force: :cascade do |t|
-    t.varchar "nombre", limit: 20, null: false
+    t.varchar "nombre", limit: 50, null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
@@ -328,7 +328,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   end
 
   create_table "grupos", force: :cascade do |t|
-    t.string "descripcion", limit: 50
+    t.string "descripcion", limit: 80
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
@@ -384,7 +384,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
 
   create_table "nomenclaturas", force: :cascade do |t|
     t.char "abreviatura", limit: 6, null: false
-    t.string "descripcion", limit: 50
+    t.string "descripcion", limit: 80
     t.integer "orden"
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
@@ -468,7 +468,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   end
 
   create_table "paises", force: :cascade do |t|
-    t.varchar "nombre", limit: 50, null: false
+    t.varchar "nombre", limit: 80, null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
@@ -476,7 +476,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   end
 
   create_table "parametros", force: :cascade do |t|
-    t.string "descripcion", limit: 80
+    t.string "descripcion", limit: 100
     t.string "valor", limit: 100
   end
 
@@ -518,7 +518,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
 
   create_table "planes", force: :cascade do |t|
     t.bigint "servicio_id", null: false
-    t.varchar "nombre", limit: 20, null: false
+    t.varchar "nombre", limit: 50, null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
@@ -529,6 +529,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   create_table "plantilla_fact", force: :cascade do |t|
     t.bigint "senal_id"
     t.bigint "concepto_id"
+    t.bigint "estado_id", null: false
     t.bigint "tarifa_id"
     t.datetime "fechaini", null: false
     t.datetime "fechafin", null: false
@@ -536,6 +537,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
     t.index ["concepto_id"], name: "index_plantilla_fact_on_concepto_id"
+    t.index ["estado_id"], name: "index_plantilla_fact_on_estado_id"
     t.index ["senal_id"], name: "index_plantilla_fact_on_senal_id"
     t.index ["tarifa_id"], name: "index_plantilla_fact_on_tarifa_id"
     t.index ["usuario_id"], name: "index_plantilla_fact_on_usuario_id"
@@ -554,7 +556,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   end
 
   create_table "registro_orden", force: :cascade do |t|
-    t.varchar "nombre", limit: 20, null: false
+    t.varchar "nombre", limit: 100, null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
@@ -581,7 +583,6 @@ ActiveRecord::Schema.define(version: 20180223224100) do
 
   create_table "senales", force: :cascade do |t|
     t.bigint "entidad_id", null: false
-    t.bigint "servicio_id", null: false
     t.string "contrato", limit: 20, null: false
     t.string "direccion", limit: 200, null: false
     t.string "urbanizacion", limit: 200
@@ -595,7 +596,6 @@ ActiveRecord::Schema.define(version: 20180223224100) do
     t.integer "estrato"
     t.char "vivienda", limit: 1
     t.string "observacion", limit: 200
-    t.bigint "estado_id", null: false
     t.datetime "fechacontrato", null: false
     t.integer "permanencia"
     t.integer "televisores"
@@ -611,8 +611,6 @@ ActiveRecord::Schema.define(version: 20180223224100) do
     t.bigint "usuario_id", null: false
     t.index ["barrio_id"], name: "index_senales_on_barrio_id"
     t.index ["entidad_id"], name: "index_senales_on_entidad_id"
-    t.index ["estado_id"], name: "index_senales_on_estado_id"
-    t.index ["servicio_id"], name: "index_senales_on_servicio_id"
     t.index ["tecnologia_id"], name: "index_senales_on_tecnologia_id"
     t.index ["tipo_instalacion_id"], name: "index_senales_on_tipo_instalacion_id"
     t.index ["usuario_id"], name: "index_senales_on_usuario_id"
@@ -645,7 +643,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   end
 
   create_table "tecnologias", force: :cascade do |t|
-    t.varchar "nombre", limit: 20, null: false
+    t.varchar "nombre", limit: 50, null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
@@ -653,7 +651,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   end
 
   create_table "tipo_documentos", force: :cascade do |t|
-    t.varchar "nombre", limit: 20, null: false
+    t.varchar "nombre", limit: 50, null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
@@ -661,7 +659,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   end
 
   create_table "tipo_instalaciones", force: :cascade do |t|
-    t.varchar "nombre", limit: 20, null: false
+    t.varchar "nombre", limit: 50, null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
@@ -690,7 +688,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   end
 
   create_table "unidades", force: :cascade do |t|
-    t.string "descripcion", limit: 50
+    t.string "descripcion", limit: 80
     t.char "unidad", limit: 3
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
@@ -708,7 +706,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   end
 
   create_table "usuarios", force: :cascade do |t|
-    t.string "login", limit: 10, null: false
+    t.string "login", limit: 15, null: false
     t.varchar "nombre", limit: 50, null: false
     t.string "password_digest"
     t.string "token"
@@ -844,6 +842,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   add_foreign_key "planes", "servicios"
   add_foreign_key "planes", "usuarios"
   add_foreign_key "plantilla_fact", "conceptos"
+  add_foreign_key "plantilla_fact", "estados"
   add_foreign_key "plantilla_fact", "senales"
   add_foreign_key "plantilla_fact", "tarifas"
   add_foreign_key "plantilla_fact", "usuarios"
@@ -854,8 +853,6 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   add_foreign_key "senales", "barrios"
   add_foreign_key "senales", "entidades"
   add_foreign_key "senales", "entidades", column: "vendedor_id"
-  add_foreign_key "senales", "estados"
-  add_foreign_key "senales", "servicios"
   add_foreign_key "senales", "tecnologias"
   add_foreign_key "senales", "tipo_instalaciones"
   add_foreign_key "senales", "usuarios"

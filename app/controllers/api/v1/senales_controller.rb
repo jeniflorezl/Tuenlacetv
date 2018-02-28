@@ -4,6 +4,7 @@ module Api
             before_action :set_senal_buscar, only: [:show]
             before_action :set_senal, only: [:update, :destroy]
 
+            @t = Time.now
             # GET /senales
             def index
                 query = <<-SQL 
@@ -49,11 +50,37 @@ module Api
                     if @entidad.save and @funcion==1
                         @senal = Senal.new(senal_params)
                         @senal.entidad_id = @entidad.id
+                        @senal.estado_id = 4
                         if @senal.save
+                            if params[:tv]==1
+                                @plantilla = PlantillaFact.new(senal_id: @senal.id, concepto_id: 3, tarifa_id: params[:tarifa_id_tv], 
+                                fechaini: @senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: @senal.usuario_id)
+                                if @plantilla.save
+                                    ultimo = Orden.last.nrorden
+                                    @orden = Orden.new(senal_id: @senal.id, concepto_id: 11, fechatrn: @t.strftime("%d/%m/%Y %H:%M:%S"),
+                                    fechaven: @t.strftime("%d/%m/%Y %H:%M:%S"), nrorden: ultimo + 1, estado_id: 4, observacion: 'Registro creado en proceso de afiliación',
+                                    tecnico_id: params[:tecnico_id], usuario_id: @senal.usuario_id)
+                                    if @orden.save
+                                        if params[:valorafi] > 0
+                                            ultimo = Facturacion.last.nrofact
+                                            @factura = Facturacion.new(entidad_id: @entidad.id, )
+
+                                end
+                            end
                             if params[:internet]==1
                                 @info_internet = InfoInternet.new(internet_params)
                                 @info_internet.senal_id = @senal.id
-                                @info_internet.save
+                                if @info_internet.save
+                                    @plantillaint = PlantillaFact.new(senal_id: @senal.id, concepto_id: 4, tarifa_id: params[:tarifa_id_int], 
+                                    fechaini: @senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: @senal.usuario_id)
+                                    if @plantillaint.save
+                                        ultimo = Orden.last.nrorden
+                                        @ordenin = Orden.new(senal_id: @senal.id, concepto_id: 12, fechatrn: @t.strftime("%d/%m/%Y %H:%M:%S"),
+                                        fechaven: @t.strftime("%d/%m/%Y %H:%M:%S"), nrorden: ultimo + 1, estado_id: 4, observacion: 'Registro creado en proceso de afiliación',
+                                        tecnico_id: params[:tecnico_id], usuario_id: @senal.usuario_id)
+                                        @ordenin.save
+                                    end
+                                end
                             end
                             render json: { status: :created }
                         else
@@ -65,9 +92,8 @@ module Api
 
             # PATCH/PUT /senales/id
             def update
-                t = Time.now
-                @senal.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
-                @persona.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
+                @senal.fechacam = @t.strftime("%d/%m/%Y %H:%M:%S")
+                @persona.fechacam = @t.strftime("%d/%m/%Y %H:%M:%S")
                 if @persona.update(persona_params)
                     if @senal.update(senal_params)
                         if params[:internet]==1
@@ -114,9 +140,9 @@ module Api
             #Le coloco los parametros que necesito de la persona y la señal para actualizarlos
 
             def senal_params
-                params.require(:senal).permit(:servicio_id, :contrato, :direccion, :urbanizacion, 
+                params.require(:senal).permit(:contrato, :direccion, :urbanizacion, 
                 :torre, :apto, :barrio_id, :zona_id, :telefono1, :telefono2, :contacto, :estrato,
-                :vivienda, :observacion, :estado_id, :fechacontrato, :permanencia, :televisores,  
+                :vivienda, :observacion, :fechacontrato, :permanencia, :televisores,  
                 :decos, :precinto, :vendedor_id, :tipo_instalacion_id, :tecnologia_id,
                 :tiposervicio,:areainstalacion, :usuario_id)
             end 

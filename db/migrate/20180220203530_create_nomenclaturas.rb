@@ -2,7 +2,7 @@ class CreateNomenclaturas < ActiveRecord::Migration[5.1]
   def up
     create_table :nomenclaturas do |t|
       t.char :abreviatura, limit: 6, null:false
-      t.string :descripcion, limit: 50
+      t.string :descripcion, limit: 80
       t.integer :orden
       t.datetime :fechacre, null:false
       t.datetime :fechacam, null:false
