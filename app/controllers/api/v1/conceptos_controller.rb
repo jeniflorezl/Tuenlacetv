@@ -72,8 +72,8 @@ module Api
             #Le coloco los parametros que necesito del concepto para crearlo y actualizarlo
 
             def concepto_params
-                params.require(:concepto).permit(:servicio_id, :codigo, :nombre, :porcentajeIva, 
-                :abreviatura, :operacion,:usuario_id)
+                params.require(:concepto).permit(:servicio_id, :codigo, :nombre, :abreviatura,
+                :porcentajeIva, :operacion,:usuario_id)
             end 
         end
     end
