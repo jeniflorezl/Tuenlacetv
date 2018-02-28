@@ -1,6 +1,5 @@
 class Senal < ApplicationRecord
   belongs_to :entidad
-  belongs_to :servicio
   belongs_to :barrio
   belongs_to :zona
   belongs_to :tipo_instalacion
@@ -10,7 +9,7 @@ class Senal < ApplicationRecord
 
   before_save :uppercase
 
-  validates :entidad, :servicio, :contrato, :direccion, :telefono1, :barrio, :zona, :fechacontrato,
+  validates :entidad, :contrato, :direccion, :telefono1, :barrio, :zona, :fechacontrato,
   :tipo_instalacion, :tecnologia, :tiposervicio, :usuario, presence: true #obligatorio
 
   def uppercase
@@ -25,7 +24,8 @@ class Senal < ApplicationRecord
 
   private
 
-  def proceso_afiliacion(@senal, tv, internet, valorAfi, tarifaTv, tarifaInt)
+  def proceso_afiliacion(senal, tv, internet, valorAfi, tarifaTv, tarifaInt)
+    @senal = senal
     if tv==1
       @plantilla = PlantillaFact.new(senal_id: @senal.id, concepto_id: 3, tarifa_id: tarifaTv, 
       fechaini: @senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: @senal.usuario_id)
@@ -36,9 +36,10 @@ class Senal < ApplicationRecord
         tecnico_id: params[:tecnico_id], usuario_id: @senal.usuario_id)
         if @orden.save
           if valorAfi > 0
+            @pref = Resolucion.last.prefijo
             ultimo = Facturacion.last.nrofact
             @factura = Facturacion.new(entidad_id: @entidad.id, documento_id: 1, fechatrn: @senal.fechacontrato,
-            fechaven: @senal.fechacontrato, valor: valorAfi, iva: 0, dias: 0, prefijo: 'A', nrofact: ultimo + 1,
+            fechaven: @senal.fechacontrato, valor: valorAfi, iva: 0, dias: 0, prefijo: pref, nrofact: ultimo + 1,
             estado_id: 4, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN', reporta: '0', usuario_id:  @senal.usuario_id)
             if @factura.save
               @detallef = DetalleFactura.create(factura_id: @factura.id, prefijo: @factura.prefijo, nrofact: @factura.nrofact,
@@ -65,7 +66,7 @@ class Senal < ApplicationRecord
             if params[:valorafi] > 0
               ultimo = Facturacion.last.nrofact
               @facturain = Facturacion.new(entidad_id: @entidad.id, documento_id: 1, fechatrn: @senal.fechacontrato,
-              fechaven: @senal.fechacontrato, valor: valorAfi, iva: 0, dias: 0, prefijo: 'A', nrofact: ultimo + 1,
+              fechaven: @senal.fechacontrato, valor: valorAfi, iva: 0, dias: 0, prefijo: @pref, nrofact: ultimo + 1,
               estado_id: 4, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN', reporta: '0', usuario_id:  @senal.usuario_id)
               if @facturain.save
                 @detallefin = DetalleFactura.create(factura_id: @factura.id, prefijo: @factura.prefijo, nrofact: @factura.nrofact,
