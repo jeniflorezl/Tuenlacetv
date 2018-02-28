@@ -52,36 +52,8 @@ module Api
                         @senal.entidad_id = @entidad.id
                         @senal.estado_id = 4
                         if @senal.save
-                            if params[:tv]==1
-                                @plantilla = PlantillaFact.new(senal_id: @senal.id, concepto_id: 3, tarifa_id: params[:tarifa_id_tv], 
-                                fechaini: @senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: @senal.usuario_id)
-                                if @plantilla.save
-                                    ultimo = Orden.last.nrorden
-                                    @orden = Orden.new(senal_id: @senal.id, concepto_id: 11, fechatrn: @t.strftime("%d/%m/%Y %H:%M:%S"),
-                                    fechaven: @t.strftime("%d/%m/%Y %H:%M:%S"), nrorden: ultimo + 1, estado_id: 4, observacion: 'Registro creado en proceso de afiliación',
-                                    tecnico_id: params[:tecnico_id], usuario_id: @senal.usuario_id)
-                                    if @orden.save
-                                        if params[:valorafi] > 0
-                                            ultimo = Facturacion.last.nrofact
-                                            @factura = Facturacion.new(entidad_id: @entidad.id, )
-
-                                end
-                            end
-                            if params[:internet]==1
-                                @info_internet = InfoInternet.new(internet_params)
-                                @info_internet.senal_id = @senal.id
-                                if @info_internet.save
-                                    @plantillaint = PlantillaFact.new(senal_id: @senal.id, concepto_id: 4, tarifa_id: params[:tarifa_id_int], 
-                                    fechaini: @senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: @senal.usuario_id)
-                                    if @plantillaint.save
-                                        ultimo = Orden.last.nrorden
-                                        @ordenin = Orden.new(senal_id: @senal.id, concepto_id: 12, fechatrn: @t.strftime("%d/%m/%Y %H:%M:%S"),
-                                        fechaven: @t.strftime("%d/%m/%Y %H:%M:%S"), nrorden: ultimo + 1, estado_id: 4, observacion: 'Registro creado en proceso de afiliación',
-                                        tecnico_id: params[:tecnico_id], usuario_id: @senal.usuario_id)
-                                        @ordenin.save
-                                    end
-                                end
-                            end
+                            @senal.proceso_afiliacion(@senal, params[:tv], params[:internet], 
+                            params[:valorafi], params[:tarifa_id_tv], params[:tarifa_id_int])
                             render json: { status: :created }
                         else
                             render json: @senal.errors, status: :unprocessable_entity
