@@ -3,10 +3,7 @@ json.senales do
         json.id senal.entidad.id
         json.tipo_documento senal.entidad.persona.tipo_documento.nombre
         json.documento senal.entidad.persona.documento
-        json.nombre1 senal.entidad.persona.nombre1
-        json.nombre2 senal.entidad.persona.nombre2
-        json.apellido1 senal.entidad.persona.apellido1
-        json.apellido2 senal.entidad.persona.apellido2
+        json.nombres senal.entidad.persona.nombre1 + '' + senal.entidad.persona.nombre2 + ' ' + senal.entidad.persona.apellido1 + ' ' + senal.entidad.persona.apellido2
         json.direccionP senal.entidad.persona.direccion
         json.barrioP senal.entidad.persona.barrio.nombre
         json.zonaP senal.entidad.persona.zona.nombre
@@ -30,7 +27,15 @@ json.senales do
         json.estrato senal.estrato
         json.vivienda senal.vivienda
         json.observacion senal.observacion
-
+        unless @plantillas.blank?
+            json.array! @plantillas do |plantilla|
+                if (plantilla.senal_id == senal.id) and (plantilla.concepto_id == 1)
+                    json.plan_tv plantilla.tarifa.plan.nombre
+                    json.tarifa_tv plantilla.tarifa.nombre
+                    json.estado_tv plantilla.estado.nombre
+                end
+            end
+        end
         json.fechacontrato senal.fechacontrato
         json.permanencia senal.permanencia
         json.televisores senal.televisores
@@ -40,21 +45,8 @@ json.senales do
             json.array! @entidades do |entidad|
                 vendedor = senal.vendedor_id
                 if (vendedor == entidad.id)
-                    json.tipo_documento entidad.persona.tipo_documento.nombre
-                    json.documento entidad.persona.documento
-                    json.nombre1 entidad.persona.nombre1
-                    json.nombre2 entidad.persona.nombre2
-                    json.apellido1 entidad.persona.apellido1
-                    json.apellido2 entidad.persona.apellido2
-                    json.direccionP entidad.persona.direccion
-                    json.telefono1P entidad.persona.telefono1
-                    json.telefono2P entidad.persona.telefono2
-                    json.barrioP entidad.persona.barrio.nombre
-                    json.zonaP entidad.persona.zona.nombre
-                    json.correo entidad.persona.correo
-                    json.fechanac entidad.persona.fechanac
-                    json.tipopersona entidad.persona.tipopersona
-                    json.estratoP entidad.persona.estrato
+                    json.id entidad.id
+                    json.nombres entidad.persona.nombre1 + '' + entidad.persona.nombre2 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
                 end
             end
         end
@@ -78,11 +70,21 @@ json.senales do
                     json.nodo internet.nodo
                     json.clavewifi internet.clavewifi
                     json.equipo internet.equipo
+                    unless @plantillas.blank?
+                        json.array! @plantillas do |plantilla|
+                            if (plantilla.senal_id == senal.id) and (plantilla.concepto_id == 2)
+                                json.plan_int plantilla.tarifa.plan.nombre
+                                json.tarifa_int plantilla.tarifa.nombre
+                                json.estado_int plantilla.estado.nombre
+                            end
+                        end
+                    end
                 end
             end
-        end
+        end        
     end
 end
+
 
 json.servicios do
     json.array! @servicios do |servicio|
@@ -107,14 +109,43 @@ json.zonas do
     end
 end
 
-json.tarifas do
+json.planes_tv do
+    json.array! @planes_tv do |plan|
+        json.id plan.id
+        json.nombre plan.nombre
+    end
+end
+
+json.planes_int do
+    json.array! @planes_int do |plan|
+        json.id plan.id
+        json.nombre plan.nombre
+    end
+end
+
+json.tarifas_tv do
     json.array! @tarifas do |tarifa|
-        json.id tarifa.id
-        json.zona tarifa.zona.nombre
-        json.concepto tarifa.concepto.nombre
-        json.plan tarifa.plan.nombre
-        json.valor tarifa.valor
-        json.estado tarifa.estado
+        if (tarifa.plan.servicio_id == 1)
+            json.id tarifa.id
+            json.zona tarifa.zona.nombre
+            json.concepto tarifa.concepto.nombre
+            json.plan tarifa.plan.nombre
+            json.valor tarifa.valor
+            json.estado tarifa.estado.nombre
+        end
+    end
+end
+
+json.tarifas_int do
+    json.array! @tarifas do |tarifa|
+        if (tarifa.plan.servicio_id == 2)
+            json.id tarifa.id
+            json.zona tarifa.zona.nombre
+            json.concepto tarifa.concepto.nombre
+            json.plan tarifa.plan.nombre
+            json.valor tarifa.valor
+            json.estado tarifa.estado.nombre
+        end
     end
 end
 
@@ -146,21 +177,12 @@ json.funciones do
     end
 end
 
-json.estados do
-    json.array! @estados do |estado|
-        json.id estado.id
-        json.nombre estado.nombre
-    end
-end
-
 json.vendedores do
     json.array! @vendedores do |vendedor|
+        json.id vendedor.id
         json.tipo_documento vendedor.persona.tipo_documento.nombre
         json.documento vendedor.persona.documento
-        json.nombre1 vendedor.persona.nombre1
-        json.nombre2 vendedor.persona.nombre2
-        json.apellido1 vendedor.persona.apellido1
-        json.apellido2 vendedor.persona.apellido2
+        json.nombres vendedor.persona.nombre1 + '' + vendedor.persona.nombre2 + ' ' + vendedor.persona.apellido1 + ' ' + vendedor.persona.apellido2
         json.direccion vendedor.persona.direccion
         json.telefono1 vendedor.persona.telefono1
         json.telefono2 vendedor.persona.telefono2
@@ -170,5 +192,23 @@ json.vendedores do
         json.fechanac vendedor.persona.fechanac
         json.tipopersona vendedor.persona.tipopersona
         json.estrato vendedor.persona.estrato
+    end
+end
+
+json.tecnicos do
+    json.array! @tecnicos do |tecnico|
+        json.id tecnico.id
+        json.tipo_documento tecnico.persona.tipo_documento.nombre
+        json.documento tecnico.persona.documento
+        json.nombres tecnico.persona.nombre1 + '' + tecnico.persona.nombre2 + ' ' + tecnico.persona.apellido1 + ' ' + tecnico.persona.apellido2
+        json.direccion tecnico.persona.direccion
+        json.telefono1 tecnico.persona.telefono1
+        json.telefono2 tecnico.persona.telefono2
+        json.barrio tecnico.persona.barrio.nombre
+        json.zona tecnico.persona.zona.nombre
+        json.correo tecnico.persona.correo
+        json.fechanac tecnico.persona.fechanac
+        json.tipopersona tecnico.persona.tipopersona
+        json.estrato tecnico.persona.estrato
     end
 end

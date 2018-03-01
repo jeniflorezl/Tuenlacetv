@@ -24,10 +24,11 @@ class Senal < ApplicationRecord
 
   private
 
-  def proceso_afiliacion(senal, tv, internet, valorAfi, tarifaTv, tarifaInt)
+  def self.proceso_afiliacion(senal, tv, internet, valorAfiTv, valorAfiInt, tarifaTv, tarifaInt)
     @senal = senal
+    result = 0
     if tv==1
-      @plantilla = PlantillaFact.new(senal_id: @senal.id, concepto_id: 3, tarifa_id: tarifaTv, 
+      @plantilla = PlantillaFact.new(senal_id: @senal.id, concepto_id: 3, estado_id: 4, tarifa_id: tarifaTv, 
       fechaini: @senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: @senal.usuario_id)
       if @plantilla.save
         ultimo = Orden.last.nrorden
@@ -39,13 +40,15 @@ class Senal < ApplicationRecord
             @pref = Resolucion.last.prefijo
             ultimo = Facturacion.last.nrofact
             @factura = Facturacion.new(entidad_id: @entidad.id, documento_id: 1, fechatrn: @senal.fechacontrato,
-            fechaven: @senal.fechacontrato, valor: valorAfi, iva: 0, dias: 0, prefijo: pref, nrofact: ultimo + 1,
+            fechaven: @senal.fechacontrato, valor: valorAfiTv, iva: 0, dias: 0, prefijo: pref, nrofact: ultimo + 1,
             estado_id: 4, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN', reporta: '0', usuario_id:  @senal.usuario_id)
             if @factura.save
               @detallef = DetalleFactura.create(factura_id: @factura.id, prefijo: @factura.prefijo, nrofact: @factura.nrofact,
               concepto_id: 1, valor: @factura.valor, porcentajeIva: 0, iva: 0, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN',
               operacion: '+', usuario_id: @factura.usuario_id)
-              @detallef.save
+               if @detallef.save
+                result = 1
+               end
             end    
           end
         end
@@ -55,7 +58,7 @@ class Senal < ApplicationRecord
       @info_internet = InfoInternet.new(internet_params)
       @info_internet.senal_id = @senal.id
       if @info_internet.save
-        @plantillaint = PlantillaFact.new(senal_id: @senal.id, concepto_id: 4, tarifa_id: tarifaTv, 
+        @plantillaint = PlantillaFact.new(senal_id: @senal.id, concepto_id: 4, estado_id: 4, tarifa_id: tarifaTv, 
         fechaini: @senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: @senal.usuario_id)
         if @plantillaint.save
           ultimo = Orden.last.nrorden
@@ -66,18 +69,23 @@ class Senal < ApplicationRecord
             if params[:valorafi] > 0
               ultimo = Facturacion.last.nrofact
               @facturain = Facturacion.new(entidad_id: @entidad.id, documento_id: 1, fechatrn: @senal.fechacontrato,
-              fechaven: @senal.fechacontrato, valor: valorAfi, iva: 0, dias: 0, prefijo: @pref, nrofact: ultimo + 1,
+              fechaven: @senal.fechacontrato, valor: valorAfiInt, iva: 0, dias: 0, prefijo: @pref, nrofact: ultimo + 1,
               estado_id: 4, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN', reporta: '0', usuario_id:  @senal.usuario_id)
               if @facturain.save
                 @detallefin = DetalleFactura.create(factura_id: @factura.id, prefijo: @factura.prefijo, nrofact: @factura.nrofact,
                 concepto_id: 1, valor: @factura.valor, porcentajeIva: 0, iva: 0, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN',
                 operacion: '+', usuario_id: @factura.usuario_id)
-                @detallefin.save
+                if @detallefin.save
+                  result = 2
+                end
               end
             end
           end
         end
       end
+    end
+    if (result == 2)
+      return true
     end
   end
 end

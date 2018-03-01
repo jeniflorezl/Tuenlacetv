@@ -7,24 +7,23 @@ module Api
             @t = Time.now
             # GET /senales
             def index
-                query = <<-SQL 
-                SELECT TOP(10) * FROM VwSenales;
-                SQL
-                #@senales = ActiveRecord::Base.connection.select_all(query)
                 @senales = Senal.all
                 @servicios = Servicio.all
                 @barrios = Barrio.all
                 @zonas = Zona.all
-                @tarifas = Tarifa.all
+                @planes_tv = Plan.where(servicio_id: 1)
+                @planes_int = Plan.where(servicio_id: 2)
+                @tarifas = Tarifa.where(estado_id: 1)
                 @tipo_instalaciones = TipoInstalacion.all
                 @tecnologias = Tecnologia.all
                 @tipo_documentos = TipoDocumento.all
                 @funciones = Funcion.all
                 @estados = Estado.all
                 @vendedores = Entidad.where(funcion_id: 5)
+                @tecnicos = Entidad.where(funcion_id: 7)
                 @entidades = Entidad.all
-                @info_internet = InfoInternet.all
                 @plantillas = PlantillaFact.all
+                @info_internet = InfoInternet.all
             end
 
             # GET /senales/id
@@ -51,11 +50,14 @@ module Api
                     if @entidad.save and @funcion==1
                         @senal = Senal.new(senal_params)
                         @senal.entidad_id = @entidad.id
-                        @senal.estado_id = 4
                         if @senal.save
-                            @senal.proceso_afiliacion(@senal, params[:tv], params[:internet], 
-                            params[:valorafi], params[:tarifa_id_tv], params[:tarifa_id_int])
-                            render json: { status: :created }
+                            if Senal.proceso_afiliacion(@senal, params[:tv], params[:internet], 
+                            params[:valorafi_tv], params[:valorafi_int], params[:tarifa_id_tv], 
+                            params[:tarifa_id_int])
+                                render json: { status: :created }
+                            else
+                                render json: { error: "Error en proceso de afiliacion" }
+                            end
                         else
                             render json: @senal.errors, status: :unprocessable_entity
                         end
@@ -107,6 +109,13 @@ module Api
                 SQL
                 @senal = ActiveRecord::Base.connection.select_all(query)
                 @senal = [*@senal]
+                @entidad = Array.new
+                @senal.each do |s|
+                    @entidad = s["codigo"].to_i
+                end
+                @entidad = [*@entidad]
+                @info_internet = InfoInternet.all
+                @senales = Senal.all
             end
 
 

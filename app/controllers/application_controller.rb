@@ -6,7 +6,7 @@ class ApplicationController < ActionController::API
     after_action :set_access_control_headers
     helper_method :user_signed_in?, :current_user
 
-    rescue_from StandardError, with: :standard_error
+    #rescue_from StandardError, with: :standard_error
     rescue_from ActiveRecord::RecordNotFound, with: :not_found
     rescue_from ActiveRecord::RecordInvalid, with: :invalid_record
 
