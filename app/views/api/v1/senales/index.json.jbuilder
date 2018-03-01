@@ -1,7 +1,6 @@
 json.senales do
     json.array! @senales do |senal|
         json.id senal.entidad.id
-        json.servicio senal.servicio.nombre
         json.tipo_documento senal.entidad.persona.tipo_documento.nombre
         json.documento senal.entidad.persona.documento
         json.nombre1 senal.entidad.persona.nombre1
@@ -31,7 +30,7 @@ json.senales do
         json.estrato senal.estrato
         json.vivienda senal.vivienda
         json.observacion senal.observacion
-        json.estado senal.estado.nombre
+
         json.fechacontrato senal.fechacontrato
         json.permanencia senal.permanencia
         json.televisores senal.televisores

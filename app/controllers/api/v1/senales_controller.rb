@@ -24,6 +24,7 @@ module Api
                 @vendedores = Entidad.where(funcion_id: 5)
                 @entidades = Entidad.all
                 @info_internet = InfoInternet.all
+                @plantillas = PlantillaFact.all
             end
 
             # GET /senales/id
