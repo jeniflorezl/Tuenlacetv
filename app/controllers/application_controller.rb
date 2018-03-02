@@ -9,6 +9,7 @@ class ApplicationController < ActionController::API
     #rescue_from StandardError, with: :standard_error
     rescue_from ActiveRecord::RecordNotFound, with: :not_found
     rescue_from ActiveRecord::RecordInvalid, with: :invalid_record
+    rescue_from ActiveRecord::StatementInvalid, with: :error_clave_foranea
 
     def set_access_control_headers
         headers['Access-Control-Allow-Origin']='*'
@@ -57,6 +58,10 @@ class ApplicationController < ActionController::API
 
     def invalid_record(error)
         render status: :not_acceptable, json: { error: error.message }
+    end
+
+    def error_clave_foranea(error)
+        render status: :not_acceptable, json: { error: "foranea" }
     end
 
     private

@@ -10,6 +10,8 @@ class Persona < ApplicationRecord
   validates :tipo_documento, :documento, :nombre1, :apellido1, :barrio, :zona, 
   :tipopersona, :condicionfisica, :usuario, presence: true #obligatorio
 
+  validates :documento, uniqueness: true
+
   validates :correo, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, on: :create }
 
   def uppercase

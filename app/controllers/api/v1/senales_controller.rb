@@ -43,25 +43,46 @@ module Api
 
             # POST /senales
             def create
+                result=0
                 @funcion = params[:funcion_id]
                 @persona = Persona.new(persona_params)
                 if @persona.save
                     @entidad = Entidad.new(funcion_id: @funcion, persona_id: @persona.id, usuario_id: @persona.usuario_id)
                     if @entidad.save and @funcion==1
-                        @senal = Senal.new(senal_params)
-                        @senal.entidad_id = @entidad.id
-                        if @senal.save
-                            if Senal.proceso_afiliacion(@senal, params[:tv], params[:internet], 
-                            params[:valorafi_tv], params[:valorafi_int], params[:tarifa_id_tv], 
-                            params[:tarifa_id_int])
-                                render json: { status: :created }
-                            else
-                                render json: { error: "Error en proceso de afiliacion" }
+                        if (params[:tv] == 1)
+                            @senal = Senal.new(senal_params)
+                            @senal.entidad_id = @entidad.id
+                            if @senal.save
+                                if Senal.proceso_afiliacion_tv(@senal, @entidad, params[:valorafi_tv], 
+                                    params[:tarifa_id_tv], params[:tecnico_id])
+                                    result=1
+                                else
+                                    result=0
+                                    
+                                end
                             end
-                        else
+                        end
+                        if (params[:internet] == 1)
+                            @info_internet = InfoInternet.new(internet_params)
+                            @info_internet.senal_id = @senal.id
+                            if @info_internet.save
+                                if Senal.proceso_afiliacion_int(@senal, @entidad, params[:valorafi_int], 
+                                    params[:tarifa_id_int], params[:tecnico_id])
+                                    result=2
+                                else
+                                    #render json: { error: "Error en proceso de afiliacion" }
+                                end
+                            end
+                        end
+                        if (result == 2)
+                            render json: { status: :created }
+                        elsif (result == 0)
+
                             render json: @senal.errors, status: :unprocessable_entity
                         end
                     end
+                else
+                    render json: { error: "Ya existe un suscriptor con esa información" }
                 end
             end
 
@@ -84,8 +105,11 @@ module Api
             # DELETE /senales/id
             def destroy
                 if @senal
-                    @senal.destroy()
-                    render json: { status: :deleted }
+                    if @senal.destroy()
+                        render json: { status: :deleted }
+                    else 
+                        render json: { error: "clave foranea" }
+                    end 
                 else
                     render json: { post: "not found" }
                 end
