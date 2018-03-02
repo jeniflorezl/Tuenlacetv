@@ -58,7 +58,6 @@ module Api
                                     result=1
                                 else
                                     result=0
-                                    
                                 end
                             end
                         end
@@ -68,17 +67,16 @@ module Api
                             if @info_internet.save
                                 if Senal.proceso_afiliacion_int(@senal, @entidad, params[:valorafi_int], 
                                     params[:tarifa_id_int], params[:tecnico_id])
-                                    result=2
+                                    result=1
                                 else
-                                    #render json: { error: "Error en proceso de afiliacion" }
+                                    result=0
                                 end
                             end
                         end
-                        if (result == 2)
+                        if (result == 1)
                             render json: { status: :created }
-                        elsif (result == 0)
-
-                            render json: @senal.errors, status: :unprocessable_entity
+                        else (result == 0)
+                            render json: @senal.errors, status: :unprocessable_entity, error: "Error en proceso de afiliacion"
                         end
                     end
                 else
@@ -105,11 +103,8 @@ module Api
             # DELETE /senales/id
             def destroy
                 if @senal
-                    if @senal.destroy()
-                        render json: { status: :deleted }
-                    else 
-                        render json: { error: "clave foranea" }
-                    end 
+                    @senal.destroy()
+                    render json: { status: :deleted }
                 else
                     render json: { post: "not found" }
                 end

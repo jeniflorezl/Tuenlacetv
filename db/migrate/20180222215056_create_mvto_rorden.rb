@@ -4,7 +4,7 @@ class CreateMvtoRorden < ActiveRecord::Migration[5.1]
       t.references :registro_orden, foreign_key: true, null:false
       t.integer :orden_id, null:false
       t.references :concepto, foreign_key: true, null:false
-      t.decimal :nrorden, null:false
+      t.integer :nrorden, null:false
       t.money :valor, null:false
       t.datetime :fechacre, null:false
       t.datetime :fechacam, null:false

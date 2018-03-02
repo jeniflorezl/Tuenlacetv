@@ -15,10 +15,10 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   create_table "abonos", force: :cascade do |t|
     t.integer "pago_id", null: false
     t.bigint "documento_id", null: false
-    t.decimal "nropago", precision: 18, scale: 0, null: false
+    t.integer "nropago", null: false
     t.integer "factura_id", null: false
     t.char "prefijo", limit: 6, null: false
-    t.decimal "nrofact", precision: 18, scale: 0, null: false
+    t.integer "nrofact", null: false
     t.bigint "concepto_id", null: false
     t.datetime "fechabono", null: false
     t.money "saldo", precision: 19, scale: 4, null: false
@@ -50,10 +50,10 @@ ActiveRecord::Schema.define(version: 20180223224100) do
     t.bigint "senal_id", null: false
     t.integer "factura_id", null: false
     t.char "prefijo", limit: 6, null: false
-    t.decimal "nrofact", precision: 18, scale: 0, null: false
+    t.integer "nrofact", null: false
     t.integer "pago_id", null: false
     t.bigint "documento_id", null: false
-    t.decimal "nropago", precision: 18, scale: 0, null: false
+    t.integer "nropago", null: false
     t.datetime "fechatrn", null: false
     t.datetime "fechaven", null: false
     t.money "valor", precision: 19, scale: 4, null: false
@@ -141,7 +141,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   create_table "descuentos", force: :cascade do |t|
     t.integer "pago_id", null: false
     t.bigint "documento_id", null: false
-    t.decimal "nropago", precision: 18, scale: 0, null: false
+    t.integer "nropago", null: false
     t.money "valor", precision: 19, scale: 4, null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
@@ -153,9 +153,9 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   create_table "detalle_factura", force: :cascade do |t|
     t.integer "factura_id", null: false
     t.char "prefijo", limit: 6, null: false
-    t.decimal "nrofact", precision: 18, scale: 0, null: false
+    t.integer "nrofact", null: false
     t.bigint "concepto_id", null: false
-    t.decimal "cantidad", precision: 18, scale: 0, null: false
+    t.integer "cantidad", null: false
     t.money "valor", precision: 19, scale: 4, null: false
     t.float "porcentajeIva", null: false
     t.money "iva", precision: 19, scale: 4, null: false
@@ -171,9 +171,9 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   create_table "detalle_orden", force: :cascade do |t|
     t.integer "orden_id", null: false
     t.bigint "concepto_id", null: false
-    t.decimal "nrorden", precision: 18, scale: 0, null: false
+    t.integer "nrorden", null: false
     t.bigint "articulo_id"
-    t.decimal "cantidad", precision: 18, scale: 0, null: false
+    t.integer "cantidad", null: false
     t.money "valor", precision: 19, scale: 4, null: false
     t.float "porcentajeIva", null: false
     t.money "iva", precision: 19, scale: 4, null: false
@@ -277,10 +277,10 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   create_table "factura_orden", force: :cascade do |t|
     t.integer "factura_id", null: false
     t.char "prefijo", limit: 6, null: false
-    t.decimal "nrofact", precision: 18, scale: 0, null: false
+    t.integer "nrofact", null: false
     t.integer "orden_id", null: false
     t.bigint "concepto_id", null: false
-    t.decimal "nrorden", precision: 18, scale: 0, null: false
+    t.integer "nrorden", null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
@@ -298,7 +298,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
     t.money "iva", precision: 19, scale: 4, null: false
     t.integer "dias", null: false
     t.char "prefijo", limit: 6, null: false
-    t.decimal "nrofact", precision: 18, scale: 0, null: false
+    t.integer "nrofact", null: false
     t.bigint "estado_id", null: false
     t.string "observacion", limit: 300
     t.char "reporta", limit: 1, null: false
@@ -372,7 +372,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
     t.bigint "registro_orden_id", null: false
     t.integer "orden_id", null: false
     t.bigint "concepto_id", null: false
-    t.decimal "nrorden", precision: 18, scale: 0, null: false
+    t.integer "nrorden", null: false
     t.money "valor", precision: 19, scale: 4, null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
@@ -428,7 +428,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
     t.bigint "concepto_id", null: false
     t.datetime "fechatrn", null: false
     t.datetime "fechaven", null: false
-    t.decimal "nrorden", precision: 18, scale: 0, null: false
+    t.integer "nrorden", null: false
     t.bigint "estado_id", null: false
     t.string "observacion", limit: 300
     t.bigint "tecnico_id", null: false
@@ -446,7 +446,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
     t.integer "id", null: false
     t.bigint "entidad_id", null: false
     t.bigint "documento_id", null: false
-    t.decimal "nropago", precision: 18, scale: 0, null: false
+    t.integer "nropago", null: false
     t.datetime "fechatrn", null: false
     t.datetime "fechaven", null: false
     t.money "valor", precision: 19, scale: 4, null: false
@@ -570,8 +570,8 @@ ActiveRecord::Schema.define(version: 20180223224100) do
     t.string "prefijo", limit: 4, null: false
     t.string "rangoRI", limit: 20, null: false
     t.string "rangoRF", limit: 20, null: false
-    t.decimal "rangoI", precision: 18, scale: 0, null: false
-    t.decimal "rangoF", precision: 18, scale: 0, null: false
+    t.integer "rangoI", null: false
+    t.integer "rangoF", null: false
     t.datetime "fechainicio", null: false
     t.datetime "fechavence", null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
@@ -669,7 +669,7 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   create_table "traslados", force: :cascade do |t|
     t.integer "orden_id", null: false
     t.bigint "concepto_id", null: false
-    t.decimal "nrorden", precision: 18, scale: 0, null: false
+    t.integer "nrorden", null: false
     t.bigint "zonaAnt_id", null: false
     t.bigint "barrioAnt_id", null: false
     t.string "direccionAnt", limit: 200, null: false

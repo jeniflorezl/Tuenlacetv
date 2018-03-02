@@ -3,7 +3,7 @@ class CreateDescuentos < ActiveRecord::Migration[5.1]
     create_table :descuentos do |t|
       t.integer :pago_id, null:false
       t.references :documento, foreign_key: true, null:false
-      t.decimal :nropago, null:false
+      t.integer :nropago, null:false
       t.money :valor, null:false
       t.datetime :fechacre, null:false
       t.datetime :fechacam, null:false

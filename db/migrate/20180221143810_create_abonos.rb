@@ -3,10 +3,10 @@ class CreateAbonos < ActiveRecord::Migration[5.1]
     create_table :abonos do |t|
       t.integer :pago_id, null:false
       t.references :documento, foreign_key: true, null:false
-      t.decimal :nropago, null:false
+      t.integer :nropago, null:false
       t.integer :factura_id, null:false
       t.char :prefijo, limit: 6, null:false
-      t.decimal :nrofact, null:false
+      t.integer :nrofact, null:false
       t.references :concepto, foreign_key: true, null:false
       t.datetime :fechabono, null:false
       t.money :saldo, null:false

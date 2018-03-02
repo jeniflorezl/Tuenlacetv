@@ -28,20 +28,22 @@ class Senal < ApplicationRecord
     @senal = senal
     @entidad = entidad
     result = 0
+    ultimo = 0
     @plantilla = PlantillaFact.new(senal_id: @senal.id, concepto_id: 3, estado_id: 4, tarifa_id: tarifaTv, 
     fechaini: @senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: @senal.usuario_id)
+    byebug
     if @plantilla.save
       query = <<-SQL 
         SELECT MAX(nrorden) as ultimo FROM ordenes WHERE concepto_id=11;
       SQL
       ultimo = ActiveRecord::Base.connection.select_all(query)
       if (ultimo[0]["ultimo"] == nil)
-        ultimo=0
+        ultimo=1
       else
-        ultimo = ultimo[0]["ultimo"]
+        ultimo = (ultimo[0]["ultimo"]).to_i + 1
       end
       @orden = Orden.new(senal_id: @senal.id, concepto_id: 11, fechatrn: @senal.fechacontrato,
-      fechaven: @senal.fechacontrato, nrorden: ultimo + 1, estado_id: 4, observacion: 'Registro creado en proceso de afiliación',
+      fechaven: @senal.fechacontrato, nrorden:ultimo, estado_id: 4, observacion: 'Registro creado en proceso de afiliación',
       tecnico_id: tecnico, usuario_id: @senal.usuario_id)
       if @orden.save
         if valorAfi > 0
@@ -55,8 +57,9 @@ class Senal < ApplicationRecord
           else
             ultimo = ultimo[0]["ultimo"]
           end
+          nro = ultimo + 1
           @factura = Facturacion.new(entidad_id: @entidad.id, documento_id: 1, fechatrn: @senal.fechacontrato,
-          fechaven: @senal.fechacontrato, valor: valorAfiTv, iva: 0, dias: 0, prefijo: pref, nrofact: ultimo + 1,
+          fechaven: @senal.fechacontrato, valor: valorAfiTv, iva: 0, dias: 0, prefijo: pref, nrofact: nro,
           estado_id: 4, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN', reporta: '0', usuario_id:  @senal.usuario_id)
           if @factura.save
             @detallef = DetalleFactura.create(factura_id: @factura.id, prefijo: @factura.prefijo, nrofact: @factura.nrofact,
@@ -75,6 +78,7 @@ class Senal < ApplicationRecord
   def self.proceso_afiliacion_int(senal, entidad, valorAfiInt, tarifaInt, tecnico)
     @senal = senal
     @entidad = entidad
+    ultimo = 0
     @plantillaint = PlantillaFact.new(senal_id: @senal.id, concepto_id: 4, estado_id: 4, tarifa_id: tarifaInt, 
     fechaini: @senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: @senal.usuario_id)
     if @plantillaint.save
@@ -83,12 +87,12 @@ class Senal < ApplicationRecord
       SQL
       ultimo = ActiveRecord::Base.connection.select_all(query)
       if (ultimo[0]["ultimo"] == nil)
-        ultimo=0
+        ultimo=1
       else
-        ultimo = ultimo[0]["ultimo"]
+        ultimo = ultimo[0]["ultimo"] + 1
       end
       @ordenin = Orden.new(senal_id: @senal.id, concepto_id: 12, fechatrn: @t.strftime("%d/%m/%Y %H:%M:%S"),
-      fechaven: @t.strftime("%d/%m/%Y %H:%M:%S"), nrorden: ultimo + 1, estado_id: 4, observacion: 'Registro creado en proceso de afiliación',
+      fechaven: @t.strftime("%d/%m/%Y %H:%M:%S"), nrorden: ultimo, estado_id: 4, observacion: 'Registro creado en proceso de afiliación',
       tecnico_id: tecnico, usuario_id: @senal.usuario_id)
       if @ordenin.save
         if params[:valorafi] > 0

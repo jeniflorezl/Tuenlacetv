@@ -10,7 +10,7 @@ class CreateFacturacion < ActiveRecord::Migration[5.1]
       t.money :iva, null:false
       t.integer :dias, null:false
       t.char :prefijo, limit: 6, null:false
-      t.decimal :nrofact, null:false
+      t.integer :nrofact, null:false
       t.references :estado, foreign_key: true, null:false
       t.string :observacion, limit: 300
       t.char :reporta, limit: 1, null:false

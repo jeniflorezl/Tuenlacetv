@@ -3,9 +3,9 @@ class CreateDetalleOrden < ActiveRecord::Migration[5.1]
     create_table :detalle_orden do |t|
       t.integer :orden_id, null:false
       t.references :concepto, foreign_key: true, null:false
-      t.decimal :nrorden, null:false
+      t.integer :nrorden, null:false
       t.references :articulo, foreign_key: true
-      t.decimal :cantidad, null:false      
+      t.integer :cantidad, null:false      
       t.money :valor, null:false
       t.float :porcentajeIva, null:false
       t.money :iva, null:false

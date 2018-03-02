@@ -3,9 +3,9 @@ class CreateDetalleFactura < ActiveRecord::Migration[5.1]
     create_table :detalle_factura do |t|
       t.integer :factura_id, null:false
       t.char :prefijo, limit: 6, null:false
-      t.decimal :nrofact, null:false
+      t.integer :nrofact, null:false
       t.references :concepto, foreign_key: true, null:false
-      t.decimal :cantidad, null:false      
+      t.integer :cantidad, limit: 3, null:false      
       t.money :valor, null:false
       t.float :porcentajeIva, null:false
       t.money :iva, null:false

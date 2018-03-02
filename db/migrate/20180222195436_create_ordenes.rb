@@ -6,7 +6,7 @@ class CreateOrdenes < ActiveRecord::Migration[5.1]
       t.references :concepto, foreign_key: true, null:false
       t.datetime :fechatrn, null:false
       t.datetime :fechaven, null:false
-      t.decimal :nrorden, null:false
+      t.integer :nrorden, null:false
       t.references :estado, foreign_key: true, null:false
       t.string :observacion, limit: 300
       t.references :tecnico, foreign_key: { to_table: :entidades }, null:false

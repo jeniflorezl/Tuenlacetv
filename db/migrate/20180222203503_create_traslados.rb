@@ -3,7 +3,7 @@ class CreateTraslados < ActiveRecord::Migration[5.1]
     create_table :traslados do |t|
       t.integer :orden_id, null:false
       t.references :concepto, foreign_key: true, null:false
-      t.decimal :nrorden, null:false
+      t.integer :nrorden, null:false
       t.references :zonaAnt, foreign_key: { to_table: :zonas }, null:false
       t.references :barrioAnt, foreign_key: { to_table: :barrios }, null:false
       t.string :direccionAnt, limit: 200, null:false

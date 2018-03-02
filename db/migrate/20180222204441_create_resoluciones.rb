@@ -7,8 +7,8 @@ class CreateResoluciones < ActiveRecord::Migration[5.1]
       t.string :prefijo, limit:4, null:false
       t.string :rangoRI, limit:20, null:false
       t.string :rangoRF, limit:20, null:false
-      t.decimal :rangoI, null:false
-      t.decimal :rangoF, null:false
+      t.integer :rangoI, null:false
+      t.integer :rangoF, null:false
       t.datetime :fechainicio, null:false
       t.datetime :fechavence, null:false
       t.datetime :fechacre, null:false

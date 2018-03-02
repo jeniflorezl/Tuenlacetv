@@ -3,10 +3,10 @@ class CreateFacturaOrden < ActiveRecord::Migration[5.1]
     create_table :factura_orden do |t|
       t.integer :factura_id, null:false
       t.char :prefijo, limit: 6, null:false
-      t.decimal :nrofact, null:false
+      t.integer :nrofact, null:false
       t.integer :orden_id, null:false
       t.references :concepto, foreign_key: true, null:false
-      t.decimal :nrorden, null:false
+      t.integer :nrorden, null:false
       t.datetime :fechacre, null:false
       t.datetime :fechacam, null:false
       t.references :usuario, foreign_key: true, null:false

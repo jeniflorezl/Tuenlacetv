@@ -4,7 +4,7 @@ class CreatePagos < ActiveRecord::Migration[5.1]
       t.integer :id, null:false
       t.references :entidad, foreign_key: true, null:false
       t.references :documento, foreign_key: true, null:false
-      t.decimal :nropago, null:false
+      t.integer :nropago, null:false
       t.datetime :fechatrn, null:false
       t.datetime :fechaven, null:false
       t.money :valor, null:false
