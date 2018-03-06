@@ -44,6 +44,7 @@ module Api
             # POST /senales
             def create
                 result=0
+                result1=0
                 @funcion = params[:funcion_id]
                 @persona = Persona.new(persona_params)
                 if @persona.save
@@ -57,7 +58,7 @@ module Api
                                     params[:tarifa_id_tv], params[:tecnico_id])
                                     result=1
                                 else
-                                    result=0
+                                    result=2
                                 end
                             end
                         end
@@ -67,17 +68,29 @@ module Api
                             if @info_internet.save
                                 if Senal.proceso_afiliacion_int(@senal, @entidad, params[:valorafi_int], 
                                     params[:tarifa_id_int], params[:tecnico_id])
-                                    result=1
+                                    result1=1
                                 else
-                                    result=0
+                                    result1=2
                                 end
                             end
                         end
-                        if (result == 1)
-                            render json: { status: :created }
-                        else (result == 0)
-                            render json: @senal.errors, status: :unprocessable_entity, error: "Error en proceso de afiliacion"
+                        if (params[:tv]==1)
+                            if (result == 1)
+                                message1 = "creado servicio tv"
+                            else
+                                message1 = @senal.errors
+                            end
                         end
+                        if (params[:internet]==1)
+                            if (result1 == 1)
+                                message2 = "creado servicio internet"
+                            else
+                                message2 = @info_internet.errors
+                            end
+                        end
+                        msg = message1 + ' ' + message2
+                        byebug
+                        render :json { 'message' => msg }
                     end
                 else
                     render json: { error: "Ya existe un suscriptor con esa información" }

@@ -16,7 +16,7 @@ class CreateDescuentos < ActiveRecord::Migration[5.1]
       ADD  DEFAULT (getdate()) FOR fechacam
     ALTER TABLE descuentos
       ADD CONSTRAINT FK_descuentos_pagos
-      FOREIGN KEY (pago_id,documento_id,nropago) REFERENCES pagos(id,documento_id,nropago);
+      FOREIGN KEY (documento_id,nropago) REFERENCES pagos(documento_id,nropago);
     SQL
   end
 

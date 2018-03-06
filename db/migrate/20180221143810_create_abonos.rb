@@ -2,9 +2,10 @@ class CreateAbonos < ActiveRecord::Migration[5.1]
   def up
     create_table :abonos do |t|
       t.integer :pago_id, null:false
-      t.references :documento, foreign_key: true, null:false
+      t.references :doc_pagos, foreign_key: { to_table: :documentos }, null:false
       t.integer :nropago, null:false
       t.integer :factura_id, null:false
+      t.references :doc_factura, foreign_key: { to_table: :documentos }, null:false
       t.char :prefijo, limit: 6, null:false
       t.integer :nrofact, null:false
       t.references :concepto, foreign_key: true, null:false
@@ -22,10 +23,10 @@ class CreateAbonos < ActiveRecord::Migration[5.1]
       ADD  DEFAULT (getdate()) FOR fechacam
     ALTER TABLE abonos
       ADD CONSTRAINT FK_pagos
-      FOREIGN KEY (pago_id,documento_id,nropago) REFERENCES pagos(id,documento_id,nropago);
+      FOREIGN KEY (doc_pagos_id,nropago) REFERENCES pagos(documento_id,nropago);
     ALTER TABLE abonos
       ADD CONSTRAINT FK_facturas
-      FOREIGN KEY (factura_id,prefijo,nrofact) REFERENCES facturacion(id,prefijo,nrofact);
+      FOREIGN KEY (doc_factura_id,prefijo,nrofact) REFERENCES facturacion(documento_id,prefijo,nrofact);
     SQL
   end
   

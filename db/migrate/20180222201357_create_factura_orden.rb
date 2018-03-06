@@ -2,6 +2,7 @@ class CreateFacturaOrden < ActiveRecord::Migration[5.1]
   def up
     create_table :factura_orden do |t|
       t.integer :factura_id, null:false
+      t.references :documento, foreign_key: true, null:false
       t.char :prefijo, limit: 6, null:false
       t.integer :nrofact, null:false
       t.integer :orden_id, null:false
@@ -18,10 +19,10 @@ class CreateFacturaOrden < ActiveRecord::Migration[5.1]
       ADD  DEFAULT (getdate()) FOR fechacam
     ALTER TABLE factura_orden
       ADD CONSTRAINT FK_factorden_facturas
-      FOREIGN KEY (factura_id,prefijo,nrofact) REFERENCES facturacion(id,prefijo,nrofact);
+      FOREIGN KEY (documento_id,prefijo,nrofact) REFERENCES facturacion(documento_id,prefijo,nrofact);
     ALTER TABLE factura_orden
       ADD CONSTRAINT FK_factorden_ordenes
-      FOREIGN KEY (orden_id,concepto_id,nrorden) REFERENCES ordenes(id,concepto_id,nrorden);
+      FOREIGN KEY (concepto_id,nrorden) REFERENCES ordenes(concepto_id,nrorden);
     SQL
   end
 

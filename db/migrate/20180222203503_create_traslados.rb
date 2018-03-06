@@ -21,7 +21,7 @@ class CreateTraslados < ActiveRecord::Migration[5.1]
       ADD  DEFAULT (getdate()) FOR fechacam
     ALTER TABLE traslados
       ADD CONSTRAINT FK_traslados_ordenes
-      FOREIGN KEY (orden_id,concepto_id,nrorden) REFERENCES ordenes(id,concepto_id,nrorden);
+      FOREIGN KEY (concepto_id,nrorden) REFERENCES ordenes(concepto_id,nrorden);
     SQL
   end
 

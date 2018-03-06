@@ -19,7 +19,7 @@ class CreateOrdenes < ActiveRecord::Migration[5.1]
       ADD  DEFAULT (getdate()) FOR fechacre
     ALTER TABLE ordenes 
       ADD  DEFAULT (getdate()) FOR fechacam
-    ALTER TABLE ordenes ADD PRIMARY KEY (id,concepto_id,nrorden);
+    ALTER TABLE ordenes ADD PRIMARY KEY (concepto_id,nrorden);
     SQL
   end
 

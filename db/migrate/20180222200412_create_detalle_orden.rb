@@ -22,7 +22,7 @@ class CreateDetalleOrden < ActiveRecord::Migration[5.1]
       ADD  DEFAULT (getdate()) FOR fechacam
     ALTER TABLE detalle_orden
       ADD CONSTRAINT FK_ordenes
-      FOREIGN KEY (orden_id,concepto_id,nrorden) REFERENCES ordenes(id,concepto_id,nrorden);
+      FOREIGN KEY (concepto_id,nrorden) REFERENCES ordenes(concepto_id,nrorden);
     SQL
   end
 

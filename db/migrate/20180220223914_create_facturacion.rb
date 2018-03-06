@@ -23,7 +23,7 @@ class CreateFacturacion < ActiveRecord::Migration[5.1]
       ADD  DEFAULT (getdate()) FOR fechacre
     ALTER TABLE facturacion 
       ADD  DEFAULT (getdate()) FOR fechacam
-    ALTER TABLE facturacion ADD PRIMARY KEY (id,prefijo,nrofact);
+    ALTER TABLE facturacion ADD PRIMARY KEY (documento_id,prefijo,nrofact);
     SQL
   end
 

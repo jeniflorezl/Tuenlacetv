@@ -22,7 +22,7 @@ class CreatePagos < ActiveRecord::Migration[5.1]
       ADD  DEFAULT (getdate()) FOR fechacre
     ALTER TABLE pagos 
       ADD  DEFAULT (getdate()) FOR fechacam
-    ALTER TABLE pagos ADD PRIMARY KEY (id,documento_id,nropago);
+    ALTER TABLE pagos ADD PRIMARY KEY (documento_id,nropago);
     SQL
   end
   

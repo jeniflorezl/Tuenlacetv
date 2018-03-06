@@ -1,4 +1,6 @@
 class Senal < ApplicationRecord
+  extend NombreMeses
+
   belongs_to :entidad
   belongs_to :barrio
   belongs_to :zona
@@ -13,6 +15,8 @@ class Senal < ApplicationRecord
   :tipo_instalacion, :tecnologia, :tiposervicio, :usuario, presence: true #obligatorio
 
   @t = Time.now
+  @mes = Senal.mes(@t.strftime("%B"))
+  @consecutivos = Parametro.find(70).valor
 
   def uppercase
     self.direccion.upcase!
@@ -24,18 +28,25 @@ class Senal < ApplicationRecord
     self.areainstalacion.upcase!
   end
 
+  private
+
   def self.proceso_afiliacion_tv(senal, entidad, valorAfiTv, tarifaTv, tecnico)
     @senal = senal
     @entidad = entidad
-    result = 0
     ultimo = 0
     @plantilla = PlantillaFact.new(senal_id: @senal.id, concepto_id: 3, estado_id: 4, tarifa_id: tarifaTv, 
     fechaini: @senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: @senal.usuario_id)
-    byebug
     if @plantilla.save
-      query = <<-SQL 
+      if (@consecutivos == 'S')
+        query = <<-SQL 
         SELECT MAX(nrorden) as ultimo FROM ordenes WHERE concepto_id=11;
-      SQL
+        SQL
+      else
+        query = <<-SQL 
+        SELECT MAX(nrorden) as ultimo FROM ordenes;
+        SQL
+      end
+      ActiveRecord::Base.connection.clear_query_cache
       ultimo = ActiveRecord::Base.connection.select_all(query)
       if (ultimo[0]["ultimo"] == nil)
         ultimo=1
@@ -46,24 +57,37 @@ class Senal < ApplicationRecord
       fechaven: @senal.fechacontrato, nrorden:ultimo, estado_id: 4, observacion: 'Registro creado en proceso de afiliación',
       tecnico_id: tecnico, usuario_id: @senal.usuario_id)
       if @orden.save
-        if valorAfi > 0
-          @pref = Resolucion.last.prefijo
-          query = <<-SQL 
+        if valorAfiTv > 0
+          pref = Resolucion.last.prefijo
+          if (@consecutivos == 'S')
+            query = <<-SQL 
             SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=1;
-          SQL
+            SQL
+          else
+            query = <<-SQL 
+            SELECT MAX(nrofact) as ultimo FROM facturacion;
+            SQL
+          end
+          ActiveRecord::Base.connection.clear_query_cache
           ultimo = ActiveRecord::Base.connection.select_all(query)
           if (ultimo[0]["ultimo"] == nil)
-            ultimo=0
+            ultimo=1
           else
-            ultimo = ultimo[0]["ultimo"]
+            ultimo = (ultimo[0]["ultimo"]).to_i + 1
           end
-          nro = ultimo + 1
           @factura = Facturacion.new(entidad_id: @entidad.id, documento_id: 1, fechatrn: @senal.fechacontrato,
-          fechaven: @senal.fechacontrato, valor: valorAfiTv, iva: 0, dias: 0, prefijo: pref, nrofact: nro,
+          fechaven: @senal.fechacontrato, valor: valorAfiTv, iva: 0, dias: 0, prefijo: pref, nrofact: ultimo,
           estado_id: 4, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN', reporta: '0', usuario_id:  @senal.usuario_id)
           if @factura.save
-            @detallef = DetalleFactura.create(factura_id: @factura.id, prefijo: @factura.prefijo, nrofact: @factura.nrofact,
-            concepto_id: 1, valor: @factura.valor, porcentajeIva: 0, iva: 0, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN',
+            query = <<-SQL 
+            SELECT id FROM facturacion WHERE nrofact=#{@factura.nrofact};
+            SQL
+            ActiveRecord::Base.connection.clear_query_cache
+            factura_id = ActiveRecord::Base.connection.select_all(query)
+            factura_id = (factura_id[0]["id"]).to_i
+            @detallef = DetalleFactura.new(factura_id: factura_id, documento_id: @factura.documento_id, 
+            prefijo: @factura.prefijo, nrofact: @factura.nrofact, concepto_id: 1, cantidad: 1, 
+            valor: @factura.valor, porcentajeIva: 0, iva: 0, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN' + ' ' + @mes,
             operacion: '+', usuario_id: @factura.usuario_id)
             if @detallef.save
               return true
@@ -82,36 +106,58 @@ class Senal < ApplicationRecord
     @plantillaint = PlantillaFact.new(senal_id: @senal.id, concepto_id: 4, estado_id: 4, tarifa_id: tarifaInt, 
     fechaini: @senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: @senal.usuario_id)
     if @plantillaint.save
-      query = <<-SQL 
-        SELECT MAX(nrorden) as ultimo FROM ordenes WHERE concepto_id=11;
-      SQL
+      if (@consecutivos == 'S')
+        query = <<-SQL  
+        SELECT MAX(nrorden) as ultimo FROM ordenes WHERE concepto_id=12;
+        SQL
+      else
+        query = <<-SQL 
+        SELECT MAX(nrorden) as ultimo FROM ordenes;
+        SQL
+      end
+      ActiveRecord::Base.connection.clear_query_cache
       ultimo = ActiveRecord::Base.connection.select_all(query)
       if (ultimo[0]["ultimo"] == nil)
         ultimo=1
       else
-        ultimo = ultimo[0]["ultimo"] + 1
+        ultimo = (ultimo[0]["ultimo"]).to_i + 1
       end
       @ordenin = Orden.new(senal_id: @senal.id, concepto_id: 12, fechatrn: @t.strftime("%d/%m/%Y %H:%M:%S"),
       fechaven: @t.strftime("%d/%m/%Y %H:%M:%S"), nrorden: ultimo, estado_id: 4, observacion: 'Registro creado en proceso de afiliación',
       tecnico_id: tecnico, usuario_id: @senal.usuario_id)
       if @ordenin.save
-        if params[:valorafi] > 0
-          query = <<-SQL 
+        if valorAfiInt > 0
+          pref = Resolucion.last.prefijo
+          if (@consecutivos == 'S')
+            query = <<-SQL 
             SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=1;
-          SQL
+            SQL
+          else
+            query = <<-SQL 
+            SELECT MAX(nrofact) as ultimo FROM facturacion;
+            SQL
+          end
+          ActiveRecord::Base.connection.clear_query_cache
           ultimo = ActiveRecord::Base.connection.select_all(query)
           if (ultimo[0]["ultimo"] == nil)
-              ultimo=0
+            ultimo=1
           else
-            ultimo = ultimo[0]["ultimo"]
+            ultimo = (ultimo[0]["ultimo"]).to_i + 1
           end
           @facturain = Facturacion.new(entidad_id: @entidad.id, documento_id: 1, fechatrn: @senal.fechacontrato,
-          fechaven: @senal.fechacontrato, valor: valorAfiInt, iva: 0, dias: 0, prefijo: @pref, nrofact: ultimo + 1,
+          fechaven: @senal.fechacontrato, valor: valorAfiInt, iva: 0, dias: 0, prefijo: pref, nrofact: ultimo,
           estado_id: 4, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN', reporta: '0', usuario_id:  @senal.usuario_id)
           if @facturain.save
-            @detallefin = DetalleFactura.create(factura_id: @factura.id, prefijo: @factura.prefijo, nrofact: @factura.nrofact,
-            concepto_id: 1, valor: @factura.valor, porcentajeIva: 0, iva: 0, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN',
-            operacion: '+', usuario_id: @factura.usuario_id)
+            query = <<-SQL 
+            SELECT id FROM facturacion WHERE nrofact=#{@facturain.nrofact};
+            SQL
+            ActiveRecord::Base.connection.clear_query_cache
+            facturain_id = ActiveRecord::Base.connection.select_all(query)
+            facturain_id = (facturain_id[0]["id"]).to_i
+            @detallefin = DetalleFactura.new(factura_id: facturain_id, documento_id: @facturain.documento_id, 
+            prefijo: @facturain.prefijo, nrofact: @facturain.nrofact, concepto_id: 1, cantidad: 1, 
+            valor: @facturain.valor, porcentajeIva: 0, iva: 0, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN' + ' ' + @mes,
+            operacion: '+', usuario_id: @facturain.usuario_id)
             if @detallefin.save
               return true
             end
