@@ -287,7 +287,7 @@ ActiveRecord::Schema.define(version: 20180306154629) do
 
   create_table "estados", force: :cascade do |t|
     t.varchar "nombre", limit: 20, null: false
-    t.char "abreviatura", limit: 1, null: false
+    t.char "abreviatura", limit: 3, null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.varchar "usuario", limit: 15, null: false
