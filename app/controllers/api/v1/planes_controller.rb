@@ -57,7 +57,7 @@ module Api
             def set_plan_buscar
                 @campo = params[:campo]
                 @valor = params[:valor]
-                if @campo == 'codigo'
+                if @campo == 'id'
                     @plan = Plan.find(params[:valor])
                 elsif @campo == 'servicio'
                     @plan = Plan.limit(10).where(servicio_id: @valor)

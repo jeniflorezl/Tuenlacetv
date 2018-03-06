@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180223224100) do
+ActiveRecord::Schema.define(version: 20180306154629) do
 
   create_table "abonos", force: :cascade do |t|
     t.integer "pago_id", null: false
@@ -124,6 +124,8 @@ ActiveRecord::Schema.define(version: 20180223224100) do
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
+    t.bigint "departamento_id"
+    t.index ["departamento_id"], name: "index_ciudades_on_departamento_id"
     t.index ["pais_id"], name: "index_ciudades_on_pais_id"
     t.index ["usuario_id"], name: "index_ciudades_on_usuario_id"
   end
@@ -140,6 +142,17 @@ ActiveRecord::Schema.define(version: 20180223224100) do
     t.bigint "usuario_id", null: false
     t.index ["servicio_id"], name: "index_conceptos_on_servicio_id"
     t.index ["usuario_id"], name: "index_conceptos_on_usuario_id"
+  end
+
+  create_table "departamentos", force: :cascade do |t|
+    t.bigint "pais_id"
+    t.varchar "nombre", limit: 80, null: false
+    t.char "codigo", limit: 5
+    t.datetime "fechacre", default: -> { "getdate()" }, null: false
+    t.datetime "fechacam", default: -> { "getdate()" }, null: false
+    t.bigint "usuario_id", null: false
+    t.index ["pais_id"], name: "index_departamentos_on_pais_id"
+    t.index ["usuario_id"], name: "index_departamentos_on_usuario_id"
   end
 
   create_table "descuentos", force: :cascade do |t|
@@ -770,10 +783,13 @@ ActiveRecord::Schema.define(version: 20180223224100) do
   add_foreign_key "bancos", "usuarios"
   add_foreign_key "barrios", "usuarios"
   add_foreign_key "barrios", "zonas"
+  add_foreign_key "ciudades", "departamentos"
   add_foreign_key "ciudades", "paises"
   add_foreign_key "ciudades", "usuarios"
   add_foreign_key "conceptos", "servicios"
   add_foreign_key "conceptos", "usuarios"
+  add_foreign_key "departamentos", "paises"
+  add_foreign_key "departamentos", "usuarios"
   add_foreign_key "descuentos", "documentos"
   add_foreign_key "descuentos", "pagos", column: "documento_id", primary_key: "documento_id", name: "FK_descuentos_pagos"
   add_foreign_key "descuentos", "pagos", column: "nropago", primary_key: "nropago", name: "FK_descuentos_pagos"

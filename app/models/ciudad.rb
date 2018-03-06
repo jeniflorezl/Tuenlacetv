@@ -1,6 +1,7 @@
 class Ciudad < ApplicationRecord
   belongs_to :pais
   belongs_to :usuario
+  belongs_to :departamento
   has_many :zonas
   has_many :bancos
   has_many :empresas

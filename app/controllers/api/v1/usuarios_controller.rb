@@ -86,7 +86,7 @@ module Api
                 def set_usuario_buscar
                     @campo = params[:campo]
                     @valor = params[:valor]
-                    if @campo == 'codigo'
+                    if @campo == 'id'
                         @usuario = Usuario.find(params[:valor])
                     else
                         @usuario = Usuario.limit(10).where("#{@campo} LIKE '%#{@valor}%'")

@@ -8,6 +8,7 @@ module Api
             def index
                 @ciudades = Ciudad.all
                 @paises = Pais.all
+                @departamentos = Departamento.all
             end
         
             # GET /ciudades/id
@@ -56,7 +57,7 @@ module Api
             def set_ciudad_buscar
                 @campo = params[:campo]
                 @valor = params[:valor]
-                if @campo == 'codigo'
+                if @campo == 'id'
                   @ciudad = Ciudad.find(params[:valor])
                 else
                   @ciudad = Ciudad.limit(10).where("nombre LIKE '%#{@valor}%'")
@@ -67,7 +68,8 @@ module Api
             #Le coloco los parametros que necesito de la ciudad para crearla y actualizarla
 
             def ciudad_params
-                params.require(:ciudad).permit(:pais_id, :nombre, :codigo, :usuario_id)
+                params.require(:ciudad).permit(:pais_id, :nombre, :codigoDane, :codigoAlterno,
+                    :usuario_id, :departamento_id)
             end 
         end
     end

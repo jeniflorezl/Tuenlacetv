@@ -58,7 +58,7 @@ module Api
             def set_concepto_buscar
                 @campo = params[:campo]
                 @valor = params[:valor]
-                if @campo == 'codigo'
+                if @campo == 'id'
                     @concepto = Concepto.find(params[:valor])
                 elsif @campo == 'servicio'
                     @concepto = Concepto.limit(10).where(servicio_id: @valor)

@@ -89,8 +89,9 @@ module Api
                             end
                         end
                         msg = message1 + ' ' + message2
-                        byebug
-                        render :json { 'message' => msg }
+                        #byebug
+                        render :json => {:message => msg}.to_json
+                        #render :json { 'message' => msg }
                     end
                 else
                     render json: { error: "Ya existe un suscriptor con esa información" }
@@ -99,25 +100,68 @@ module Api
 
             # PATCH/PUT /senales/id
             def update
-                @senal.fechacam = @t.strftime("%d/%m/%Y %H:%M:%S")
                 @persona.fechacam = @t.strftime("%d/%m/%Y %H:%M:%S")
                 if @persona.update(persona_params)
+                    @senal.fechacam = @t.strftime("%d/%m/%Y %H:%M:%S")
                     if @senal.update(senal_params)
-                        if params[:internet]==1
-                            @info_internet.update(internet_params)
+                        if (params[:tv] == 1)
+                            unless @plantilla_tv
+                                if Senal.proceso_afiliacion_tv(@senal, @entidad, params[:valorafi_tv], 
+                                    params[:tarifa_id_tv], params[:tecnico_id])
+                                    result=1
+                                else
+                                    result=2
+                                end
+                            end  
                         end
-                        render json: { status: :updated }
-                    else
-                        render json: @senal.errors, status: :unprocessable_entity
+                        if params[:internet]==1
+                            if @info_internet
+                                @info_internet.fechacam = @t.strftime("%d/%m/%Y %H:%M:%S")
+                                @info_internet.update(internet_params)
+                            else
+                                @info_internet = InfoInternet.new(internet_params)
+                                @info_internet.senal_id = @senal.id
+                                if @info_internet.save
+                                    if Senal.proceso_afiliacion_int(@senal, @entidad, params[:valorafi_int], 
+                                        params[:tarifa_id_int], params[:tecnico_id])
+                                        result1=1
+                                    else
+                                        result1=2
+                                    end
+                                end
+                            end
+                        end
                     end
                 end
+                if (params[:tv]==1)
+                    if (result == 1)
+                        message1 = "actualizado servicio tv"
+                    else
+                        message1 = @senal.errors
+                    end
+                end
+                if (params[:internet]==1)
+                    if (result1 == 1)
+                        message2 = "actualizado servicio internet"
+                    else
+                        message2 = @info_internet.errors
+                    end
+                end
+                msg = message1 + ' ' + message2
+                render :json => {:message => msg}.to_json
             end
 
             # DELETE /senales/id
             def destroy
                 if @senal
-                    @senal.destroy()
-                    render json: { status: :deleted }
+                    @pago = Pago.find_by(entidad_id: @entidad.id).first
+                    @factura = Facturacion.find_by(entidad_id: @entidad.id).first
+                    if @pago or @factura
+                        render json: { error: "El suscriptor no se puede eliminar" }
+                    else
+                        @senal.destroy()
+                        render json: { status: :deleted }
+                    end
                 else
                     render json: { post: "not found" }
                 end
@@ -127,8 +171,9 @@ module Api
 
             def set_senal
                 @entidad = Entidad.find(params[:id])
-                @senal = Senal.find_by(entidad_id: @entidad.id)
                 @persona = Persona.find(@entidad.persona_id)
+                @senal = Senal.find_by(entidad_id: @entidad.id)
+                @plantilla_tv = PlantillaFact.where("senal_id = ? AND concepto_id = ?", @senal.id, 3)
                 @info_internet = InfoInternet.find_by(senal_id: @senal.id)
             end
             

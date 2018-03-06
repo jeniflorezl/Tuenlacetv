@@ -57,7 +57,7 @@ module Api
             def set_barrio_buscar
                 @campo = params[:campo]
                 @valor = params[:valor]
-                if @campo == 'codigo'
+                if @campo == 'id'
                     @barrio = Barrio.find(params[:valor])
                 elsif @campo == 'zona'
                     @barrio = Barrio.limit(10).where(zona_id: @valor)

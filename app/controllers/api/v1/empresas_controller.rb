@@ -60,7 +60,7 @@ module Api
             def set_empresa_buscar
                 @campo = params[:campo]
                 @valor = params[:valor]
-                if @campo == 'codigo'
+                if @campo == 'id'
                     @empresa = Empresa.find(params[:valor])
                 else
                     @empresa = Empresa.limit(10).where("#{@campo} LIKE '%#{@valor}%'")

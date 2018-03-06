@@ -26,6 +26,10 @@ module Api
                 def create
                     @tarifa = Tarifa.new(tarifa_params)
                     if @tarifa.save 
+                        HistorialTarifa.create(tarifa_id: @tarifa.id, zona_id: @tarifa.zona_id,
+                            concepto_id: @tarifa.concepto_id, plan_id: @tarifa.plan_id, valor: @tarifa.valor,
+                            fechainicio: params[:fechainicio], fechavence: params[:fechaven], 
+                            ccosto: Empresa.first.centrocosto, usuario_id: @tarifa.usuario_id)
                         render json: { status: :created }
                     else
                         render json: @tarifa.errors, status: :unprocessable_entity
@@ -37,6 +41,18 @@ module Api
                     t = Time.now
                     @tarifa.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                     if @tarifa.update(tarifa_params)
+                        htarifa = HistorialTarifa.find_by(tarifa_id: @tarifa.id)
+                        if (htarifa.fechainicio == params[:fechainicio]) and (htarifa.fechavence == params[:fechaven])
+                            htarifa.update(tarifa_id: @tarifa.id, zona_id: @tarifa.zona_id,
+                                concepto_id: @tarifa.concepto_id, plan_id: @tarifa.plan_id, valor: @tarifa.valor,
+                                fechainicio: params[:fechainicio], fechavence: params[:fechaven], 
+                                ccosto: Empresa.first.centrocosto, usuario_id: @tarifa.usuario_id)
+                        else
+                            HistorialTarifa.create(tarifa_id: @tarifa.id, zona_id: @tarifa.zona_id,
+                                concepto_id: @tarifa.concepto_id, plan_id: @tarifa.plan_id, valor: @tarifa.valor,
+                                fechainicio: params[:fechainicio], fechavence: params[:fechaven], 
+                                ccosto: Empresa.first.centrocosto, usuario_id: @tarifa.usuario_id)
+                        end
                         render json: { status: :updated }
                     else
                         render json: @tarifa.errors, status: :unprocessable_entity
@@ -60,7 +76,7 @@ module Api
                 def set_tarifa_buscar
                     @campo = params[:campo]
                     @valor = params[:valor]
-                    if @campo == 'codigo'
+                    if @campo == 'id'
                         @tarifa = Tarifa.find(params[:valor])
                     elsif @campo == 'zona'
                         @tarifa = Tarifa.limit(10).where(zona_id: @valor)

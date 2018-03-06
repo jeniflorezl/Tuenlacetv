@@ -57,7 +57,7 @@ module Api
             def set_banco_buscar
                 @campo = params[:campo]
                 @valor = params[:valor]
-                if @campo == 'codigo'
+                if @campo == 'id'
                     @banco = Banco.find(params[:valor])
                 else
                     @banco = Banco.limit(10).where("#{@campo} LIKE '%#{@valor}%'")

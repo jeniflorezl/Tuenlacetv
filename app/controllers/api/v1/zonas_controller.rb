@@ -56,7 +56,7 @@ module Api
             def set_zona_buscar
                 @campo = params[:campo]
                 @valor = params[:valor]
-                if @campo == 'codigo'
+                if @campo == 'id'
                     @zona = Zona.find(params[:valor])
                 else
                     @zona = Zona.limit(10).where("nombre LIKE '%#{@valor}%'")
