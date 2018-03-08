@@ -58,8 +58,9 @@ class Senal < ApplicationRecord
       else
         ultimo = (ultimo[0]["ultimo"]).to_i + 1
       end
+      byebug
       @orden = Orden.new(senal_id: @senal.id, concepto_id: @conceptoord.id, fechatrn: @senal.fechacontrato,
-      fechaven: @senal.fechacontrato, nrorden:ultimo, estado_id: @estadoD.id, observacion: 'Registro creado en proceso de afiliación',
+      fechaven: @senal.fechacontrato, nrorden: ultimo, estado_id: @estadoD.id, observacion: 'Registro creado en proceso de afiliación',
       tecnico_id: tecnico, usuario_id: @senal.usuario_id)
       if @orden.save
         if valorAfiTv > 0
@@ -97,7 +98,9 @@ class Senal < ApplicationRecord
             if @detallef.save
               return true
             end
-          end    
+          end 
+        else   
+          return true
         end
       end
     end
@@ -170,6 +173,8 @@ class Senal < ApplicationRecord
               return true
             end
           end
+        else
+          return true
         end
       end
     end

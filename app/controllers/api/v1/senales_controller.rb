@@ -46,6 +46,7 @@ module Api
                 result1=0
                 message1 = ''
                 message2 = ''
+                msg = ''
                 @funcion = params[:funcion_id]
                 @persona = Persona.new(persona_params)
                 if @persona.save
@@ -89,6 +90,7 @@ module Api
                                 message2 = @info_internet.errors
                             end
                         end
+                        byebug
                         msg = message1 + ' ' + message2
                         render :json => {:message => msg}.to_json
                     end
@@ -172,21 +174,23 @@ module Api
                     SQL
                     ActiveRecord::Base.connection.clear_query_cache
                     factura = ActiveRecord::Base.connection.select_all(query)
-                    byebug
-                    unless pago.blank? and @factura.blank?
-                        render json: { error: "El suscriptor no se puede eliminar" }
-                    else
+                    if pago.blank? and factura.blank?
                         if @plantilla_tv
-                            @plantilla_tv.destroy()
+                            @plantilla_tv.destroy_all()
                         end
                         query = <<-SQL 
                         DELETE FROM ordenes WHERE senal_id = #{@senal.id};
                         SQL
                         ActiveRecord::Base.connection.select_all(query)
+                        if @info_internet
+                            @info_internet.destroy()
+                        end
                         @senal.destroy()
                         @entidad.destroy()
                         @persona.destroy()
                         render json: { status: :deleted }
+                    else
+                        render json: { error: "El suscriptor no se puede eliminar" }
                     end
                 else
                     render json: { post: "not found" }
@@ -220,6 +224,7 @@ module Api
                 @entidad = [*@entidad]
                 @info_internet = InfoInternet.all
                 @senales = Senal.all
+                @plantillas = PlantillaFact.all
             end
 
 
