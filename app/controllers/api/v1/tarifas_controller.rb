@@ -11,6 +11,7 @@ module Api
                     @conceptos = Concepto.all
                     @planes = Plan.all
                     @estados = Estado.all
+                    @historial = HistorialTarifa.all
                 end
             
                 # GET /tarifas/id
@@ -88,10 +89,12 @@ module Api
                         @tarifa = Tarifa.limit(10).where(valor: @valor)
                     end
                     @tarifa = [*@tarifa]
+                    @historial = HistorialTarifa.all
                 end
 
                 def set_tarifa
-                @tarifa = Tarifa.find(params[:id])
+                    @tarifa = Tarifa.find(params[:id])
+                    @historial = HistorialTarifa.all
                 end
 
                 #Le coloco los parametros que necesito de la tarifa para crearla y actualizarla
