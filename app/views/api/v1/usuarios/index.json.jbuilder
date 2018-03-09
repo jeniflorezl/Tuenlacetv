@@ -8,3 +8,10 @@ json.usuarios do
         json.tipoImpresora usuario.tipoImpresora
     end
 end
+
+json.estados do
+    json.array! @estados do |estado|
+        json.id estado.id
+        json.nombre estado.nombre
+    end
+end
