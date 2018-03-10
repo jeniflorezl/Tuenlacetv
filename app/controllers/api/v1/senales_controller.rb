@@ -110,6 +110,7 @@ module Api
                 if @persona.update(persona_params)
                     @senal.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                     if @senal.update(senal_params)
+                        byebug
                         if (params[:tv] == 1)
                             unless @plantilla_tv.blank?
                                 @plantilla_tv.update(tarifa_id: params[:tarifa_id_tv])
@@ -127,6 +128,10 @@ module Api
                             if @info_internet
                                 @info_internet.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                                 @info_internet.update(internet_params)
+                                unless @plantilla_int.blank?
+                                    @plantilla_int.update(tarifa_id: params[:tarifa_id_int])
+                                    result1=1
+                                end
                             else
                                 @info_internet = InfoInternet.new(internet_params)
                                 @info_internet.senal_id = @senal.id
@@ -157,8 +162,8 @@ module Api
                     end
                 end
                 #byebug
-                msg = message1 + ' ' + message2
-                render :json => {:message => msg}.to_json
+                #msg = message1 + ' ' + message2
+                render :json => {:message => (message1 message2) }.to_json
             end
 
             # DELETE /senales/id
@@ -203,8 +208,10 @@ module Api
                 @entidad = Entidad.find(params[:id])
                 @persona = Persona.find(@entidad.persona_id)
                 @senal = Senal.find_by(entidad_id: @entidad.id)
-                @conceptoplant = Concepto.find_by(nombre: 'MENSUALIDAD TELEVISION')
-                @plantilla_tv = PlantillaFact.where("senal_id = ? AND concepto_id = ?", @senal.id, @conceptoplant.id)
+                @concepto_tv = Concepto.find_by(nombre: 'MENSUALIDAD TELEVISION')
+                @concepto_int = Concepto.find_by(nombre: 'MENSUALIDAD INTERNET')
+                @plantilla_tv = PlantillaFact.where("senal_id = ? AND concepto_id = ?", @senal.id, @concepto_tv.id)
+                @plantilla_int = PlantillaFact.where("senal_id = ? AND concepto_id = ?", @senal.id, @concepto_int.id)
                 @info_internet = InfoInternet.find_by(senal_id: @senal.id)
             end
             
