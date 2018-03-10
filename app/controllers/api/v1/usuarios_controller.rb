@@ -103,7 +103,7 @@ module Api
                 # Reemplazamos :password_digest por :password y :password_confirmation
                 def usuario_params
                     params.permit(:login, :nombre, :password, :password_confirmation,
-                    :token, :nivel,  :estado_id, :tipoImpresora, :usuariocre)
+                    :nivel,  :estado_id, :tipoImpresora, :usuariocre)
                 end 
         end
     end

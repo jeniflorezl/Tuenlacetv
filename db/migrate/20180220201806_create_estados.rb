@@ -3,6 +3,7 @@ class CreateEstados < ActiveRecord::Migration[5.1]
     create_table :estados do |t|
       t.varchar :nombre, limit: 20, null:false
       t.char :abreviatura, limit: 3, null:false
+      t.char :tipo, limit: 1, null:false
       t.datetime :fechacre, null:false
       t.datetime :fechacam, null:false
       t.varchar :usuario, limit: 15, null:false

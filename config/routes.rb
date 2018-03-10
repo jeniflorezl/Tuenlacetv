@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       resources :senales
       resources :usuarios
       resources :empresas
+      resources :facturacion
       get 'paises/bd/:db', to: 'paises#index'
       get 'paises/:campo/:valor/:db', to: 'paises#show'
       get 'ciudades/bd/:db', to: 'ciudades#index'
@@ -36,6 +37,7 @@ Rails.application.routes.draw do
       post 'usuarios/resetear_password/:id', to: 'usuarios#resetear_password'
       get 'empresas/bd/:db', to: 'empresas#index'
       get 'empresas/:campo/:valor/:db', to: 'empresas#show'
+      get 'facturacion/tipo_facturacion/:db', to: 'facturacion#tipo_facturacion'
       post 'signin', to: 'sesion#create'
       delete 'signout', to: 'sesion#destroy'
     end

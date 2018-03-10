@@ -4,28 +4,38 @@ module Api
             before_action :set_ciudad_buscar, only: [:show]
             before_action :set_ciudad, only: [:update, :destroy]
   
-            # GET /ciudades
+            # GET /facturaciones
             def index
-                @ciudades = Ciudad.all
+                @facturaciones = Ciudad.all
                 @paises = Pais.all
                 @departamentos = Departamento.all
             end
         
-            # GET /ciudades/id
+            # GET /facturaciones/id
             def show
             end
-        
-            # POST /ciudades
-            def create
-                @ciudad = Ciudad.new(ciudad_params)
-                if @ciudad.save 
-                    render json: { status: :created }
+
+            def tipo_facturacion
+                @tipo = Parametro.find_by(descripcion: 'Tipo facturacion')
+                if @tipo.valor == 'V'
+                    @tipo = 'Vencida'
                 else
-                    render json: @ciudad.errors, status: :unprocessable_entity
+                    @tipo = 'Anticipada'
                 end
             end
         
-            # PATCH/PUT /ciudades/id
+            # POST /facturaciones
+            def create
+                if Facturacion.generar_facturacion(params[:f_elaboracion], params[:f_inicio], 
+                    params[:f_fin], params[:f_vence], params[:f_corte], params[:f_vencidos],
+                    params[:observa], params[:zona], params[:usuario_id])
+                    render json: { status: :created }
+                else
+                    render json: { error: "error en el proceso" }
+                end
+            end
+        
+            # PATCH/PUT /facturaciones/id
             def update
             t = Time.now
             @ciudad.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
@@ -36,7 +46,7 @@ module Api
                 end
             end
         
-            # DELETE /ciudades/id
+            # DELETE /facturaciones/id
             def destroy
                 if @ciudad
                     @ciudad.destroy
@@ -64,13 +74,6 @@ module Api
                 end
                 @ciudad = [*@ciudad]
             end
-
-            #Le coloco los parametros que necesito de la ciudad para crearla y actualizarla
-
-            def ciudad_params
-                params.require(:ciudad).permit(:pais_id, :nombre, :codigoDane, :codigoAlterno,
-                    :usuario_id, :departamento_id)
-            end 
         end
     end
 end

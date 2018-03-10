@@ -288,6 +288,7 @@ ActiveRecord::Schema.define(version: 20180306154629) do
   create_table "estados", force: :cascade do |t|
     t.varchar "nombre", limit: 20, null: false
     t.char "abreviatura", limit: 3, null: false
+    t.char "tipo", limit: 1, null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.varchar "usuario", limit: 15, null: false
@@ -431,7 +432,7 @@ ActiveRecord::Schema.define(version: 20180306154629) do
   end
 
   create_table "notas_fact", force: :cascade do |t|
-    t.bigint "zona_id", null: false
+    t.bigint "zona_id"
     t.datetime "fechaElaboracion", null: false
     t.datetime "fechaInicio", null: false
     t.datetime "fechaFin", null: false

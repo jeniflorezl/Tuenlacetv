@@ -39,4 +39,3 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'tiny_tds'
 gem 'activerecord-sqlserver-adapter'
-gem 'composite_primary_keys', '=10.0.3'

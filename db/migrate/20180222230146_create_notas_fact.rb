@@ -1,7 +1,7 @@
 class CreateNotasFact < ActiveRecord::Migration[5.1]
   def up
     create_table :notas_fact do |t|
-      t.references :zona, foreign_key: true, null:false
+      t.references :zona, foreign_key: true
       t.datetime :fechaElaboracion, null:false
       t.datetime :fechaInicio, null:false
       t.datetime :fechaFin, null:false
