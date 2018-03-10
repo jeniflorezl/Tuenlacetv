@@ -15,7 +15,7 @@ Estado.create(nombre: 'PENDIENTE', abreviatura: 'PE', tipo: 2, usuario: 'admin')
 Estado.create(nombre: 'ANULADO', abreviatura: 'AN', tipo: 2, usuario: 'admin')
 Estado.create(nombre: 'APLICADO', abreviatura: 'AP', tipo: 2, usuario: 'admin')
 Estado.create(nombre: 'PAGADO', abreviatura: 'PA', tipo: 2, usuario: 'admin')
-=end
+
 Pais.create(nombre: 'COLOMBIA', usuario_id: 1)
 Pais.create(nombre: 'PANAMA', usuario_id: 1)
 Pais.create(nombre: 'VENEZUELA',usuario_id: 1)
@@ -279,6 +279,7 @@ Entidad.create(funcion_id: 1, persona_id: 4, usuario_id: 1)
 Entidad.create(funcion_id: 7, persona_id: 5, usuario_id: 1)
 Entidad.create(funcion_id: 5, persona_id: 6, usuario_id: 1)
 Entidad.create(funcion_id: 5, persona_id: 7, usuario_id: 1)
+=end
 Senal.create(entidad_id: 1, contrato: '4789963', direccion: 'Calle 11 #24-23', urbanizacion: '', 
 torre: '', apto: '', barrio_id: 1, zona_id: 1, telefono1: '4540312', telefono2: '', contacto: '', estrato: '4',
 vivienda: 'P', observacion: '', fechacontrato: '01/01/2017', permanencia: '', televisores: 2, 

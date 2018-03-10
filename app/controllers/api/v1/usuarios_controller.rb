@@ -12,7 +12,7 @@ module Api
                         @usuario = current_user
                         @usuarios = [*@usuario]
                     end
-                    @estados = Estado.all
+                    @estados = Estado.where(tipo: 1)
                 end
             
                 # GET /usuarios/id
