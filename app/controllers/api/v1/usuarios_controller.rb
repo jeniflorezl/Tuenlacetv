@@ -60,13 +60,17 @@ module Api
 
                 def cambiar_password
                     t = Time.now
-                    if @usuario.validar_password(params[:antiguaP], params[:nuevaP])
+                    if @usuario.validar_password(params[:antiguaP])
                         @usuario.password = params[:nuevaP]
                         @usuario.password_confirmation = params[:nuevaP]
                         @usuario.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                         if @usuario.update(usuario_params)
                             render json: { message: "Contraseña actualizada!" }
+                        else
+                            render json: { message: "Error!" }
                         end
+                    else
+                        render json: { message: "Contraseña antigua incorrecta!" }
                     end
                 end
 
@@ -77,6 +81,8 @@ module Api
                     @usuario.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                     if @usuario.update(usuario_params)
                         render json: { message: "Contraseña cambiada!" }
+                    else
+                        render json: { message: "Error!" }
                     end
                 end
 

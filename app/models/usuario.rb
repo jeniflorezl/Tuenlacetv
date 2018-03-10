@@ -33,7 +33,7 @@ class Usuario < ApplicationRecord
       nivel == '1'
   end
 
-  def validar_password(antiguaPassword, nuevaPassword)
+  def validar_password(antiguaPassword)
       if self.authenticate(antiguaPassword)
           return true
       end
