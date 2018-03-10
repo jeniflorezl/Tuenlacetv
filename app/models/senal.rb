@@ -16,7 +16,7 @@ class Senal < ApplicationRecord
 
   @t = Time.now
   @mes = Senal.mes(@t.strftime("%B"))
-  @consecutivos = Parametro.find(70).valor
+  @consecutivos = Parametro.find_by(descripcion: 'Maneja consecutivos separados').valor
   @estadoD = Estado.find_by(abreviatura: 'PE')
   @estadoU = Estado.find_by(abreviatura: 'P')
 
@@ -33,6 +33,7 @@ class Senal < ApplicationRecord
   private
 
   def self.proceso_afiliacion_tv(senal, entidad, valorAfiTv, tarifaTv, tecnico)
+    byebug
     @senal = senal
     @entidad = entidad
     ultimo = 0

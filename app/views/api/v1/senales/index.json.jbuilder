@@ -27,12 +27,14 @@ json.senales do
         json.estrato senal.estrato
         json.vivienda senal.vivienda
         json.observacion senal.observacion
-        unless @plantillas.blank?
-            json.array! @plantillas do |plantilla|
-                if (plantilla.senal_id == senal.id) and (plantilla.concepto_id == 1)
-                    json.plan_tv plantilla.tarifa.plan.nombre
-                    json.tarifa_tv plantilla.tarifa.nombre
-                    json.estado_tv plantilla.estado.nombre
+        json.plantilla_tv do
+            unless @plantillas.blank?
+                json.array! @plantillas do |plantilla|
+                    if (plantilla.senal_id == senal.id) and (plantilla.concepto_id == 1)
+                        json.plan_tv plantilla.tarifa.plan.nombre
+                        json.tarifa_tv plantilla.tarifa.nombre
+                        json.estado_tv plantilla.estado.nombre
+                    end
                 end
             end
         end
@@ -70,12 +72,14 @@ json.senales do
                     json.nodo internet.nodo
                     json.clavewifi internet.clavewifi
                     json.equipo internet.equipo
-                    unless @plantillas.blank?
-                        json.array! @plantillas do |plantilla|
-                            if (plantilla.senal_id == senal.id) and (plantilla.concepto_id == 2)
-                                json.plan_int plantilla.tarifa.plan.nombre
-                                json.tarifa_int plantilla.tarifa.nombre
-                                json.estado_int plantilla.estado.nombre
+                    json.plantilla_int do
+                        unless @plantillas.blank?
+                            json.array! @plantillas do |plantilla|
+                                if (plantilla.senal_id == senal.id) and (plantilla.concepto_id == 2)
+                                    json.plan_int plantilla.tarifa.plan.nombre
+                                    json.tarifa_int plantilla.tarifa.nombre
+                                    json.estado_int plantilla.estado.nombre
+                                end
                             end
                         end
                     end
