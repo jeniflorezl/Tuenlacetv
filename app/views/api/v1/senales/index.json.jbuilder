@@ -4,6 +4,10 @@ json.senales do
         json.tipo_documento senal.entidad.persona.tipo_documento.nombre
         json.documento senal.entidad.persona.documento
         json.nombres senal.entidad.persona.nombre1 + '' + senal.entidad.persona.nombre2 + ' ' + senal.entidad.persona.apellido1 + ' ' + senal.entidad.persona.apellido2
+        json.nombre1 senal.entidad.persona.nombre1
+        json.nombre2 senal.entidad.persona.nombre2
+        json.apellido1 senal.entidad.persona.apellido1
+        json.apellido2 senal.entidad.persona.apellido2
         json.direccionP senal.entidad.persona.direccion
         json.barrioP senal.entidad.persona.barrio.nombre
         json.zonaP senal.entidad.persona.zona.nombre
@@ -113,6 +117,17 @@ json.zonas do
     end
 end
 
+json.ciudades do
+    json.array! @ciudades do |ciudad|
+        json.id ciudad.id
+        json.pais ciudad.pais.nombre
+        json.nombre ciudad.nombre
+        json.codigoDane ciudad.codigoDane
+        json.codigoAlterno ciudad.codigoAlterno
+        json.departamento ciudad.departamento.nombre
+    end
+end
+
 json.planes_tv do
     json.array! @planes_tv do |plan|
         json.id plan.id
@@ -133,6 +148,7 @@ json.tarifas_tv do
             json.id tarifa.id
             json.zona tarifa.zona.nombre
             json.concepto tarifa.concepto.nombre
+            json.plan_id tarifa.plan.id
             json.plan tarifa.plan.nombre
             json.valor tarifa.valor
             json.estado tarifa.estado.nombre
@@ -146,6 +162,7 @@ json.tarifas_int do
             json.id tarifa.id
             json.zona tarifa.zona.nombre
             json.concepto tarifa.concepto.nombre
+            json.plan_id tarifa.plan.id
             json.plan tarifa.plan.nombre
             json.valor tarifa.valor
             json.estado tarifa.estado.nombre
@@ -184,35 +201,13 @@ end
 json.vendedores do
     json.array! @vendedores do |vendedor|
         json.id vendedor.id
-        json.tipo_documento vendedor.persona.tipo_documento.nombre
-        json.documento vendedor.persona.documento
         json.nombres vendedor.persona.nombre1 + '' + vendedor.persona.nombre2 + ' ' + vendedor.persona.apellido1 + ' ' + vendedor.persona.apellido2
-        json.direccion vendedor.persona.direccion
-        json.telefono1 vendedor.persona.telefono1
-        json.telefono2 vendedor.persona.telefono2
-        json.barrio vendedor.persona.barrio.nombre
-        json.zona vendedor.persona.zona.nombre
-        json.correo vendedor.persona.correo
-        json.fechanac vendedor.persona.fechanac
-        json.tipopersona vendedor.persona.tipopersona
-        json.estrato vendedor.persona.estrato
     end
 end
 
 json.tecnicos do
     json.array! @tecnicos do |tecnico|
         json.id tecnico.id
-        json.tipo_documento tecnico.persona.tipo_documento.nombre
-        json.documento tecnico.persona.documento
         json.nombres tecnico.persona.nombre1 + '' + tecnico.persona.nombre2 + ' ' + tecnico.persona.apellido1 + ' ' + tecnico.persona.apellido2
-        json.direccion tecnico.persona.direccion
-        json.telefono1 tecnico.persona.telefono1
-        json.telefono2 tecnico.persona.telefono2
-        json.barrio tecnico.persona.barrio.nombre
-        json.zona tecnico.persona.zona.nombre
-        json.correo tecnico.persona.correo
-        json.fechanac tecnico.persona.fechanac
-        json.tipopersona tecnico.persona.tipopersona
-        json.estrato tecnico.persona.estrato
     end
 end

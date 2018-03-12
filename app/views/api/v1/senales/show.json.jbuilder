@@ -2,8 +2,12 @@ json.senales do
     json.array! @senal do |senal|
         json.id senal["id"]
         json.tipo_documento senal["tipo_documento"]
-        json.documento senal["documento"]
-        json.nombres senal["nombres"]
+        json.documento senal["documento"]  
+        json.nombres senal["nombre1"] + '' + senal["nombre2"] + '' + senal["apellido1"] + '' + senal["apellido2"]
+        json.nombre1 senal["nombre1"]
+        json.nombre2 senal["nombre2"]
+        json.apellido1 senal["apellido1"]
+        json.apellido2 senal["apellido2"]
         json.direccionP senal["direccionP"]
         json.barrioP senal["barrioP"]
         json.zonaP senal["zonaP"]
@@ -41,13 +45,11 @@ json.senales do
         @senales.each do |senales|
             if (senal["id"] == senales.entidad_id)
                 json.plantilla_fact_tv do
-                    unless @plantillas.blank?
-                        json.array! @plantillas do |plantilla|
-                            if (plantilla.senal_id == senales.id) and (plantilla.concepto_id == 3)
-                                json.plan_tv plantilla.tarifa.plan.nombre
-                                json.tarifa_tv plantilla.tarifa.valor
-                                json.estado_tv plantilla.estado.nombre
-                            end
+                    json.array! @plantillas do |plantilla|
+                        if (plantilla.senal_id == senales.id) and (plantilla.concepto_id == 3)
+                            json.plan_tv plantilla.tarifa.plan.nombre
+                            json.tarifa_tv plantilla.tarifa.valor
+                            json.estado_tv plantilla.estado.nombre
                         end
                     end
                 end
@@ -66,11 +68,13 @@ json.senales do
                             json.nodo internet.nodo
                             json.clavewifi internet.clavewifi
                             json.equipo internet.equipo
-                            json.array! @plantillas do |plantilla|
-                                if (plantilla.senal_id == senales.id) and (plantilla.concepto_id == 4)
-                                    json.plan_int plantilla.tarifa.plan.nombre
-                                    json.tarifa_int plantilla.tarifa.valor
-                                    json.estado_int plantilla.estado.nombre
+                            json.plantilla_fact_int do
+                                json.array! @plantillas do |plantilla|
+                                    if (plantilla.senal_id == senales.id) and (plantilla.concepto_id == 4)
+                                        json.plan_int plantilla.tarifa.plan.nombre
+                                        json.tarifa_int plantilla.tarifa.valor
+                                        json.estado_int plantilla.estado.nombre
+                                    end
                                 end
                             end
                         end

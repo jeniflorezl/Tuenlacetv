@@ -10,6 +10,7 @@ module Api
                 @servicios = Servicio.all
                 @barrios = Barrio.all
                 @zonas = Zona.all
+                @ciudades = Ciudad.all
                 @planes_tv = Plan.where(servicio_id: 1)
                 @planes_int = Plan.where(servicio_id: 2)
                 @tarifas = Tarifa.where(estado_id: 1)
@@ -56,8 +57,8 @@ module Api
                         @senal.entidad_id = @entidad.id
                         if @senal.save
                             if (params[:tv] == 1)
-                                if Senal.proceso_afiliacion_tv(@senal, @entidad, params[:valorafi_tv], 
-                                    params[:tarifa_id_tv], params[:tecnico_id])
+                                if Senal.afiliacion_tv(@senal, @entidad, params[:valorafi_tv], 
+                                    params[:valor_dcto_tv], params[:tarifa_id_tv], params[:tecnico_id])
                                     result=1
                                 else
                                     result=2
@@ -67,8 +68,8 @@ module Api
                                 @info_internet = InfoInternet.new(internet_params)
                                 @info_internet.senal_id = @senal.id
                                 if @info_internet.save
-                                    if Senal.proceso_afiliacion_int(@senal, @entidad, params[:valorafi_int], 
-                                        params[:tarifa_id_int], params[:tecnico_id])
+                                    if Senal.afiliacion_int(@senal, @entidad, params[:valorafi_int], 
+                                        params[:valor_dcto_int],params[:tarifa_id_int], params[:tecnico_id])
                                         result1=1
                                     else
                                         result1=2
@@ -116,8 +117,8 @@ module Api
                                 @plantilla_tv.update(tarifa_id: params[:tarifa_id_tv])
                                 result=1
                             else
-                                if Senal.proceso_afiliacion_tv(@senal, @entidad, params[:valorafi_tv], 
-                                    params[:tarifa_id_tv], params[:tecnico_id])
+                                if Senal.afiliacion_tv(@senal, @entidad, params[:valorafi_tv], 
+                                    params[:valor_dcto_tv], params[:tarifa_id_tv], params[:tecnico_id])
                                     result=1
                                 else
                                     result=2
@@ -136,8 +137,8 @@ module Api
                                 @info_internet = InfoInternet.new(internet_params)
                                 @info_internet.senal_id = @senal.id
                                 if @info_internet.save
-                                    if Senal.proceso_afiliacion_int(@senal, @entidad, params[:valorafi_int], 
-                                        params[:tarifa_id_int], params[:tecnico_id])
+                                    if Senal.afiliacion_int(@senal, @entidad, params[:valorafi_int], 
+                                        params[:valor_dcto_int],params[:tarifa_id_int], params[:tecnico_id])
                                         result1=1
                                     else
                                         result1=2
