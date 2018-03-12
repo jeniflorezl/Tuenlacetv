@@ -155,6 +155,8 @@ json.tarifas_tv do
         end
     end
 end
+json.valor_afi_tv @valor_afi_tv
+json.param_valor_afi @param_valor_afi
 
 json.tarifas_int do
     json.array! @tarifas do |tarifa|
@@ -169,6 +171,7 @@ json.tarifas_int do
         end
     end
 end
+json.valor_afi_int @valor_afi_int
 
 json.tipo_instalaciones do
     json.array! @tipo_instalaciones do |tipo_instalacion|

@@ -14,6 +14,11 @@ module Api
                 @planes_tv = Plan.where(servicio_id: 1)
                 @planes_int = Plan.where(servicio_id: 2)
                 @tarifas = Tarifa.where(estado_id: 1)
+                sus_tv = Concepto.find_by(nombre: 'SUSCRIPCION TELEVISION')
+                sus_int = Concepto.find_by(nombre: 'SUSCRIPCION INTERNET')
+                @valor_afi_tv = Tarifa.find_by(concepto_id: sus_tv.id).valor
+                @valor_afi_int = Tarifa.find_by(concepto_id: sus_int.id).valor
+                @param_valor_afi = Parametro.find_by(descripcion: 'Permite modificar valor de afiliación').valor
                 @tipo_instalaciones = TipoInstalacion.all
                 @tecnologias = Tecnologia.all
                 @tipo_documentos = TipoDocumento.all
