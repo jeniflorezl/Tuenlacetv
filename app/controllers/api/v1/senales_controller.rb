@@ -97,8 +97,8 @@ module Api
                             end
                         end
                         byebug
-                        msg = message1 + ' ' + message2
-                        render :json => {:message => msg}.to_json
+                        render :json => {:message1 => message1,
+                            :message2 => message2 }.to_json
                     end
                 else
                     render json: { error: "Ya existe un suscriptor con esa información" }
@@ -112,11 +112,12 @@ module Api
                 message1 = ''
                 message2 = ''
                 t = Time.now
+                byebug
                 @persona.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                 if @persona.update(persona_params)
                     @senal.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                     if @senal.update(senal_params)
-                        byebug
+                        
                         if (params[:tv] == 1)
                             unless @plantilla_tv.blank?
                                 @plantilla_tv.update(tarifa_id: params[:tarifa_id_tv])
@@ -128,8 +129,11 @@ module Api
                                 else
                                     result=2
                                 end
-                            end  
+                            end 
+                        else
+                            result=1
                         end
+                        byebug
                         if (params[:internet]==1)
                             if @info_internet
                                 @info_internet.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
@@ -150,26 +154,31 @@ module Api
                                     end
                                 end
                             end
+                        else
+                            result1=1
                         end
                     end
-                end
-                if (params[:tv]==1)
-                    if (result == 1)
-                        message1 = "actualizado servicio tv"
-                    else
-                        message1 = @senal.errors
+                    if (params[:tv]==1)
+                        if (result == 1)
+                            message1 = "actualizado servicio tv"
+                        else
+                            message1 = @senal.errors
+                        end
                     end
-                end
-                if (params[:internet]==1)
-                    if (result1 == 1)
-                        message2 = "actualizado servicio internet"
-                    else
-                        message2 = @info_internet.errors
+                    if (params[:internet]==1)
+                        if (result1 == 1)
+                            message2 = "actualizado servicio internet"
+                        else
+                            message2 = @info_internet.errors
+                        end
                     end
+                    #byebug
+                    #msg = message1 + ' ' + message2
+                    render :json => {:message1 => message1,
+                    :message2 => message2 }.to_json
+                else
+                    render json: { error: "Informacion persona" }
                 end
-                #byebug
-                #msg = message1 + ' ' + message2
-                render :json => {:message => (message1 message2) }.to_json
             end
 
             # DELETE /senales/id
@@ -253,8 +262,8 @@ module Api
 
             def persona_params
                 params.require(:persona).permit(:tipo_documento_id, :documento, :nombre1, :nombre2, 
-                :apellido1, :apellido2, :direccion, :barrio_id, :zona_id, :telefono1, :telefono2,  
-                :correo, :fechanac, :tipopersona, :estrato, :condicionfisica, :usuario_id)
+                :apellido1, :apellido2, :direccion, :barrio_id, :zona_id, :ciudad_id, :telefono1, 
+                :telefono2, :correo, :fechanac, :tipopersona, :estrato, :condicionfisica, :usuario_id)
             end
 
             def internet_params

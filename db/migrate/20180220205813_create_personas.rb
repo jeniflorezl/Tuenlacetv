@@ -10,6 +10,7 @@ class CreatePersonas < ActiveRecord::Migration[5.1]
       t.string :direccion, limit: 200, null:false
       t.references :barrio, foreign_key: true, null:false
       t.references :zona, foreign_key: true, null:false
+      t.references :ciudad, foreign_key: true
       t.string :telefono1, limit: 20
       t.string :telefono2, limit: 20
       t.string :correo, limit: 50

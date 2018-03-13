@@ -41,7 +41,7 @@ class Senal < ApplicationRecord
     conceptoplant = Concepto.find_by(nombre: 'MENSUALIDAD TELEVISION')
     conceptofact = Concepto.find_by(nombre: 'SUSCRIPCION TELEVISION')
     plantilla = PlantillaFact.new(senal_id: senal.id, concepto_id: conceptoplant.id, estado_id: @estadoU.id, tarifa_id: tarifaTv, 
-    fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: @senal.usuario_id)
+    fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: senal.usuario_id)
     if plantilla.save
       if (@consecutivos == 'S')
         query = <<-SQL 
@@ -59,7 +59,6 @@ class Senal < ApplicationRecord
       else
         ultimo = (ultimo[0]["ultimo"]).to_i + 1
       end
-      byebug
       orden = Orden.new(senal_id: senal.id, concepto_id: conceptord.id, fechatrn: senal.fechacontrato,
       fechaven: senal.fechacontrato, nrorden: ultimo, estado_id: @estadoD.id, observacion: 'Registro creado en proceso de afiliación',
       tecnico_id: tecnico, usuario_id: senal.usuario_id)

@@ -71,9 +71,9 @@ Concepto.create(servicio_id: 1, codigo: '009', nombre: 'REVISION SEÑAL TELEVISI
 porcentajeIva: '19', operacion: '+', usuario_id: 1)
 Concepto.create(servicio_id: 2, codigo: '010', nombre: 'REVISION SEÑAL INTERNET', abreviatura: 'REI',
 porcentajeIva: '19', operacion: '+', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '011', nombre: 'INSTALACIÓN TELEVISION', abreviatura: 'INT',
+Concepto.create(servicio_id: 1, codigo: '011', nombre: 'INSTALACION TELEVISION', abreviatura: 'INT',
 porcentajeIva: '19', operacion: '+', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '012', nombre: 'INSTALACIÓN INTERNET', abreviatura: 'INI',
+Concepto.create(servicio_id: 2, codigo: '012', nombre: 'INSTALACION INTERNET', abreviatura: 'INI',
 porcentajeIva: '19', operacion: '+', usuario_id: 1)
 Concepto.create(servicio_id: 1, codigo: '013', nombre: 'TRASLADO TELEVISION', abreviatura: 'TRT',
 porcentajeIva: '19', operacion: '+', usuario_id: 1)
@@ -327,6 +327,21 @@ clavewifi: '353534545', equipo: 'S', usuario_id: 1)
 InfoInternet.create(senal_id: 2, direccionip: '123.455.566.777', velocidad: '3', mac1: '123.0.0.77', mac2: '', 
 serialm: '', marcam: '', mascarasub: '', dns: '128.0.0.0', gateway: '123.4.4.4', nodo: '', 
 clavewifi: '353534545', equipo: 'S', usuario_id: 1)
+PlantillaFact.create(senal_id: 1, concepto_id: 3, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
+fechafin: '01/01/2118', usuario_id: 1)
+PlantillaFact.create(senal_id: 2, concepto_id: 3, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
+fechafin: '01/01/2118', usuario_id: 1)
+PlantillaFact.create(senal_id: 3, concepto_id: 3, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
+fechafin: '01/01/2118', usuario_id: 1)
+PlantillaFact.create(senal_id: 4, concepto_id: 3, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
+fechafin: '01/01/2118', usuario_id: 1)
+PlantillaFact.create(senal_id: 5, concepto_id: 3, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
+fechafin: '01/01/2118', usuario_id: 1)
+PlantillaFact.create(senal_id: 6, concepto_id: 3, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
+fechafin: '01/01/2118', usuario_id: 1)
+PlantillaFact.create(senal_id: 7, concepto_id: 3, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
+fechafin: '01/01/2118', usuario_id: 1)
+
 
 
 
