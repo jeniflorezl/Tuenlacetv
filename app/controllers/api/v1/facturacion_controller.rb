@@ -6,24 +6,13 @@ module Api
   
             # GET /facturaciones
             def index
-                @facturaciones = Ciudad.all
-                @paises = Pais.all
-                @departamentos = Departamento.all
+                @tipo_fact = Facturacion.tipo_facturacion
             end
         
             # GET /facturaciones/id
             def show
             end
 
-            def tipo_facturacion
-                @tipo = Parametro.find_by(descripcion: 'Tipo facturacion')
-                if @tipo.valor == 'V'
-                    @tipo = 'Vencida'
-                else
-                    @tipo = 'Anticipada'
-                end
-            end
-        
             # POST /facturaciones
             def create
                 byebug
