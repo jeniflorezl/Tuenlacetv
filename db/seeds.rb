@@ -341,6 +341,26 @@ PlantillaFact.create(senal_id: 6, concepto_id: 3, estado_id: 1, tarifa_id: 3, fe
 fechafin: '01/01/2118', usuario_id: 1)
 PlantillaFact.create(senal_id: 7, concepto_id: 3, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
 fechafin: '01/01/2118', usuario_id: 1)
+PlantillaFact.create(senal_id: 1, concepto_id: 4, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
+fechafin: '01/01/2118', usuario_id: 1)
+PlantillaFact.create(senal_id: 2, concepto_id: 4, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
+fechafin: '01/01/2118', usuario_id: 1)
+PlantillaFact.create(senal_id: 3, concepto_id: 4, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
+fechafin: '01/01/2118', usuario_id: 1)
+PlantillaFact.create(senal_id: 4, concepto_id: 4, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
+fechafin: '01/01/2118', usuario_id: 1)
+PlantillaFact.create(senal_id: 5, concepto_id: 4, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
+fechafin: '01/01/2118', usuario_id: 1)
+PlantillaFact.create(senal_id: 6, concepto_id: 4, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
+fechafin: '01/01/2118', usuario_id: 1)
+PlantillaFact.create(senal_id: 7, concepto_id: 4, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
+fechafin: '01/01/2118', usuario_id: 1)
+    
+    
+    
+    
+    
+    
 
 
 
