@@ -244,6 +244,8 @@ Funcion.create(nombre: 'Vendedor', usuario_id: 1)
 Funcion.create(nombre: 'Esal', usuario_id: 1)
 Funcion.create(nombre: 'Tecnico', usuario_id: 1)
 Funcion.create(nombre: 'Cobrador', usuario_id: 1)
+TipoFacturacion.create(nombre: 'ANTICIPADA', usuario_id: 1)
+TipoFacturacion.create(nombre: 'VENCIDA', usuario_id: 1)
 Persona.create(tipo_documento_id: 1, documento: '1020470055', nombre1: 'JENIFFER', nombre2: '',
 apellido1: 'FLÓREZ', apellido2: 'LONDOÑO', direccion: 'Cra 47 #53-41', barrio_id: 1, zona_id: 1,
 telefono1: '4540312', telefono2: '', correo: 'jeniferfl@gmail.com', fechanac: '13/07/1995', 
@@ -284,37 +286,37 @@ Senal.create(entidad_id: 1, contrato: '4789963', direccion: 'Calle 11 #24-23', u
 torre: '', apto: '', barrio_id: 1, zona_id: 1, telefono1: '4540312', telefono2: '', contacto: '', estrato: '4',
 vivienda: 'P', observacion: '', fechacontrato: '01/01/2017', permanencia: '', televisores: 2, 
 decos: '', precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
-areainstalacion: 'urbana', usuario_id: 1)
+areainstalacion: 'urbana', usuario_id: 1, tipo_facturacion_id: 1)
 Senal.create(entidad_id: 2, contrato: '145665', direccion: 'Cr 47', urbanizacion: '', torre: '', 
 apto: '', barrio_id: 2, zona_id: 2, telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P',
 observacion: '', fechacontrato: '01/01/2017', permanencia: '', televisores: 2, decos: '',
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
-areainstalacion: 'urbana', usuario_id: 1)
+areainstalacion: 'urbana', usuario_id: 1, tipo_facturacion_id: 1)
 Senal.create(entidad_id: 3, contrato: '369669', direccion: 'Calle 8', urbanizacion: '', torre: '', 
 apto: '', barrio_id: 3, zona_id: 3, telefono1: '4540312', telefono2: '', contacto: '', estrato: '4',
 vivienda: 'P', observacion: '', fechacontrato: '01/01/2017', permanencia: '', televisores: 2, decos: '',
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
-areainstalacion: 'urbana', usuario_id: 1)
+areainstalacion: 'urbana', usuario_id: 1, tipo_facturacion_id: 1)
 Senal.create(entidad_id: 4, contrato: '325856', direccion: 'Cr 45', urbanizacion: '', torre: '', 
 apto: '', barrio_id: 4, zona_id: 4, telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P',
 observacion: '', fechacontrato: '01/01/2017', permanencia: '', televisores: 2, decos: '',
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
-areainstalacion: 'urbana', usuario_id: 1)
+areainstalacion: 'urbana', usuario_id: 1, tipo_facturacion_id: 1)
 Senal.create(entidad_id: 5, contrato: '477586', direccion: 'Calle 11 #24-23', urbanizacion: '', torre: '', 
 apto: '', barrio_id: 5, zona_id: 5, telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', 
 observacion: '', fechacontrato: '01/01/2017', permanencia: '', televisores: 2, decos: '',
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
-areainstalacion: 'urbana', usuario_id: 1)
+areainstalacion: 'urbana', usuario_id: 1, tipo_facturacion_id: 1)
 Senal.create(entidad_id: 6, contrato: '365899', direccion: 'Calle 11 #24-23', urbanizacion: '', torre: '', 
 apto: '', barrio_id: 1, zona_id: 1, telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', 
 observacion: '', fechacontrato: '01/01/2017', permanencia: '', televisores: 2, decos: '',
 precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
-areainstalacion: 'urbana', usuario_id: 1)
+areainstalacion: 'urbana', usuario_id: 1, tipo_facturacion_id: 1)
 Senal.create(entidad_id: 7, contrato: '147788', direccion: 'Calle 11 #24-23', urbanizacion: '', torre: '', 
 apto: '', barrio_id: 2, zona_id: 2, telefono1: '4540312', telefono2: '', contacto: '', estrato: '4', vivienda: 'P', 
 observacion: '', fechacontrato: '01/01/2017', permanencia: '', televisores: 2, decos: '',
 precinto: '12321', vendedor_id: 6, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
-areainstalacion: 'urbana', usuario_id: 1)
+areainstalacion: 'urbana', usuario_id: 1, tipo_facturacion_id: 1)
 Empresa.create(tipo: '01', nit: '900353347', razonsocial: 'enlace informatico s.a.s', direccion: 'cra 47 #53-41', 
 telefono1: '4540312', telefono2: '', ciudad_id: 2, entidad_id: 2, logo: '', correo: 'gerencia@enlaceinformatico.com',
 regimen: 's', contribuyente: 's', centrocosto: '0001', usuario_id: 1)
@@ -355,6 +357,7 @@ PlantillaFact.create(senal_id: 6, concepto_id: 4, estado_id: 1, tarifa_id: 3, fe
 fechafin: '01/01/2118', usuario_id: 1)
 PlantillaFact.create(senal_id: 7, concepto_id: 4, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
 fechafin: '01/01/2118', usuario_id: 1)
+
     
     
     
