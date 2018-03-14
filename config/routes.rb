@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       resources :usuarios
       resources :empresas
       resources :facturacion
+      resources :tipo_facturacion
       get 'paises/bd/:db', to: 'paises#index'
       get 'paises/:campo/:valor/:db', to: 'paises#show'
       get 'ciudades/bd/:db', to: 'ciudades#index'
