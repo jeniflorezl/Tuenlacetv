@@ -156,6 +156,8 @@ ActiveSupport::Inflector.inflections do |inflect|
     inflect.irregular 'UsuarioMenu', 'UsuarioMenu'
     inflect.irregular 'polit_permanencia', 'polit_permanencia'
     inflect.irregular 'PolitPermanencia', 'PolitPermanencia'
+    inflect.irregular 'tipo_facturacion', 'tipo_facturacion'
+    inflect.irregular 'TipoFacturacion', 'TipoFacturacion'
   
     # NOTA: es necesario indicar los dos modos (underscore y camelcase) porque el
     # método irregular no soporta expresiones regulares

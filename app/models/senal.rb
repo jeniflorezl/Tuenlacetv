@@ -8,11 +8,12 @@ class Senal < ApplicationRecord
   belongs_to :tecnologia
   belongs_to :entidad
   belongs_to :usuario
+  belongs_to :tipo_facturacion
 
   before_save :uppercase
 
   validates :entidad, :contrato, :direccion, :telefono1, :barrio, :zona, :fechacontrato,
-  :tipo_instalacion, :tecnologia, :tiposervicio, :usuario, presence: true #obligatorio
+  :tipo_instalacion, :tecnologia, :tiposervicio, :usuario, :tipo_facturacion, presence: true #obligatorio
 
   @t = Time.now
   @mes = Senal.mes(@t.strftime("%B"))

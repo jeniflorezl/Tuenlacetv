@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180306154629) do
+ActiveRecord::Schema.define(version: 20180314162109) do
 
   create_table "abonos", force: :cascade do |t|
     t.integer "pago_id", null: false
@@ -637,9 +637,11 @@ ActiveRecord::Schema.define(version: 20180306154629) do
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
+    t.bigint "tipo_facturacion_id"
     t.index ["barrio_id"], name: "index_senales_on_barrio_id"
     t.index ["entidad_id"], name: "index_senales_on_entidad_id"
     t.index ["tecnologia_id"], name: "index_senales_on_tecnologia_id"
+    t.index ["tipo_facturacion_id"], name: "index_senales_on_tipo_facturacion_id"
     t.index ["tipo_instalacion_id"], name: "index_senales_on_tipo_instalacion_id"
     t.index ["usuario_id"], name: "index_senales_on_usuario_id"
     t.index ["vendedor_id"], name: "index_senales_on_vendedor_id"
@@ -652,6 +654,14 @@ ActiveRecord::Schema.define(version: 20180306154629) do
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
     t.index ["usuario_id"], name: "index_servicios_on_usuario_id"
+  end
+
+  create_table "sysdiagrams", primary_key: "diagram_id", id: :integer, force: :cascade do |t|
+    t.string "name", limit: 128, null: false
+    t.integer "principal_id", null: false
+    t.integer "version"
+    t.binary "definition"
+    t.index ["principal_id", "name"], name: "UK_principal_name", unique: true
   end
 
   create_table "tarifas", force: :cascade do |t|
@@ -684,6 +694,14 @@ ActiveRecord::Schema.define(version: 20180306154629) do
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
     t.index ["usuario_id"], name: "index_tipo_documentos_on_usuario_id"
+  end
+
+  create_table "tipo_facturacion", force: :cascade do |t|
+    t.varchar "nombre", limit: 30, null: false
+    t.datetime "fechacre", default: -> { "getdate()" }, null: false
+    t.datetime "fechacam", default: -> { "getdate()" }, null: false
+    t.bigint "usuario_id", null: false
+    t.index ["usuario_id"], name: "index_tipo_facturacion_on_usuario_id"
   end
 
   create_table "tipo_instalaciones", force: :cascade do |t|
@@ -885,6 +903,7 @@ ActiveRecord::Schema.define(version: 20180306154629) do
   add_foreign_key "senales", "entidades"
   add_foreign_key "senales", "entidades", column: "vendedor_id"
   add_foreign_key "senales", "tecnologias"
+  add_foreign_key "senales", "tipo_facturacion"
   add_foreign_key "senales", "tipo_instalaciones"
   add_foreign_key "senales", "usuarios"
   add_foreign_key "senales", "zonas"
@@ -896,6 +915,7 @@ ActiveRecord::Schema.define(version: 20180306154629) do
   add_foreign_key "tarifas", "zonas"
   add_foreign_key "tecnologias", "usuarios"
   add_foreign_key "tipo_documentos", "usuarios"
+  add_foreign_key "tipo_facturacion", "usuarios"
   add_foreign_key "tipo_instalaciones", "usuarios"
   add_foreign_key "traslados", "barrios", column: "barrioAnt_id"
   add_foreign_key "traslados", "barrios", column: "barrioNue_id"

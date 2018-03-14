@@ -8,7 +8,7 @@ class Ciudad < ApplicationRecord
 
   before_save :uppercase
 
-  validates :pais, :nombre, :usuario, presence: true #obligatorio
+  validates :pais, :nombre, :usuario, :departamento, presence: true #obligatorio
 
   def uppercase
     self.nombre.upcase!

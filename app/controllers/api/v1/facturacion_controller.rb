@@ -15,8 +15,7 @@ module Api
 
             # POST /facturaciones
             def create
-                byebug
-                if Facturacion.generar_facturacion(params[:f_elaboracion], params[:f_inicio], 
+                if Facturacion.generar_facturacion(params[:tipo_fact_id], params[:f_elaboracion], params[:f_inicio], 
                     params[:f_fin], params[:f_vence], params[:f_corte], params[:f_vencidos],
                     params[:observa], params[:zona], params[:usuario_id])
                     render json: { status: :created }

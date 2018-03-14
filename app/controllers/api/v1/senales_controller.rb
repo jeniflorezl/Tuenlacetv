@@ -257,7 +257,7 @@ module Api
                 :torre, :apto, :barrio_id, :zona_id, :telefono1, :telefono2, :contacto, :estrato,
                 :vivienda, :observacion, :fechacontrato, :permanencia, :televisores,  
                 :decos, :precinto, :vendedor_id, :tipo_instalacion_id, :tecnologia_id,
-                :tiposervicio,:areainstalacion, :usuario_id)
+                :tiposervicio,:areainstalacion, :usuario_id, :tipo_facturacion_id)
             end 
 
             def persona_params
