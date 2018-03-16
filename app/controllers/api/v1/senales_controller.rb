@@ -29,6 +29,7 @@ module Api
                 @entidades = Entidad.all
                 @plantillas = PlantillaFact.all
                 @info_internet = InfoInternet.all
+                @tipo_facturacion = TipoFacturacion.all
             end
 
             # GET /senales/id
@@ -215,6 +216,15 @@ module Api
                 else
                     render json: { post: "not found" }
                 end
+            end
+
+            def listado_suscriptores
+                query = <<-SQL 
+                SELECT * FROM VwSenales;
+                SQL
+                @senal = ActiveRecord::Base.connection.select_all(query)
+                @senales = Senal.all
+                @plantillas = PlantillaFact.all
             end
 
             private

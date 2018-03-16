@@ -61,6 +61,13 @@ json.senales do
         json.tiposervicio senal.tiposervicio
         json.areainstalacion senal.areainstalacion
         json.funcion senal.entidad.funcion.nombre
+        json.tipo_facturacion do
+            json.array! @tipo_facturacion do |tipo|
+                if (tipo.id == senal.tipo_facturacion_id)
+                    json.tipo senal.tipo_facturacion.nombre
+                end
+            end
+        end
         json.info_internet do
             json.array! @info_internet do |internet|
                 if (internet.senal_id == senal.id)
@@ -212,5 +219,12 @@ json.tecnicos do
     json.array! @tecnicos do |tecnico|
         json.id tecnico.id
         json.nombres tecnico.persona.nombre1 + '' + tecnico.persona.nombre2 + ' ' + tecnico.persona.apellido1 + ' ' + tecnico.persona.apellido2
+    end
+end
+
+json.tipo_facturacion do
+    json.array! @tipo_facturacion do |tipo|
+        json.id tipo.id
+        json.nombre tipo.nombre
     end
 end

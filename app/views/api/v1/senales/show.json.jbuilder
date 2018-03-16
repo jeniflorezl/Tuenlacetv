@@ -42,6 +42,7 @@ json.senales do
         json.tiposervicio senal["tiposervicio"]
         json.areainstalacion senal["areainstalacion"]
         json.funcion senal["funcion_id"]
+        json.tipo_facturacion senal["tipo_facturacion"]
         @senales.each do |senales|
             if (senal["id"] == senales.entidad_id)
                 json.plantilla_fact_tv do

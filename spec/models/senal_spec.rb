@@ -4,13 +4,13 @@ RSpec.describe Senal, :type => :model do
   it "is valid with a entity, service, contract, address, urbanization,
   tower, apartment, neighborhood, zone, phones, contact, stratum, type living place,
   observation, state, contract date, permanence, amount tv, amount decoder, precinto, 
-  seller, type of installation, technology, type of service, installation area
-  and an user" do
+  seller, type of installation, technology, type of service, installation area, user,
+  billing type" do
     senal = Senal.new(entidad_id: 1, servicio_id: 1, contrato: '4789963', direccion: 'Calle 11 #24-23', 
     urbanizacion: '', torre: '', apto: '', barrio_id: 1, zona_id: 1, telefono1: '4540312', telefono2: '',
     contacto: '', estrato: '4', vivienda: 'P', observacion: '', estado_id: 1, fechacontrato: '01/01/2017',
     permanencia: '', televisores: 2, decos: '', precinto: '12321', vendedor_id: 5, tipo_instalacion_id: 1,
-    tecnologia_id: 1, tiposervicio: 'residencial', areainstalacion: 'urbana', usuario_id: 1)
+    tecnologia_id: 1, tiposervicio: 'residencial', areainstalacion: 'urbana', usuario_id: 1, tipo_facturacion_id: 1)
     expect(senal).to be_valid
   end
   
@@ -90,5 +90,11 @@ RSpec.describe Senal, :type => :model do
     senal = Senal.new(usuario_id: nil)
     senal.valid?
     expect(senal.errors[:usuario]).to include("can't be blank")
+  end
+
+  it "is invalid without billing type" do
+    senal = Senal.new(tipo_facturacion_id: nil)
+    senal.valid?
+    expect(senal.errors[:tipo_facturacion]).to include("can't be blank")
   end
 end

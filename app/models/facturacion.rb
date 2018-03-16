@@ -12,19 +12,50 @@ class Facturacion < ApplicationRecord
 
   private
 
-  def self.tipo_facturacion
-    tipo = Parametro.find_by(descripcion: 'Tipo facturacion')
-    if tipo.valor == 'V'
-        tipo = 'Vencida'
-    else
-        tipo = 'Anticipada'
+  def self.facturaciones_generadas
+    fact_generadas = Array.new
+    i = 0
+    notas_fact = NotaFact.all
+    notas_fact.each do |nota|
+      fecha_ela = nota["fechaElaboracion"]
+      fecha_ela = Date.parse fecha_ela.to_s
+      fecha1 = self.formato_fecha(fecha_ela)
+      fecha_inicio = nota["fechaInicio"]
+      fecha2 = self.formato_fecha(fecha_inicio)
+      fecha_fin = nota["fechaFin"]
+      fecha_fin = Date.parse fecha_fin.to_s
+      fecha3 = self.formato_fecha(fecha_fin)
+      fecha_ven = nota["fechaVencimiento"]
+      fecha4 = self.formato_fecha(fecha_ven)
+      query = <<-SQL 
+      SELECT * FROM facturacion WHERE fechatrn >= #{fecha_ela.to_s} and fechaven <= #{fecha_fin.to_s};
+      SQL
+      ActiveRecord::Base.connection.clear_query_cache
+      factura = ActiveRecord::Base.connection.select_all(query)
+      fact_ini = factura.first
+      nrofact_ini = fact_ini["nrofact"]
+      fact_fin = factura.last
+      nrofact_fin = fact_fin["nrofact"]
+      fact_generadas[i] = { 'nrofact_ini' => nrofact_ini, 'nrofact_fin' => nrofact_fin, 'f_elaboracion' => fecha1,
+      'f_inicio' => fecha2, 'f_fin' => fecha3, 'f_ven' => fecha4}
+      i += 1
     end
-    tipo
+    fact_generadas
   end
 
-  def self.facturaciones_generadas
-    notas_fact = NotaFact.all
-
+  def self.formato_fecha(f)
+    fecha_date = Date.parse f.to_s
+    mes_f = fecha_date.month.to_s
+    ano_f = fecha_date.year.to_s
+    dia_f = fecha_date.day.to_s
+    if (mes_f.length == 1)
+      mes_f = '0' + mes_f
+    end
+    if (dia_f.length == 1)
+      dia_f = '0' + dia_f
+    end
+    fecha = dia_f + '/' + mes_f + '/' + ano_f
+    fecha
   end
 
   def self.generar_facturacion(tipo_fact, f_elaboracion, f_inicio, f_fin, f_vence, f_corte, f_vencidos, observa, zona, usuario_id)
@@ -575,8 +606,171 @@ class Facturacion < ApplicationRecord
     end
   end
 
-  def self.factura_manual()
-    
+  def self.factura_manual(tipo_facturacion, servicio_id, f_elaboracion, f_inicio, f_fin, entidad_id, valor_fact, observa, usuario_id)
+    fecha1 = Date.parse f_fin
+    mes = fecha1.month
+    ano = fecha1.year
+    concepto_tv = Concepto.find_by(nombre: 'MENSUALIDAD TELEVISION')
+    iva_tv = concepto_tv.porcentajeIva
+    concepto_int = Concepto.find_by(nombre: 'MENSUALIDAD INTERNET')
+    iva_int = concepto_int.porcentajeIva
+    fact = 0
+    serv_tv = Servicio.find_by(nombre: 'TELEVISION').id
+    serv_int = Servicio.find_by(nombre: 'INTERNET').id
+    pref = Resolucion.last.prefijo
+    consecutivos = Parametro.find_by(descripcion: 'Maneja consecutivos separados').valor
+    estadoD = Estado.find_by(abreviatura: 'PE')
+    t = Time.now
+    nombre_mes = Facturacion.mes(t.strftime("%B"))
+    query = <<-SQL 
+    SELECT * FROM facturacion WHERE entidad_id = #{entidad_id} and fechatrn >= '01/#{mes}/#{ano}';
+    SQL
+    ActiveRecord::Base.connection.clear_query_cache
+    factura = ActiveRecord::Base.connection.select_all(query)
+    if (servicio_id == serv_tv)
+      byebug
+      unless factura.blank?
+        factura.each do |row|
+          query = <<-SQL 
+          SELECT * FROM detalle_factura WHERE nrofact=#{row["nrofact"]};
+          SQL
+          ActiveRecord::Base.connection.clear_query_cache
+          detallefact = ActiveRecord::Base.connection.select_all(query)
+          if (detallefact[0]["concepto_id"] == concepto_tv) 
+            fact = 1
+          end
+        end
+      end
+      if (fact != 1)
+        if (consecutivos == 'S')
+          query = <<-SQL 
+          SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=1;
+          SQL
+        else
+          query = <<-SQL 
+          SELECT MAX(nrofact) as ultimo FROM facturacion;
+          SQL
+        end
+        ActiveRecord::Base.connection.clear_query_cache
+        ultimo = ActiveRecord::Base.connection.select_all(query)
+        if (ultimo[0]["ultimo"] == nil)
+          ultimo=1
+        else
+          ultimo = (ultimo[0]["ultimo"]).to_i + 1
+        end
+        senal = Senal.find_by(entidad_id: entidad_id)
+        plantilla = PlantillaFact.where("senal_id = #{senal.id} and concepto_id = #{concepto_tv.id}")
+        fecha2 = Date.parse plantilla[0]["fechaini"].to_s
+        dias = (fecha1 - fecha2).to_i + 1
+        if (dias < 30)
+          if (fecha1.month == 2)
+            dias = 30
+          end
+        else
+          dias = 30
+        end
+        if (iva_tv > 0)
+          valor_sin_iva = valor_fact / (iva_tv / 100 + 1)
+          iva = valor_fact - valor_sin_iva
+          valor_fact = valor_sin_iva
+        end
+        facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: 1, fechatrn: f_elaboracion,
+          fechaven: f_fin, valor: valor_fact, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
+          estado_id: estadoD.id, observacion: observa, reporta: '1', usuario_id: usuario_id)
+          if facturacion.save
+            query = <<-SQL 
+            SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact};
+            SQL
+            ActiveRecord::Base.connection.clear_query_cache
+            facturacion_id = ActiveRecord::Base.connection.select_all(query)
+            facturacion_id = (facturacion_id[0]["id"]).to_i
+            detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
+            prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_tv.id, cantidad: 1, 
+            valor: facturacion.valor, porcentajeIva: iva_tv, iva: facturacion.iva, observacion: 'TELEVISION' + ' ' + nombre_mes,
+            operacion: '+', usuario_id: usuario_id)
+            if detallef.save
+              return true
+            else
+              return false
+            end
+          end
+      else
+        return false
+      end
+    else
+      byebug
+      unless factura.blank?
+        factura.each do |row|
+          query = <<-SQL 
+          SELECT * FROM detalle_factura WHERE nrofact=#{row["nrofact"]};
+          SQL
+          ActiveRecord::Base.connection.clear_query_cache
+          detallefact = ActiveRecord::Base.connection.select_all(query)
+          if (detallefact[0]["concepto_id"] == concepto_int) 
+            fact = 1
+          end
+        end
+      end
+      if (fact != 1)
+        if (consecutivos == 'S')
+          query = <<-SQL 
+          SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=1;
+          SQL
+        else
+          query = <<-SQL 
+          SELECT MAX(nrofact) as ultimo FROM facturacion;
+          SQL
+        end
+        ActiveRecord::Base.connection.clear_query_cache
+        ultimo = ActiveRecord::Base.connection.select_all(query)
+        if (ultimo[0]["ultimo"] == nil)
+          ultimo=1
+        else
+          ultimo = (ultimo[0]["ultimo"]).to_i + 1
+        end
+        senal = Senal.find_by(entidad_id: entidad_id)
+        plantilla = PlantillaFact.where("senal_id = #{senal.id} and concepto_id = #{concepto_int.id}")
+        fecha2 = Date.parse plantilla[0]["fechaini"].to_s
+        dias = (fecha1 - fecha2).to_i + 1
+        if (dias < 30)
+          if (fecha1.month == 2)
+            dias = 30
+          end
+        else
+          dias = 30
+        end
+        if (iva_int > 0)
+          valor_sin_iva = valor_fact / (iva_int / 100 + 1)
+          iva = valor_fact - valor_sin_iva
+          valor_fact = valor_sin_iva
+        end
+        facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: 1, fechatrn: f_elaboracion,
+          fechaven: f_fin, valor: valor_fact, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
+          estado_id: estadoD.id, observacion: observa, reporta: '1', usuario_id: usuario_id)
+          if facturacion.save
+            query = <<-SQL 
+            SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact};
+            SQL
+            ActiveRecord::Base.connection.clear_query_cache
+            facturacion_id = ActiveRecord::Base.connection.select_all(query)
+            facturacion_id = (facturacion_id[0]["id"]).to_i
+            detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
+            prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_int.id, cantidad: 1, 
+            valor: facturacion.valor, porcentajeIva: 0, iva: facturacion.iva, observacion: 'INTERNET' + ' ' + nombre_mes,
+            operacion: '+', usuario_id: usuario_id)
+            if detallef.save
+              return true
+            else
+              return false
+            end
+          end
+      else
+        return false
+      end
+    end
+  end
 
+  def self.generar_impresion()
+    
   end
 end

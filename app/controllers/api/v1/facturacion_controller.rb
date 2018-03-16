@@ -6,7 +6,7 @@ module Api
   
             # GET /facturaciones
             def index
-                @tipo_fact = Facturacion.tipo_facturacion
+                @facturaciones = Facturacion.facturaciones_generadas
             end
         
             # GET /facturaciones/id
@@ -18,6 +18,16 @@ module Api
                 if Facturacion.generar_facturacion(params[:tipo_fact_id], params[:f_elaboracion], params[:f_inicio], 
                     params[:f_fin], params[:f_vence], params[:f_corte], params[:f_vencidos],
                     params[:observa], params[:zona], params[:usuario_id])
+                    render json: { status: :created }
+                else
+                    render json: { error: "error en el proceso" }
+                end
+            end
+
+            def create_factura
+                if Facturacion.factura_manual(params[:tipo_facturacion_id], params[:servicio_id], 
+                    params[:f_elaboracion], params[:f_inicio], params[:f_fin], params[:entidad_id], 
+                    params[:valor], params[:observa], params[:usuario_id])
                     render json: { status: :created }
                 else
                     render json: { error: "error en el proceso" }

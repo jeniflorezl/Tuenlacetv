@@ -1,6 +1,6 @@
 module Api
     module V1
-        class tipo_facturacionesController < ApplicationController
+        class TipoFacturacionController < ApplicationController
             before_action :set_tipo_facturacion_buscar, only: [:show]
             before_action :set_tipo_facturacion, only: [:update, :destroy]
   
