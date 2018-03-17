@@ -40,6 +40,7 @@ module Api
                 SQL
                 ActiveRecord::Base.connection.clear_query_cache
                 @saldos = ActiveRecord::Base.connection.select_all(query)
+                @saldo = 0
             end
 
             def index_entidad
@@ -74,7 +75,7 @@ module Api
                 @persona = Persona.new(persona_params)
                 if @persona.save
                     @entidad = Entidad.new(funcion_id: @funcion, persona_id: @persona.id, usuario_id: @persona.usuario_id)
-                    if @entidad.save and @funcion==1
+                    if (@entidad.save and @funcion=="1")
                         @senal = Senal.new(senal_params)
                         @senal.entidad_id = @entidad.id
                         if @senal.save
