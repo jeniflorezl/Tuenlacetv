@@ -84,6 +84,8 @@ class Senal < ApplicationRecord
           end
           if (valorDcto > 0)
             valor = valorAfiTv - valorDcto
+          else
+            valor = valorAfiTv
           end
           factura = Facturacion.new(entidad_id: entidad.id, documento_id: 1, fechatrn: senal.fechacontrato,
           fechaven: senal.fechacontrato, valor: valor, iva: 0, dias: 0, prefijo: pref, nrofact: ultimo,
@@ -160,6 +162,8 @@ class Senal < ApplicationRecord
             ultimo = (ultimo[0]["ultimo"]).to_i + 1
           end
           if (valorDcto > 0)
+            valor = valorAfiInt - valorDcto
+          else
             valor = valorAfiInt - valorDcto
           end
           facturain = Facturacion.new(entidad_id: entidad.id, documento_id: 1, fechatrn: senal.fechacontrato,
