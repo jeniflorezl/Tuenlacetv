@@ -36,7 +36,6 @@ json.senales do
         json.vivienda senal.vivienda
         json.observacion senal.observacion
         @tv = 0
-        @saldo = 0
         unless @plantillas_tv.blank?
             json.plantilla_fact_tv do
                 json.array! @plantillas_tv do |plantilla|
@@ -50,11 +49,7 @@ json.senales do
                 json.array! @saldos do |saldo|
                     if (senal.entidad_id == saldo["entidad_id"])
                         json.saldo_tv saldo["saldo_tv"]
-                        @saldo = 1
                     end
-                end
-                if (@saldo != 1)
-                    json.saldo_tv @saldo
                 end
             end
         end
@@ -86,7 +81,6 @@ json.senales do
             end
         end
         @int = 0
-        @saldo = 0
         unless @info_internet.blank?
             json.info_internet do
                 json.array! @info_internet do |internet|
@@ -116,11 +110,7 @@ json.senales do
                                 json.array! @saldos do |saldo|
                                     if (senal.entidad_id == saldo["entidad_id"])
                                         json.saldo_int saldo["saldo_int"]
-                                        @saldo = 1
                                     end
-                                end
-                                if (@saldo != 1)
-                                    json.saldo_tv @saldo
                                 end
                             end
                         end
