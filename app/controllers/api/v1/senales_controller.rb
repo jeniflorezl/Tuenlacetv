@@ -39,7 +39,7 @@ module Api
                 SELECT * FROM VwEstadoDeCuentaTotal;
                 SQL
                 ActiveRecord::Base.connection.clear_query_cache
-                #@saldos = ActiveRecord::Base.connection.select_all(query)
+                @saldos = ActiveRecord::Base.connection.select_all(query)
             end
 
             def index_entidad
@@ -267,7 +267,10 @@ module Api
                 @entidad = [*@entidad]
                 @info_internet = InfoInternet.all
                 @senales = Senal.all
-                @plantillas = PlantillaFact.all
+                concepto_tv = Concepto.find_by(nombre: 'MENSUALIDAD TELEVISION').id
+                concepto_int = Concepto.find_by(nombre: 'MENSUALIDAD INTERNET').id
+                @plantillas_tv = PlantillaFact.where(concepto_id: concepto_tv)
+                @plantillas_int = PlantillaFact.where(concepto_id: concepto_int)
             end
 
 

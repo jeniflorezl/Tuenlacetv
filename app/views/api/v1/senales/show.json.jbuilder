@@ -49,42 +49,62 @@ json.senales do
         json.tipo_facturacion senal["tipo_facturacion"]
         @senales.each do |senales|
             if (senal["id"] == senales.entidad_id)
-                json.plantilla_fact_tv do
-                    json.array! @plantillas do |plantilla|
-                        if (plantilla.senal_id == senales.id) and (plantilla.concepto_id == 3)
-                            json.plan_tv plantilla.tarifa.plan.nombre
-                            json.tarifa_tv plantilla.tarifa.valor
-                            json.estado_tv plantilla.estado.nombre
+                @tv = 0
+                unless @plantillas_tv.blank?
+                    json.plantilla_fact_tv do
+                        json.array! @plantillas_tv do |plantilla|
+                            if (plantilla.senal_id == senales.id)
+                                json.plan_tv plantilla.tarifa.plan.nombre
+                                json.tarifa_tv plantilla.tarifa.valor
+                                json.estado_tv plantilla.estado.nombre
+                                @tv = 1
+                            end
+                        end
+                        json.array! @saldos do |saldo|
+                            if (senal.entidad_id == saldo["entidad_id"])
+                                json.saldo_tv saldo["saldo_tv"]
+                            end
                         end
                     end
                 end
-                json.info_internet do
-                    json.array! @info_internet do |internet|
-                        if (senales.id == internet.senal_id)
-                            json.direccionip internet.direccionip
-                            json.velocidad internet.velocidad
-                            json.mac1 internet.mac1
-                            json.mac2 internet.mac2
-                            json.serialm internet.serialm
-                            json.marcam internet.marcam
-                            json.mascarasub internet.mascarasub
-                            json.dns internet.dns
-                            json.gateway internet.gateway
-                            json.nodo internet.nodo
-                            json.clavewifi internet.clavewifi
-                            json.equipo internet.equipo
-                            json.plantilla_fact_int do
-                                json.array! @plantillas do |plantilla|
-                                    if (plantilla.senal_id == senales.id) and (plantilla.concepto_id == 4)
-                                        json.plan_int plantilla.tarifa.plan.nombre
-                                        json.tarifa_int plantilla.tarifa.valor
-                                        json.estado_int plantilla.estado.nombre
+                json.tv @tv
+                @int = 0
+                unless @info_internet.blank?
+                    json.info_internet do
+                        json.array! @info_internet do |internet|
+                            if (senales.id == internet.senal_id)
+                                json.direccionip internet.direccionip
+                                json.velocidad internet.velocidad
+                                json.mac1 internet.mac1
+                                json.mac2 internet.mac2
+                                json.serialm internet.serialm
+                                json.marcam internet.marcam
+                                json.mascarasub internet.mascarasub
+                                json.dns internet.dns
+                                json.gateway internet.gateway
+                                json.nodo internet.nodo
+                                json.clavewifi internet.clavewifi
+                                json.equipo internet.equipo
+                                json.plantilla_fact_int do
+                                    json.array! @plantillas do |plantilla|
+                                        if (plantilla.senal_id == senales.id) and (plantilla.concepto_id == 4)
+                                            json.plan_int plantilla.tarifa.plan.nombre
+                                            json.tarifa_int plantilla.tarifa.valor
+                                            json.estado_int plantilla.estado.nombre
+                                            @int = 1
+                                        end
+                                    end
+                                    json.array! @saldos do |saldo|
+                                        if (senal.entidad_id == saldo["entidad_id"])
+                                            json.saldo_int saldo["saldo_int"]
+                                        end
                                     end
                                 end
                             end
                         end
                     end
                 end
+                json.int @int
             end
         end
     end

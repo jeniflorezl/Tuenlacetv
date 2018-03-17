@@ -46,10 +46,14 @@ json.senales do
                         @tv = 1
                     end
                 end
+                json.array! @saldos do |saldo|
+                    if (senal.entidad_id == saldo["entidad_id"])
+                        json.saldo_tv saldo["saldo_tv"]
+                    end
+                end
             end
         end
         json.tv @tv
-        
         json.fechacontrato senal.fechacontrato
         json.permanencia senal.permanencia
         json.televisores senal.televisores
@@ -103,13 +107,19 @@ json.senales do
                                         @int = 1
                                     end
                                 end
+                                json.array! @saldos do |saldo|
+                                    if (senal.entidad_id == saldo["entidad_id"])
+                                        json.saldo_int saldo["saldo_int"]
+                                    end
+                                end
                             end
                         end
                     end
                 end
             end     
         end
-        json.int @int 
+        json.int @int
+        
     end
 end
 
