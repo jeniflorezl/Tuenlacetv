@@ -53,11 +53,10 @@ json.senales do
                         @saldo = 1
                     end
                 end
-                
+                if (@saldo != 1) and (@tv == 1)
+                    json.saldo_tv 0
+                end
             end
-        end
-        if (@saldo != 1) and (@tv == 1)
-            json.saldo_tv 0
         end
         json.tv @tv
         json.fechacontrato senal.fechacontrato
@@ -120,17 +119,16 @@ json.senales do
                                         @saldo = 1
                                     end
                                 end
+                                if (@saldo != 1) and (@int == 1)
+                                    json.saldo_tv 0
+                                end
                             end
                         end
                     end
                 end
             end     
         end
-        if (@saldo != 1) and (@int == 1)
-            json.saldo_tv 0
-        end
         json.int @int
-        
     end
 end
 
