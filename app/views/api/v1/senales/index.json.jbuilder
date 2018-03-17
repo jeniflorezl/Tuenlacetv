@@ -45,6 +45,9 @@ json.senales do
             end
         end
         json.tv @tv
+        json.array! @saldos do |saldo|
+            if (plantilla.senal_id == senal.id)
+        end
         json.fechacontrato senal.fechacontrato
         json.permanencia senal.permanencia
         json.televisores senal.televisores

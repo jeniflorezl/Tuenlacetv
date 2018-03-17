@@ -35,6 +35,17 @@ module Api
                 @tipo_facturacion = TipoFacturacion.all
                 @tv = 0
                 @int = 0
+                query = <<-SQL 
+                SELECT * FROM VwEstadoDeCuentaTotal;
+                SQL
+                ActiveRecord::Base.connection.clear_query_cache
+                @saldos = ActiveRecord::Base.connection.select_all(query)
+            end
+
+            def index_entidad
+                funcion = params[:funcion_id]
+                @entidades = Entidad.where(funcion_id: funcion)
+                @personas = Persona.all
             end
 
             # GET /senales/id
