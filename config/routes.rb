@@ -40,7 +40,7 @@ Rails.application.routes.draw do
       post 'usuarios/resetear_password/:id', to: 'usuarios#resetear_password'
       get 'empresas/bd/:db', to: 'empresas#index'
       get 'empresas/:campo/:valor/:db', to: 'empresas#show'
-      get 'tipo_facturacion/:db', to: 'tipo_facturacion#index'
+      get 'tipo_facturacion/bd/:db', to: 'tipo_facturacion#index'
       get 'tipo_facturacion/:campo/:valor/:db', to: 'tipo_facturacion#show'
       post 'facturacion/factura_manual/:db', to: 'facturacion#create_factura'
       post 'signin', to: 'sesion#create'

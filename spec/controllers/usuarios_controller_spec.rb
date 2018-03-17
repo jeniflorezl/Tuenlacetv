@@ -8,7 +8,7 @@ RSpec.describe Api::V1::UsuariosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        get "http://localhost:3000/api/v1/usuarios", :headers => headers
+        get "http://localhost:3000/api/v1/usuarios/bd/PRUEBAS", :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -16,8 +16,19 @@ RSpec.describe Api::V1::UsuariosController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        get "http://localhost:3000/api/v1/usuarios", :headers => headers
+        get "http://localhost:3000/api/v1/usuarios/bd/PRUEBAS", :headers => headers
         expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    describe 'GET show' do
+      it 'ok' do
+        headers = { 
+          "Content-Type" => "application/json",
+          "Accept" => "application/json",
+          "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
+        get "http://localhost:3000/api/v1/usuarios/id/1/PRUEBAS", :headers => headers
+        expect(response).to have_http_status(:ok)
       end
     end
 
@@ -27,7 +38,25 @@ RSpec.describe Api::V1::UsuariosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        post "http://localhost:3000/api/v1/usuarios", :params => '{ "login": "admin", "nombre": "ADMINISTRADOR DEL SISTEMA", "password": "123", "password_confirmation": "123", "nivel": "1", "estado_id": 1, "tipoImpresora": "L", "usuariocre": "admin" }', :headers => headers
+        post "http://localhost:3000/api/v1/usuarios", :params => '{ "login": "admin", "nombre": "ADMINISTRADOR DEL SISTEMA", "password": "123", "password_confirmation": "123", "nivel": "1", "estado_id": 1, "tipoImpresora": "L", "usuariocre": "admin", "db": "PRUEBAS" }', :headers => headers
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'ok change password' do
+        headers = { 
+          "Content-Type" => "application/json",
+          "Accept" => "application/json",
+          "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
+        post "http://localhost:3000/api/v1/usuarios/cambiar_password/1", :params => '{ "antiguaP": "123", "nuevaP": "1234", db": "PRUEBAS" }', :headers => headers
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'ok reset password' do
+        headers = { 
+          "Content-Type" => "application/json",
+          "Accept" => "application/json",
+          "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
+        post "http://localhost:3000/api/v1/usuarios/resetear_password/1", :params => '{ "nuevaP": "1234", "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -35,7 +64,7 @@ RSpec.describe Api::V1::UsuariosController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        post "http://localhost:3000/api/v1/usuarios", :params => '{ "login": "admin", "nombre": "ADMINISTRADOR DEL SISTEMA", "password": "123", "password_confirmation": "123", "nivel": "1", "estado_id": 1, "tipoImpresora": "L", "usuariocre": "admin" }', :headers => headers
+        post "http://localhost:3000/api/v1/usuarios", :params => '{ "login": "admin", "nombre": "ADMINISTRADOR DEL SISTEMA", "password": "123", "password_confirmation": "123", "nivel": "1", "estado_id": 1, "tipoImpresora": "L", "usuariocre": "admin", "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -46,7 +75,7 @@ RSpec.describe Api::V1::UsuariosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        put "http://localhost:3000/api/v1/usuarios/1", :params => '{ "login": "admin", "nombre": "ADMINISTRADOR DEL SISTEMA", "password": "123", "password_confirmation": "123", "nivel": "1", "estado_id": 1, "tipoImpresora": "L", "usuariocre": "admin" }', :headers => headers
+        put "http://localhost:3000/api/v1/usuarios/1", :params => '{ "login": "admin", "nombre": "ADMINISTRADOR DEL SISTEMA", "password": "123", "password_confirmation": "123", "nivel": "1", "estado_id": 1, "tipoImpresora": "L", "usuariocre": "admin", "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -55,7 +84,7 @@ RSpec.describe Api::V1::UsuariosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        put "http://localhost:3000/api/v1/usuarios/30", :params => '{ "login": "admin", "nombre": "ADMINISTRADOR DEL SISTEMA", "password": "123", "password_confirmation": "123", "nivel": "1", "estado_id": 1, "tipoImpresora": "L", "usuariocre": "admin" }', :headers => headers
+        put "http://localhost:3000/api/v1/usuarios/30", :params => '{ "login": "admin", "nombre": "ADMINISTRADOR DEL SISTEMA", "password": "123", "password_confirmation": "123", "nivel": "1", "estado_id": 1, "tipoImpresora": "L", "usuariocre": "admin", "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:not_found)
       end
 
@@ -63,7 +92,7 @@ RSpec.describe Api::V1::UsuariosController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        put "http://localhost:3000/api/v1/usuarios/1", :params => '{ "login": "admin", "nombre": "ADMINISTRADOR DEL SISTEMA", "password": "123", "password_confirmation": "123", "nivel": "1", "estado_id": 1, "tipoImpresora": "L", "usuariocre": "admin" }', :headers => headers
+        put "http://localhost:3000/api/v1/usuarios/1", :params => '{ "login": "admin", "nombre": "ADMINISTRADOR DEL SISTEMA", "password": "123", "password_confirmation": "123", "nivel": "1", "estado_id": 1, "tipoImpresora": "L", "usuariocre": "admin", "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -74,7 +103,7 @@ RSpec.describe Api::V1::UsuariosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/usuarios/2", :headers => headers
+        delete "http://localhost:3000/api/v1/usuarios/2", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -83,7 +112,7 @@ RSpec.describe Api::V1::UsuariosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/usuarios/1", :headers => headers
+        delete "http://localhost:3000/api/v1/usuarios/1", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:bad_request)
       end
 
@@ -92,7 +121,7 @@ RSpec.describe Api::V1::UsuariosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/usuarios/30", :headers => headers
+        delete "http://localhost:3000/api/v1/usuarios/30", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:not_found)
       end
 
@@ -100,7 +129,7 @@ RSpec.describe Api::V1::UsuariosController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        delete "http://localhost:3000/api/v1/usuarios/1", :headers => headers
+        delete "http://localhost:3000/api/v1/usuarios/1", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end

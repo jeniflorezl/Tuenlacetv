@@ -8,7 +8,7 @@ RSpec.describe Api::V1::EmpresasController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        get "http://localhost:3000/api/v1/empresas", :headers => headers
+        get "http://localhost:3000/api/v1/empresas/bd/PRUEBAS", :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -16,7 +16,26 @@ RSpec.describe Api::V1::EmpresasController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        get "http://localhost:3000/api/v1/empresas", :headers => headers
+        get "http://localhost:3000/api/v1/empresas/bd/PRUEBAS", :headers => headers
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    describe 'GET show' do
+      it 'ok' do
+        headers = { 
+          "Content-Type" => "application/json",
+          "Accept" => "application/json",
+          "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
+        get "http://localhost:3000/api/v1/empresas/id/1/PRUEBAS", :headers => headers
+        expect(response).to have_http_status(:ok)
+      end
+
+      it '401 Unauthorized' do
+        headers = { 
+          "Content-Type" => "application/json",
+          "Accept" => "application/json"}
+        get "http://localhost:3000/api/v1/empresas/id/1/PRUEBAS", :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -27,7 +46,7 @@ RSpec.describe Api::V1::EmpresasController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        post "http://localhost:3000/api/v1/empresas", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S", "contribuyente": "S", "centrocosto": "0001", "usuario_id": 1 }', :headers => headers
+        post "http://localhost:3000/api/v1/empresas", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S", "contribuyente": "S", "centrocosto": "0001", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -44,7 +63,7 @@ RSpec.describe Api::V1::EmpresasController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        post "http://localhost:3000/api/v1/empresas", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S", "contribuyente": "S", "centrocosto": "0001", "usuario_id": 1 }', :headers => headers
+        post "http://localhost:3000/api/v1/empresas", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S", "contribuyente": "S", "centrocosto": "0001", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -55,7 +74,7 @@ RSpec.describe Api::V1::EmpresasController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        put "http://localhost:3000/api/v1/empresas/1", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S", "contribuyente": "S", "centrocosto": "0001", "usuario_id": 1 }', :headers => headers
+        put "http://localhost:3000/api/v1/empresas/1", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S", "contribuyente": "S", "centrocosto": "0001", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -64,7 +83,7 @@ RSpec.describe Api::V1::EmpresasController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        put "http://localhost:3000/api/v1/empresas/30", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S", "contribuyente": "S", "centrocosto": "0001", "usuario_id": 1 }', :headers => headers
+        put "http://localhost:3000/api/v1/empresas/30", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S", "contribuyente": "S", "centrocosto": "0001", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:not_found)
       end
 
@@ -72,7 +91,7 @@ RSpec.describe Api::V1::EmpresasController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        put "http://localhost:3000/api/v1/empresas/1", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S", "contribuyente": "S", "centrocosto": "0001", "usuario_id": 1 }', :headers => headers
+        put "http://localhost:3000/api/v1/empresas/1", :params => '{ "tipo": "01", "nit": "900353347", "razonsocial": "ENLACE INFORMATICO S.A.S", "direccion": "CRA 47 #53-41", "telefono1": "4540312", "telefono2": "", "ciudad_id": 1, "entidad_id": 1, "logo": "", "correo": "gerencia@enlaceinformatico.com", "regimen": "S", "contribuyente": "S", "centrocosto": "0001", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -83,7 +102,7 @@ RSpec.describe Api::V1::EmpresasController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/empresas/1", :headers => headers
+        delete "http://localhost:3000/api/v1/empresas/1", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:bad_request)
       end
 
@@ -92,7 +111,7 @@ RSpec.describe Api::V1::EmpresasController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/empresas/30", :headers => headers
+        delete "http://localhost:3000/api/v1/empresas/30", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:not_found)
       end
 
@@ -100,7 +119,7 @@ RSpec.describe Api::V1::EmpresasController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        delete "http://localhost:3000/api/v1/empresas/1", :headers => headers
+        delete "http://localhost:3000/api/v1/empresas/1", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
