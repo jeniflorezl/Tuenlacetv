@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::SesionController, type: :request do
-
+=begin
     describe 'POST create' do
       it 'ok' do
         headers = { 
@@ -16,7 +16,7 @@ RSpec.describe Api::V1::SesionController, type: :request do
         expect(response).to have_http_status(:unauthorized)
       end
     end
-=begin
+
     describe 'DELETE delete' do
       it 'ok' do
         headers = { 

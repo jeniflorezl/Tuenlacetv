@@ -47,7 +47,7 @@ RSpec.describe Api::V1::UsuariosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        post "http://localhost:3000/api/v1/usuarios/cambiar_password/1", :params => '{ "antiguaP": "123", "nuevaP": "1234", db": "PRUEBAS" }', :headers => headers
+        post "http://localhost:3000/api/v1/usuarios/cambiar_password/1", :params => '{ "antiguaP": "123", "nuevaP": "123", db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -56,7 +56,7 @@ RSpec.describe Api::V1::UsuariosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        post "http://localhost:3000/api/v1/usuarios/resetear_password/1", :params => '{ "nuevaP": "1234", "db": "PRUEBAS" }', :headers => headers
+        post "http://localhost:3000/api/v1/usuarios/resetear_password/1", :params => '{ "nuevaP": "123", "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
