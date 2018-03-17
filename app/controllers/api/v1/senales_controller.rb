@@ -27,9 +27,14 @@ module Api
                 @vendedores = Entidad.where(funcion_id: 5)
                 @tecnicos = Entidad.where(funcion_id: 7)
                 @entidades = Entidad.all
-                @plantillas = PlantillaFact.all
+                concepto_tv = Concepto.find_by(nombre: 'MENSUALIDAD TELEVISION').id
+                concepto_int = Concepto.find_by(nombre: 'MENSUALIDAD INTERNET').id
+                @plantillas_tv = PlantillaFact.where(concepto_id: concepto_tv)
+                @plantillas_int = PlantillaFact.where(concepto_id: concepto_int)
                 @info_internet = InfoInternet.all
                 @tipo_facturacion = TipoFacturacion.all
+                @tv = 0
+                @int = 0
             end
 
             # GET /senales/id

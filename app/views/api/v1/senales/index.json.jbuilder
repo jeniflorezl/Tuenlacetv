@@ -31,17 +31,20 @@ json.senales do
         json.estrato senal.estrato
         json.vivienda senal.vivienda
         json.observacion senal.observacion
-        json.plantilla_fact_tv do
-            unless @plantillas.blank?
-                json.array! @plantillas do |plantilla|
-                    if (plantilla.senal_id == senal.id) and (plantilla.concepto_id == 3)
+        @tv = 0
+        unless @plantillas_tv.blank?
+            json.plantilla_fact_tv do
+                json.array! @plantillas_tv do |plantilla|
+                    if (plantilla.senal_id == senal.id)
                         json.plan_tv plantilla.tarifa.plan.nombre
                         json.tarifa_tv plantilla.tarifa.valor
                         json.estado_tv plantilla.estado.nombre
+                        @tv = 1
                     end
                 end
             end
         end
+        json.tv @tv
         json.fechacontrato senal.fechacontrato
         json.permanencia senal.permanencia
         json.televisores senal.televisores
@@ -68,35 +71,40 @@ json.senales do
                 end
             end
         end
-        json.info_internet do
-            json.array! @info_internet do |internet|
-                if (internet.senal_id == senal.id)
-                    json.direccionip internet.direccionip
-                    json.velocidad internet.velocidad
-                    json.mac1 internet.mac1
-                    json.mac2 internet.mac2
-                    json.serialm internet.serialm
-                    json.marcam internet.marcam
-                    json.mascarasub internet.mascarasub
-                    json.dns internet.dns
-                    json.gateway internet.gateway
-                    json.nodo internet.nodo
-                    json.clavewifi internet.clavewifi
-                    json.equipo internet.equipo
-                    json.plantilla_fact_int do
-                        unless @plantillas.blank?
-                            json.array! @plantillas do |plantilla|
-                                if (plantilla.senal_id == senal.id) and (plantilla.concepto_id == 4)
-                                    json.plan_int plantilla.tarifa.plan.nombre
-                                    json.tarifa_int plantilla.tarifa.valor
-                                    json.estado_int plantilla.estado.nombre
+        @int = 0
+        unless @info_internet.blank?
+            json.info_internet do
+                json.array! @info_internet do |internet|
+                    if (internet.senal_id == senal.id)
+                        json.direccionip internet.direccionip
+                        json.velocidad internet.velocidad
+                        json.mac1 internet.mac1
+                        json.mac2 internet.mac2
+                        json.serialm internet.serialm
+                        json.marcam internet.marcam
+                        json.mascarasub internet.mascarasub
+                        json.dns internet.dns
+                        json.gateway internet.gateway
+                        json.nodo internet.nodo
+                        json.clavewifi internet.clavewifi
+                        json.equipo internet.equipo
+                        json.plantilla_fact_int do
+                            unless @plantillas_int.blank?
+                                json.array! @plantillas_int do |plantilla|
+                                    if (plantilla.senal_id == senal.id)
+                                        json.plan_int plantilla.tarifa.plan.nombre
+                                        json.tarifa_int plantilla.tarifa.valor
+                                        json.estado_int plantilla.estado.nombre
+                                        @int = 1
+                                    end
                                 end
                             end
                         end
                     end
                 end
-            end
-        end        
+            end     
+        end
+        json.int @int 
     end
 end
 

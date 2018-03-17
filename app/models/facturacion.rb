@@ -760,7 +760,7 @@ class Facturacion < ApplicationRecord
             operacion: '+', usuario_id: usuario_id)
             if detallef.save
               return true
-            else
+          else
               return false
             end
           end
