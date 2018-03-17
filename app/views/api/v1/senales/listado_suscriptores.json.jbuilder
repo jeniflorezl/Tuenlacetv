@@ -20,6 +20,11 @@ json.senales do
                             json.estado_tv plantilla.estado.nombre
                         end
                     end
+                    json.array! @saldos do |saldo|
+                        if (senal["id"] == saldo["entidad_id"])
+                            json.saldo_tv saldo["saldo_tv"]
+                        end
+                    end
                 end
             end
         end

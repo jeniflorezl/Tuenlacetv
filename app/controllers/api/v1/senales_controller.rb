@@ -236,7 +236,11 @@ module Api
                 @senal = ActiveRecord::Base.connection.select_all(query)
                 @senales = Senal.all
                 @plantillas = PlantillaFact.all
-
+                query = <<-SQL 
+                SELECT * FROM VwEstadoDeCuentaTotal;
+                SQL
+                ActiveRecord::Base.connection.clear_query_cache
+                @saldos = ActiveRecord::Base.connection.select_all(query)
             end
 
             private
