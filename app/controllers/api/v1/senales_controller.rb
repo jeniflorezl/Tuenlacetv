@@ -236,6 +236,7 @@ module Api
                 @senal = ActiveRecord::Base.connection.select_all(query)
                 @senales = Senal.all
                 @plantillas = PlantillaFact.all
+
             end
 
             private
@@ -271,6 +272,11 @@ module Api
                 concepto_int = Concepto.find_by(nombre: 'MENSUALIDAD INTERNET').id
                 @plantillas_tv = PlantillaFact.where(concepto_id: concepto_tv)
                 @plantillas_int = PlantillaFact.where(concepto_id: concepto_int)
+                query = <<-SQL 
+                SELECT * FROM VwEstadoDeCuentaTotal;
+                SQL
+                ActiveRecord::Base.connection.clear_query_cache
+                @saldos = ActiveRecord::Base.connection.select_all(query)
             end
 
 
