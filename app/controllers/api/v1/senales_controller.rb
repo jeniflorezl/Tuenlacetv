@@ -113,7 +113,6 @@ module Api
                                 message2 = @info_internet.errors
                             end
                         end
-                        byebug
                         render :json => {:message1 => message1,
                             :message2 => message2 }.to_json
                     end
@@ -129,7 +128,6 @@ module Api
                 message1 = ''
                 message2 = ''
                 t = Time.now
-                byebug
                 @persona.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                 if @persona.update(persona_params)
                     @senal.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
@@ -150,7 +148,6 @@ module Api
                         else
                             result=1
                         end
-                        byebug
                         if (params[:internet]==1)
                             if @info_internet
                                 @info_internet.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
@@ -189,8 +186,6 @@ module Api
                             message2 = @info_internet.errors
                         end
                     end
-                    #byebug
-                    #msg = message1 + ' ' + message2
                     render :json => {:message1 => message1,
                     :message2 => message2 }.to_json
                 else
