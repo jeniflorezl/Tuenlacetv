@@ -39,7 +39,7 @@ module Api
                 SELECT * FROM VwEstadoDeCuentaTotal;
                 SQL
                 ActiveRecord::Base.connection.clear_query_cache
-                @saldos = ActiveRecord::Base.connection.select_all(query)
+                #@saldos = ActiveRecord::Base.connection.select_all(query)
             end
 
             def index_entidad

@@ -3,7 +3,11 @@ json.senales do
         json.id senal.entidad.id
         json.tipo_documento senal.entidad.persona.tipo_documento.nombre
         json.documento senal.entidad.persona.documento
-        json.nombres senal.entidad.persona.nombre1 + '' + senal.entidad.persona.nombre2 + ' ' + senal.entidad.persona.apellido1 + ' ' + senal.entidad.persona.apellido2
+        if senal.entidad.persona.nombre2.blank?
+            json.nombres senal.entidad.persona.nombre1 + ' ' + senal.entidad.persona.apellido1 + ' ' + senal.entidad.persona.apellido2
+        else
+            json.nombres senal.entidad.persona.nombre1 + ' ' + senal.entidad.persona.nombre2 + ' ' + senal.entidad.persona.apellido1 + ' ' + senal.entidad.persona.apellido2
+        end
         json.nombre1 senal.entidad.persona.nombre1
         json.nombre2 senal.entidad.persona.nombre2
         json.apellido1 senal.entidad.persona.apellido1
@@ -45,11 +49,7 @@ json.senales do
             end
         end
         json.tv @tv
-        json.array! @saldos do |saldo|
-            if (senal.entidad_id == saldo.entidad_id)
-                json.saldo saldo.saldo
-            end
-        end
+        
         json.fechacontrato senal.fechacontrato
         json.permanencia senal.permanencia
         json.televisores senal.televisores
