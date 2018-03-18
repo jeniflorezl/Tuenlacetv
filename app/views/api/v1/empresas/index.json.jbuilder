@@ -8,26 +8,10 @@ json.empresas do
         json.telefono1 empresa.telefono1
         json.telefono2 empresa.telefono2
         json.ciudad empresa.ciudad.nombre
-        json.representante do 
-            json.array! @entidades do |entidad|
-                representante = empresa.entidad_id
-                if (representante == entidad.id)
-                    json.tipo_documento entidad.persona.tipo_documento.nombre
-                    json.documento entidad.persona.documento
-                    json.nombre1 entidad.persona.nombre1
-                    json.nombre2 entidad.persona.nombre2
-                    json.apellido1 entidad.persona.apellido1
-                    json.apellido2 entidad.persona.apellido2
-                    json.direccionP entidad.persona.direccion
-                    json.telefono1P entidad.persona.telefono1
-                    json.telefono2P entidad.persona.telefono2
-                    json.barrioP entidad.persona.barrio.nombre
-                    json.zonaP entidad.persona.zona.nombre
-                    json.correo entidad.persona.correo
-                    json.fechanac entidad.persona.fechanac
-                    json.tipopersona entidad.persona.tipopersona
-                    json.estratoP entidad.persona.estrato
-                end
+        json.representante do
+            json.array! @representantes do |repre|
+                json.id repre.id
+                json.nombres repre.persona.nombre1 + '' + repre.persona.nombre2 + ' ' + repre.persona.apellido1 + ' ' + repre.persona.apellido2
             end
         end
         json.logo empresa.logo
