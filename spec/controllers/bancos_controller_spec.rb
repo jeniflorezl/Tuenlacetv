@@ -27,7 +27,7 @@ RSpec.describe Api::V1::BancosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        get "http://localhost:3000/api/v1/bancos/id/1/PRUEBAS", :headers => headers
+        get "http://localhost:3000/api/v1/bancos/id/2/PRUEBAS", :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -35,7 +35,7 @@ RSpec.describe Api::V1::BancosController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        get "http://localhost:3000/api/v1/bancos/id/1/PRUEBAS", :headers => headers
+        get "http://localhost:3000/api/v1/bancos/id/2/PRUEBAS", :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -74,7 +74,7 @@ RSpec.describe Api::V1::BancosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        put "http://localhost:3000/api/v1/bancos/1", :params => '{ "nit": "800226788", "nombre": "CAJA GENERAL", "direccion": "", "ciudad_id": 1, "telefono1": "0", "telefono2": "0", "contacto": "", "cuentaBancaria": "110505", "cuentaContable": "", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
+        put "http://localhost:3000/api/v1/bancos/2", :params => '{ "nit": "800226788", "nombre": "CAJA GENERAL", "direccion": "", "ciudad_id": 1, "telefono1": "0", "telefono2": "0", "contacto": "", "cuentaBancaria": "110505", "cuentaContable": "", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -102,7 +102,7 @@ RSpec.describe Api::V1::BancosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/bancos/3", :params => '{ "db": "PRUEBAS" }', :headers => headers
+        delete "http://localhost:3000/api/v1/bancos/6", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -111,7 +111,7 @@ RSpec.describe Api::V1::BancosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/bancos/1", :params => '{ "db": "PRUEBAS" }', :headers => headers
+        delete "http://localhost:3000/api/v1/bancos/6", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:bad_request)
       end
 
@@ -128,7 +128,7 @@ RSpec.describe Api::V1::BancosController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        delete "http://localhost:3000/api/v1/bancos/1", :params => '{ "db": "PRUEBAS" }', :headers => headers
+        delete "http://localhost:3000/api/v1/bancos/6", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end

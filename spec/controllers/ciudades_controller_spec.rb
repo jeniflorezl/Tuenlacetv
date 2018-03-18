@@ -46,7 +46,7 @@ RSpec.describe Api::V1::CiudadesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        post "http://localhost:3000/api/v1/ciudades", :params => '{ "pais_id": 1, "nombre": "MEDELLIN", "codigoDane": "05001", "codigoAlterno": "" , "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
+        post "http://localhost:3000/api/v1/ciudades", :params => '{ "pais_id": 1, "nombre": "MEDELLIN", "codigoDane": "05001", "codigoAlterno": "" , "usuario_id": 1, departamento_id: 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -63,7 +63,7 @@ RSpec.describe Api::V1::CiudadesController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        post "http://localhost:3000/api/v1/ciudades", :params => '{ "pais_id": 1, "nombre": "MEDELLIN", "codigoDane": "05001", "codigoAlterno": "" , "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
+        post "http://localhost:3000/api/v1/ciudades", :params => '{ "pais_id": 1, "nombre": "MEDELLIN", "codigoDane": "05001", "codigoAlterno": "" , "usuario_id": 1, departamento_id: 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -74,7 +74,7 @@ RSpec.describe Api::V1::CiudadesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        put "http://localhost:3000/api/v1/ciudades/1", :params => '{ "pais_id": 1, "nombre": "MEDELLIN", "codigoDane": "05001", "codigoAlterno": "" , "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
+        put "http://localhost:3000/api/v1/ciudades/1", :params => '{ "pais_id": 1, "nombre": "MEDELLIN", "codigoDane": "05001", "codigoAlterno": "" , "usuario_id": 1, departamento_id: 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -83,7 +83,7 @@ RSpec.describe Api::V1::CiudadesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        put "http://localhost:3000/api/v1/ciudades/30", :params => '{ "pais_id": 1, "nombre": "MEDELLIN", "codigoDane": "05001", "codigoAlterno": "" , "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
+        put "http://localhost:3000/api/v1/ciudades/30", :params => '{ "pais_id": 1, "nombre": "MEDELLIN", "codigoDane": "05001", "codigoAlterno": "" , "usuario_id": 1, departamento_id: 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:not_found)
       end
 
@@ -91,7 +91,7 @@ RSpec.describe Api::V1::CiudadesController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        put "http://localhost:3000/api/v1/ciudades/1", :params => '{ "pais_id": 1, "nombre": "MEDELLIN", "codigoDane": "05001", "codigoAlterno": "" , "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
+        put "http://localhost:3000/api/v1/ciudades/1", :params => '{ "pais_id": 1, "nombre": "MEDELLIN", "codigoDane": "05001", "codigoAlterno": "" , "usuario_id": 1, departamento_id: 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -106,7 +106,7 @@ RSpec.describe Api::V1::CiudadesController, type: :request do
         expect(response).to have_http_status(:ok)
       end
 
-      it 'it is not ok if it is foreign key' do
+      it 'is not ok if it is foreign key' do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json",

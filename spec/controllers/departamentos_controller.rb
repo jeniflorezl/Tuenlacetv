@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::BarriosController, type: :request do
+RSpec.describe Api::V1::DepartamentosController, type: :request do
 
     describe 'GET index' do
       it 'ok' do
@@ -8,7 +8,7 @@ RSpec.describe Api::V1::BarriosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        get "http://localhost:3000/api/v1/barrios/bd/PRUEBAS", :headers => headers
+        get "http://localhost:3000/api/v1/departamentos/bd/PRUEBAS", :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -16,7 +16,7 @@ RSpec.describe Api::V1::BarriosController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        get "http://localhost:3000/api/v1/barrios/bd/PRUEBAS", :headers => headers
+        get "http://localhost:3000/api/v1/departamentos/bd/PRUEBAS", :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -27,7 +27,7 @@ RSpec.describe Api::V1::BarriosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        get "http://localhost:3000/api/v1/barrios/id/2/PRUEBAS", :headers => headers
+        get "http://localhost:3000/api/v1/departamentos/id/1/PRUEBAS", :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -35,7 +35,7 @@ RSpec.describe Api::V1::BarriosController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        get "http://localhost:3000/api/v1/barrios/id/1/PRUEBAS", :headers => headers
+        get "http://localhost:3000/api/v1/departamentos/id/1/PRUEBAS", :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -46,7 +46,7 @@ RSpec.describe Api::V1::BarriosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        post "http://localhost:3000/api/v1/barrios", :params => '{ "zona_id": 1, "nombre": "PRADO", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
+        post "http://localhost:3000/api/v1/departamentos", :params => '{ "pais_id": 1, "nombre": "Antioquia", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -55,7 +55,7 @@ RSpec.describe Api::V1::BarriosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        post "http://localhost:3000/api/v1/barrios", :params => '{ "zona_id": 1, "nombre": "PRADO" }', :headers => headers
+        post "http://localhost:3000/api/v1/departamentos", :params => '{ "nombre": "Antioquia" }', :headers => headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
@@ -63,7 +63,7 @@ RSpec.describe Api::V1::BarriosController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        post "http://localhost:3000/api/v1/barrios", :params => '{ "zona_id": 1, "nombre": "PRADO", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
+        post "http://localhost:3000/api/v1/departamentos", :params => '{ "pais_id": 1, "nombre": "Antioquia", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -74,7 +74,7 @@ RSpec.describe Api::V1::BarriosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        put "http://localhost:3000/api/v1/barrios/1", :params => '{ "zona_id": 1, "nombre": "PRADO", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
+        put "http://localhost:3000/api/v1/departamentos/1", :params => '{ "pais_id": 1, "nombre": "Antioquia", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -83,7 +83,7 @@ RSpec.describe Api::V1::BarriosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        put "http://localhost:3000/api/v1/barrios/30", :params => '{ "zona_id": 1, "nombre": "PRADO", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
+        put "http://localhost:3000/api/v1/departamentos/30", :params => '{ "pais_id": 1, "nombre": "Antioquia", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:not_found)
       end
 
@@ -91,7 +91,7 @@ RSpec.describe Api::V1::BarriosController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        put "http://localhost:3000/api/v1/barrios/1", :params => '{ "zona_id": 1, "nombre": "PRADO", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
+        put "http://localhost:3000/api/v1/departamentos/1", :params => '{ "pais_id": 1, "nombre": "Antioquia", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -102,7 +102,7 @@ RSpec.describe Api::V1::BarriosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/barrios/5", :params => '{ "db": "PRUEBAS" }', :headers => headers
+        delete "http://localhost:3000/api/v1/departamentos/5", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -111,7 +111,7 @@ RSpec.describe Api::V1::BarriosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/barrios/1", :params => '{ "db": "PRUEBAS" }', :headers => headers
+        delete "http://localhost:3000/api/v1/departamentos/1", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:bad_request)
       end
 
@@ -120,7 +120,7 @@ RSpec.describe Api::V1::BarriosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/barrios/30", :params => '{ "db": "PRUEBAS" }', :headers => headers
+        delete "http://localhost:3000/api/v1/departamentos/30", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:not_found)
       end
 
@@ -128,7 +128,7 @@ RSpec.describe Api::V1::BarriosController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        delete "http://localhost:3000/api/v1/barrios/1", :params => '{ "db": "PRUEBAS" }', :headers => headers
+        delete "http://localhost:3000/api/v1/departamentos/1", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end

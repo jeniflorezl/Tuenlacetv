@@ -71,6 +71,7 @@ module Api
                 message1 = ''
                 message2 = ''
                 msg = ''
+                byebug
                 @funcion = params[:funcion_id]
                 @persona = Persona.new(persona_params)
                 if @persona.save

@@ -1,5 +1,6 @@
 class TipoFacturacion < ApplicationRecord
     has_many :senales
+    belongs_to :usuario
 
     before_save :uppercase
 
