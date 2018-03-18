@@ -8,8 +8,7 @@ module Api
             def index
                 @empresas = Empresa.all
                 @ciudades = Ciudad.all
-                @personas = Persona.all
-                @entidades = Entidad.all
+                @representantes = Entidad.where(funcion_id: 9)
             end
 
             # GET /empresas/id
@@ -21,6 +20,7 @@ module Api
             # POST /empresas
             def create
                 @empresa = Empresa.new(empresa_params)
+                @empresa.tipo = '01'
                 if @empresa.save 
                     render json: { status: :created }
                 else
@@ -72,7 +72,7 @@ module Api
             #Le coloco los parametros que necesito del empresa para crearlo y actualizarlo
 
             def empresa_params
-                params.require(:empresa).permit(:tipo, :nit, :razonsocial, :direccion, :telefono1,
+                params.require(:empresa).permit(:nit, :razonsocial, :direccion, :telefono1,
                 :telefono2, :ciudad_id, :entidad_id, :logo, :correo, :regimen, :contribuyente, 
                 :centrocosto, :usuario_id)
             end 

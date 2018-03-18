@@ -48,23 +48,9 @@ json.ciudades do
     end
 end
 
-json.personas do
-    json.array! @personas do |persona|
-        json.id persona.id
-        json.tipo_documento persona.tipo_documento.nombre
-        json.documento persona.documento
-        json.nombre1 persona.nombre1
-        json.nombre2 persona.nombre2
-        json.apellido1 persona.apellido1
-        json.apellido2 persona.apellido2
-        json.direccionP persona.direccion
-        json.telefono1P persona.telefono1
-        json.telefono2P persona.telefono2
-        json.barrioP persona.barrio.nombre
-        json.zonaP persona.zona.nombre
-        json.correo persona.correo
-        json.fechanac persona.fechanac
-        json.tipopersona persona.tipopersona
-        json.estratoP persona.estrato
+json.representantes do
+    json.array! @representantes do |repre|
+        json.id repre.id
+        json.nombres repre.persona.nombre1 + '' + repre.persona.nombre2 + ' ' + repre.persona.apellido1 + ' ' + repre.persona.apellido2
     end
 end
