@@ -47,6 +47,7 @@ json.senales do
         json.areainstalacion senal["areainstalacion"]
         json.funcion senal["funcion_id"]
         json.tipo_facturacion senal["tipo_facturacion"]
+        json.tecnico_id senal["tecnico_id"]
         @senales.each do |senales|
             if (senal["id"] == senales.entidad_id)
                 @tv = 0
