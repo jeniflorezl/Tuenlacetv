@@ -97,7 +97,7 @@ RSpec.describe Api::V1::EmpresasController, type: :request do
     end
 
     describe 'DELETE delete' do
-      it 'ok if it is foreign key' do
+      it 'is not ok if it is foreign key' do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json",

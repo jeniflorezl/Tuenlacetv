@@ -26,6 +26,11 @@ module Api
                 @estados = Estado.all
                 @vendedores = Entidad.where(funcion_id: 5)
                 @tecnicos = Entidad.where(funcion_id: 7)
+                query = <<-SQL 
+                SELECT senal_id, tecnico_id FROM ordenes WHERE concepto_id = (SELECT id FROM conceptos WHERE nombre = 'INSTALACION TELEVISION') OR concepto_id = (SELECT id FROM conceptos WHERE nombre = 'INSTALACION INTERNET');
+                SQL
+                ActiveRecord::Base.connection.clear_query_cache
+                @ordenes = ActiveRecord::Base.connection.select_all(query)
                 @entidades = Entidad.all
                 concepto_tv = Concepto.find_by(nombre: 'MENSUALIDAD TELEVISION').id
                 concepto_int = Concepto.find_by(nombre: 'MENSUALIDAD INTERNET').id

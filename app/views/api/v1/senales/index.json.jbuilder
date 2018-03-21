@@ -73,6 +73,19 @@ json.senales do
                 end
             end
         end
+        json.tecnico do
+            json.array! @ordenes do |orden|
+                if (senal.id == orden["senal_id"])
+                    tecnico = orden["tecnico_id"]
+                    json.array! @entidades do |entidad|
+                        if (tecnico == entidad.id)
+                            json.id entidad.id
+                            json.nombres entidad.persona.nombre1 + '' + entidad.persona.nombre2 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
+                        end
+                    end
+                end
+            end
+        end
         json.tipo_instalacion senal.tipo_instalacion.nombre
         json.tecnologia senal.tecnologia.nombre
         json.tiposervicio senal.tiposervicio

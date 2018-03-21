@@ -102,16 +102,16 @@ RSpec.describe Api::V1::BancosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/bancos/6", :params => '{ "db": "PRUEBAS" }', :headers => headers
+        delete "http://localhost:3000/api/v1/bancos/3", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
-      it 'it is not ok if it is foreign key' do
+      it 'is not ok if it is foreign key' do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/bancos/6", :params => '{ "db": "PRUEBAS" }', :headers => headers
+        delete "http://localhost:3000/api/v1/bancos/1", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:bad_request)
       end
 

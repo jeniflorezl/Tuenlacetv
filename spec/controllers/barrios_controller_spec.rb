@@ -106,7 +106,7 @@ RSpec.describe Api::V1::BarriosController, type: :request do
         expect(response).to have_http_status(:ok)
       end
 
-      it 'it is not ok if it is foreign key' do
+      it 'is not ok if it is foreign key' do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json",
