@@ -20,9 +20,17 @@ json.senales do
             json.telefono2P senal.entidad.persona.telefono2
             json.correo senal.entidad.persona.correo
             json.fechanac senal.entidad.persona.fechanac
-            json.tipopersona senal.entidad.persona.tipopersona
+            if (senal.entidad.persona.tipopersona == 'N')
+                json.tipopersona "Natural"
+            else
+                json.tipopersona "Jurídica"
+            end
             json.estratoP senal.entidad.persona.estrato
-            json.condicion_fisica senal.entidad.persona.condicionfisica
+            if (senal.entidad.persona.condicionfisica == 'N')
+                json.condicionfisica "Normal"
+            else
+                json.condicionfisica "Discapacitada"
+            end
             json.contrato senal.contrato
             json.direccion senal.direccion
             json.urbanizacion senal.urbanizacion
@@ -35,6 +43,11 @@ json.senales do
             json.contacto senal.contacto
             json.estrato senal.estrato
             json.vivienda senal.vivienda
+            if (senal.vivienda == 'P')
+                json.vivienda "Propia"
+            else
+                json.vivienda "Alquilada"
+            end
             json.observacion senal.observacion
             @tv = 0
             @saldo = 0
@@ -90,7 +103,19 @@ json.senales do
             json.tipo_instalacion senal.tipo_instalacion.nombre
             json.tecnologia senal.tecnologia.nombre
             json.tiposervicio senal.tiposervicio
-            json.areainstalacion senal.areainstalacion
+            if (senal.tiposervicio == 'R')
+                json.tiposervicio "Residencial"
+            else
+                json.tiposervicio "Comercial"
+            end
+            case senal.areainstalacion
+            when "U"
+                json.areainstalacion "Urbana"
+            when "R"
+                json.areainstalacion "Rural"
+            else "E"
+                json.areainstalacion "Extrarural"
+            end
             json.funcion senal.entidad.funcion.nombre
             json.tipo_facturacion do
                 json.array! @tipo_facturacion do |tipo|
@@ -116,7 +141,11 @@ json.senales do
                             json.gateway internet.gateway
                             json.nodo internet.nodo
                             json.clavewifi internet.clavewifi
-                            json.equipo internet.equipo
+                            if (internet.equipo == 'S')
+                                json.equipo "Si"
+                            else
+                                json.equipo "No"
+                            end
                             json.plantilla_fact_int do
                                 unless @plantillas_int.blank?
                                     json.array! @plantillas_int do |plantilla|
