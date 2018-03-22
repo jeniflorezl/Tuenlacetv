@@ -23,7 +23,6 @@ module Api
                 @tecnologias = Tecnologia.all
                 @tipo_documentos = TipoDocumento.all
                 @funciones = Funcion.all
-                @estados = Estado.all
                 @vendedores = Entidad.where(funcion_id: 5)
                 @tecnicos = Entidad.where(funcion_id: 7)
                 query = <<-SQL 

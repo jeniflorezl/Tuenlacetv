@@ -12,7 +12,7 @@ module Api
                         @usuario = current_user
                         @usuarios = [*@usuario]
                     end
-                    @estados = Estado.where(tipo: 1)
+                    @estados = Estado.where("abreviatura = 'A' or abreviatura = 'IN'")
                 end
             
                 # GET /usuarios/id

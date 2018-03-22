@@ -10,7 +10,7 @@ module Api
                     @zonas = Zona.all
                     @conceptos = Concepto.all
                     @planes = Plan.all
-                    @estados = Estado.all
+                    @estados = Estado.where("abreviatura = 'A' or abreviatura = 'IN'")
                     @historial = HistorialTarifa.all
                 end
             
@@ -64,6 +64,9 @@ module Api
                 def destroy
                     if @tarifa
                         @tarifa.destroy()
+                        @historial.each do |h|
+                            h.destroy()
+                        end
                         render json: { status: :deleted }
                     else
                         render json: { post: "not found" }
@@ -94,7 +97,7 @@ module Api
 
                 def set_tarifa
                     @tarifa = Tarifa.find(params[:id])
-                    @historial = HistorialTarifa.all
+                    @historial = HistorialTarifa.where(tarifa_id: @tarifa.id)
                 end
 
                 #Le coloco los parametros que necesito de la tarifa para crearla y actualizarla

@@ -8,6 +8,8 @@ class Concepto < ApplicationRecord
   validates :servicio, :codigo, :nombre, :porcentajeIva, :abreviatura, :operacion,
   :usuario, presence: true #obligatorio
 
+  validates :codigo, uniqueness: true
+
   def uppercase
     self.nombre.upcase!
     self.abreviatura.upcase!

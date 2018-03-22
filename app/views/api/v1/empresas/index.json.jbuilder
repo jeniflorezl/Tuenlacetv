@@ -16,8 +16,16 @@ json.empresas do
         end
         json.logo empresa.logo
         json.correo empresa.correo
-        json.regimen empresa.regimen
-        json.contribuyente empresa.contribuyente
+        if (empresa.regimen == 'S')
+            json.regimen "Simplificado"
+        else
+            json.regimen "Común"
+        end
+        if (empresa.contribuyente == 'S')
+            json.contribuyente "Si"
+        else
+            json.contribuyente "No"
+        end
         json.centrocosto empresa.centrocosto
     end
 end
