@@ -10,7 +10,7 @@ json.tarifas do
             json.array! @historial do |historial|
                 if (historial.tarifa_id == tarifa.id)
                     json.fechainicio historial.fechainicio
-                    json.fechavence historial.fechavence
+                    json.fechaven historial.fechavence
                 end
             end
         end
