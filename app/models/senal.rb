@@ -34,7 +34,6 @@ class Senal < ApplicationRecord
   private
 
   def self.afiliacion_tv(senal_tv, entidad_tv, valorAfiTv, valorDcto, tarifaTv, tecnico)
-    byebug
     senal = senal_tv
     entidad = entidad_tv
     ultimo = 0

@@ -96,8 +96,9 @@ RSpec.describe Api::V1::UsuariosController, type: :request do
         expect(response).to have_http_status(:unauthorized)
       end
     end
-=begin
+
     describe 'DELETE delete' do
+=begin
       it 'ok if it is not foreign key' do
         headers = { 
           "Content-Type" => "application/json",
@@ -106,16 +107,16 @@ RSpec.describe Api::V1::UsuariosController, type: :request do
         delete "http://localhost:3000/api/v1/usuarios/2", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
-
+=end
       it 'is not ok if it is foreign key' do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
         delete "http://localhost:3000/api/v1/usuarios/1", :params => '{ "db": "PRUEBAS" }', :headers => headers
-        expect(response).to have_http_status(:bad_request)
+        expect(response).to have_http_status(:not_acceptable)
       end
-=end
+
       it 'Not Found' do
         headers = { 
           "Content-Type" => "application/json",

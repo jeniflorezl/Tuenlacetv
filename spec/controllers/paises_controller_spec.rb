@@ -112,7 +112,7 @@ RSpec.describe Api::V1::PaisesController, type: :request do
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
         delete "http://localhost:3000/api/v1/paises/1", :params => '{ "db": "PRUEBAS" }', :headers => headers
-        expect(response).to have_http_status(:bad_request)
+        expect(response).to have_http_status(:not_acceptable)
       end
 
       it 'Not Found' do

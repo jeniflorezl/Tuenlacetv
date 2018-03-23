@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   namespace :api, defaults: { format: "json" } do
     namespace :v1 do
       resources :paises
+      resources :departamentos
       resources :ciudades
       resources :bancos
       resources :zonas
@@ -16,6 +17,8 @@ Rails.application.routes.draw do
       resources :tipo_facturacion
       get 'paises/bd/:db', to: 'paises#index'
       get 'paises/:campo/:valor/:db', to: 'paises#show'
+      get 'departamentos/bd/:db', to: 'departamentos#index'
+      get 'departamentos/:campo/:valor/:db', to: 'departamentos#show'
       get 'ciudades/bd/:db', to: 'ciudades#index'
       get 'ciudades/:campo/:valor/:db', to: 'ciudades#show'
       get 'bancos/bd/:db', to: 'bancos#index'
@@ -42,6 +45,7 @@ Rails.application.routes.draw do
       get 'empresas/:campo/:valor/:db', to: 'empresas#show'
       get 'tipo_facturacion/bd/:db', to: 'tipo_facturacion#index'
       get 'tipo_facturacion/:campo/:valor/:db', to: 'tipo_facturacion#show'
+      get 'facturacion/bd/:db', to: 'facturacion#index'
       post 'facturacion/factura_manual/:db', to: 'facturacion#create_factura'
       post 'signin', to: 'sesion#create'
       delete 'signout', to: 'sesion#destroy'

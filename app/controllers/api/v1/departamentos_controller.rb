@@ -1,6 +1,6 @@
 module Api
     module V1
-        class departamentoesController < ApplicationController
+        class DepartamentosController < ApplicationController
             before_action :set_departamento_buscar, only: [:show]
             before_action :set_departamento, only: [:update, :destroy]
   

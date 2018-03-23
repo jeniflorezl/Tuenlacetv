@@ -61,7 +61,7 @@ class ApplicationController < ActionController::API
     end
 
     def error_clave_foranea(error)
-        render status: :not_acceptable, json: { error: "foranea" }
+        render status: :not_acceptable, json: { error: "Entidad no aceptable o error de clave foranea" }
     end
 
     private
