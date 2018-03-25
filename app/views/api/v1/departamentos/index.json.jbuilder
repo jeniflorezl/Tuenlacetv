@@ -1,7 +1,7 @@
 json.departamentos do
     json.array! @departamentos do |departamento|
         json.id departamento.id
-        json.pais_id departamento.pais_id
+        json.pais departamento.pais.nombre
         json.nombre departamento.nombre
         json.codigo departamento.codigo
     end
