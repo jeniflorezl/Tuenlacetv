@@ -1,8 +1,9 @@
 class Departamento < ApplicationRecord
-  belongs_to :pais
-  has_many :ciudades
+    belongs_to :pais
+    belongs_to :usuario
+    has_many :ciudades
 
-  before_save :uppercase
+    before_save :uppercase
 
     validates :nombre, :usuario, presence: true #obligatorio
 
