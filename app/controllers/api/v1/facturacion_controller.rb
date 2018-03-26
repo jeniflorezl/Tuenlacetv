@@ -33,46 +33,6 @@ module Api
                     render json: { error: "error en el proceso" }
                 end
             end
-        
-            # PATCH/PUT /facturaciones/id
-            def update
-            t = Time.now
-            @ciudad.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
-                if @ciudad.update(ciudad_params)
-                    render json: { status: :updated }
-                else
-                    render json: @ciudad.errors, status: :unprocessable_entity
-                end
-            end
-        
-            # DELETE /facturaciones/id
-            def destroy
-                if @ciudad
-                    @ciudad.destroy
-                    render json: { status: :deleted }
-                  else
-                    render json: { post: "not found" }
-                  end
-            end
-        
-            
-            private
-
-            # Me busca la ciudad por el id
-            def set_ciudad
-                @ciudad = Ciudad.find(params[:id])
-            end
-
-            def set_ciudad_buscar
-                @campo = params[:campo]
-                @valor = params[:valor]
-                if @campo == 'id'
-                  @ciudad = Ciudad.find(params[:valor])
-                else
-                  @ciudad = Ciudad.limit(10).where("nombre LIKE '%#{@valor}%'")
-                end
-                @ciudad = [*@ciudad]
-            end
         end
     end
 end

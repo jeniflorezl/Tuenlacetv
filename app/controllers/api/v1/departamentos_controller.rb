@@ -28,11 +28,11 @@ module Api
             def update
                 t = Time.now
                 @departamento.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
-                    if @departamento.update(departamento_params)
-                        render json: { status: :updated }
-                    else
-                        render json: @departamento.errors, status: :unprocessable_entity
-                    end 
+                if @departamento.update(departamento_params)
+                    render json: { status: :updated }
+                else
+                    render json: @departamento.errors, status: :unprocessable_entity
+                end 
             end
         
             # DELETE /departamentoes/id
@@ -40,9 +40,9 @@ module Api
                 if @departamento
                     @departamento.destroy
                     render json: { status: :deleted }
-                  else
+                else
                     render json: { post: "not found" }
-                  end
+                end
             end
         
             
@@ -54,12 +54,12 @@ module Api
             end
 
             def set_departamento_buscar
-                @campo = params[:campo]
-                @valor = params[:valor]
+                campo = params[:campo]
+                valor = params[:valor]
                 if @campo == 'id'
-                  @departamento = Departamento.find(params[:valor])
+                  @departamento = Departamento.find(valor)
                 else
-                  @departamento = Departamento.limit(10).where("#{@campo} LIKE '%#{@valor}%'")
+                  @departamento = Departamento.limit(10).where("#{campo} LIKE '%#{valor}%'")
                 end
                 @departamento = [*@departamento]
             end

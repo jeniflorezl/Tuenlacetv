@@ -25,8 +25,8 @@ module Api
         
             # PATCH/PUT /tipo_facturaciones/id
             def update
-            t = Time.now
-            @tipo_facturacion.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
+                t = Time.now
+                @tipo_facturacion.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                 if @tipo_facturacion.update(tipo_facturacion_params)
                     render json: { status: :updated }
                 else
@@ -53,12 +53,12 @@ module Api
             end
 
             def set_tipo_facturacion_buscar
-                @campo = params[:campo]
-                @valor = params[:valor]
-                if @campo == 'id'
-                  @tipo_facturacion = TipoFacturacion.find(params[:valor])
+                campo = params[:campo]
+                valor = params[:valor]
+                if campo == 'id'
+                  @tipo_facturacion = TipoFacturacion.find(valor)
                 else
-                  @tipo_facturacion = TipoFacturacion.limit(10).where("nombre LIKE '%#{@valor}%'")
+                  @tipo_facturacion = TipoFacturacion.limit(10).where("nombre LIKE '%#{valor}%'")
                 end
                 @tipo_facturacion = [*@tipo_facturacion]
             end

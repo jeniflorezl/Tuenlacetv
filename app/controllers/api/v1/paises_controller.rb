@@ -52,12 +52,12 @@ module Api
         end
 
         def set_pais_buscar
-          @campo = params[:campo]
-          @valor = params[:valor]
-          if @campo == 'id'
-            @pais = Pais.find(params[:valor])
+          campo = params[:campo]
+          valor = params[:valor]
+          if campo == 'id'
+            @pais = Pais.find(valor)
           else
-            @pais = Pais.limit(10).where("nombre LIKE '%#{@valor}%'")
+            @pais = Pais.limit(10).where("nombre LIKE '%#{valor}%'")
           end
           @pais = [*@pais]
         end

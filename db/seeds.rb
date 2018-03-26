@@ -15,7 +15,6 @@ Estado.create(nombre: 'PENDIENTE', abreviatura: 'PE', tipo: 2, usuario: 'admin')
 Estado.create(nombre: 'ANULADO', abreviatura: 'AN', tipo: 2, usuario: 'admin')
 Estado.create(nombre: 'APLICADO', abreviatura: 'AP', tipo: 2, usuario: 'admin')
 Estado.create(nombre: 'PAGADO', abreviatura: 'PA', tipo: 2, usuario: 'admin')
-
 Pais.create(nombre: 'COLOMBIA', usuario_id: 1)
 Pais.create(nombre: 'PANAMA', usuario_id: 1)
 Pais.create(nombre: 'VENEZUELA',usuario_id: 1)
@@ -25,21 +24,17 @@ Ciudad.create(pais_id: 1, nombre: 'BOGOTA', codigoDane: '05001', codigoAlterno: 
 Ciudad.create(pais_id: 1, nombre: 'BUCARAMANGA', codigoDane: '05001', codigoAlterno: '', usuario_id: 1, departamento_id: 1)
 Ciudad.create(pais_id: 1, nombre: 'PEREIRA', codigoDane: '05001', codigoAlterno: '', usuario_id: 1, departamento_id: 1)
 Zona.create(ciudad_id: 1, nombre: 'ZONA GENERAL', usuario_id: 1)
-Zona.create(ciudad_id: 1, nombre: 'ZONA NORTE', usuario_id: 1)
-Zona.create(ciudad_id: 1, nombre: 'ZONA CENTRO', usuario_id: 1)
-Zona.create(ciudad_id: 1, nombre: 'ZONA SUR', usuario_id: 1)
-Zona.create(ciudad_id: 1, nombre: 'ZONA SUROESTE', usuario_id: 1)
 Barrio.create(zona_id: 1, nombre: 'PRADO', usuario_id: 1)
-Barrio.create(zona_id: 2, nombre: 'MIRADOR', usuario_id: 1)
-Barrio.create(zona_id: 3, nombre: 'TRAPICHE', usuario_id: 1)
-Barrio.create(zona_id: 4, nombre: 'SANTA ANA', usuario_id: 1)
-Barrio.create(zona_id: 5, nombre: 'BOSTON', usuario_id: 1)
-Banco.create(nit: '800226788', nombre: 'CAJA GENERAL', direccion: '', ciudad_id: 1, telefono1: '0',
-telefono2: '0', contacto: '', cuentaBancaria: '110505', cuentaContable: '', usuario_id: 1)
-Banco.create(nit: '900938640', nombre: 'PTO PAGO SUR', direccion: '', ciudad_id: 1, telefono1: '0',
-telefono2: '0', contacto: '', cuentaBancaria: '110455', cuentaContable: '', usuario_id: 1)
-Banco.create(nit: '860002964', nombre: 'PTO PAGO OESTE', direccion: '', ciudad_id: 1, telefono1: '0',
-telefono2: '0', contacto: '', cuentaBancaria: '125667', cuentaContable: '', usuario_id: 1)
+Barrio.create(zona_id: 1, nombre: 'MIRADOR', usuario_id: 1)
+Barrio.create(zona_id: 1, nombre: 'TRAPICHE', usuario_id: 1)
+Barrio.create(zona_id: 1, nombre: 'SANTA ANA', usuario_id: 1)
+Barrio.create(zona_id: 1, nombre: 'BOSTON', usuario_id: 1)
+Banco.create(nit: '800226788', nombre: 'CAJA GENERAL', direccion: 'Cll 23 #45-46', ciudad_id: 1, telefono1: '2344556',
+telefono2: '0', contacto: '', cuentaBancaria: '1105055', cuentaContable: '', usuario_id: 1)
+Banco.create(nit: '900938640', nombre: 'PTO PAGO SUR', direccion: 'Cra 20 #23-45', ciudad_id: 1, telefono1: '4347890',
+telefono2: '0', contacto: '', cuentaBancaria: '1234235', cuentaContable: '', usuario_id: 1)
+Banco.create(nit: '860002964', nombre: 'PTO PAGO OESTE', direccion: 'Cll 56 #10-9', ciudad_id: 1, telefono1: '7684523',
+telefono2: '0', contacto: '', cuentaBancaria: '5667434', cuentaContable: '', usuario_id: 1)
 Servicio.create(nombre: 'TELEVISION', usuario_id: 1)
 Servicio.create(nombre: 'INTERNET', usuario_id: 1)
 Documento.create(nombre: 'FACTURA DE VENTA TELEVISION', abreviatura: 'FTV', usuario_id: 1)
@@ -220,12 +215,18 @@ Parametro.create(descripcion: 'Maneja direccion de correspondencia', valor: 'S')
 Parametro.create(descripcion: 'Maneja nomenclatura DIAN', valor: 'S')
 Parametro.create(descripcion: 'Permite modificar valor de afiliación', valor: 'N')
 Parametro.create(descripcion: 'Maneja consecutivos separados', valor: 'N')
-Plan.create(servicio_id: 1, nombre: 'Plan tv', usuario_id: 1)
-Plan.create(servicio_id: 2, nombre: 'Plan internet', usuario_id: 1)
+Plan.create(servicio_id: 1, nombre: 'Television', usuario_id: 1)
+Plan.create(servicio_id: 2, nombre: 'Internet 2 megas', usuario_id: 1)
 Tarifa.create(zona_id: 1, concepto_id: 1, plan_id: 1, valor: '35000', estado_id: 1, usuario_id: 1)
-Tarifa.create(zona_id: 2, concepto_id: 2, plan_id: 1, valor: '50000', estado_id: 1, usuario_id: 1)
-Tarifa.create(zona_id: 3, concepto_id: 3, plan_id: 1, valor: '20000', estado_id: 1, usuario_id: 1)
-Tarifa.create(zona_id: 4, concepto_id: 1, plan_id: 1, valor: '15000', estado_id: 1, usuario_id: 1)
+Tarifa.create(zona_id: 1, concepto_id: 3, plan_id: 1, valor: '20000', estado_id: 1, usuario_id: 1)
+Tarifa.create(zona_id: 1, concepto_id: 5, plan_id: 1, valor: '18000', estado_id: 1, usuario_id: 1)
+Tarifa.create(zona_id: 1, concepto_id: 13, plan_id: 1, valor: '21000', estado_id: 1, usuario_id: 1)
+Tarifa.create(zona_id: 1, concepto_id: 15, plan_id: 1, valor: '10000', estado_id: 1, usuario_id: 1)
+Tarifa.create(zona_id: 1, concepto_id: 1, plan_id: 2, valor: '25000', estado_id: 1, usuario_id: 1)
+Tarifa.create(zona_id: 1, concepto_id: 3, plan_id: 2, valor: '25000', estado_id: 1, usuario_id: 1)
+Tarifa.create(zona_id: 1, concepto_id: 5, plan_id: 2, valor: '18000', estado_id: 1, usuario_id: 1)
+Tarifa.create(zona_id: 1, concepto_id: 13, plan_id: 2, valor: '21000', estado_id: 1, usuario_id: 1)
+Tarifa.create(zona_id: 1, concepto_id: 15, plan_id: 2, valor: '10000', estado_id: 1, usuario_id: 1)
 TipoDocumento.create(nombre: 'Cédula de Ciudadanía', usuario_id: 1)
 TipoDocumento.create(nombre: 'Cédula de Extranjería', usuario_id: 1)
 TipoDocumento.create(nombre: 'Pasaporte', usuario_id: 1)
@@ -244,6 +245,7 @@ Funcion.create(nombre: 'Vendedor', usuario_id: 1)
 Funcion.create(nombre: 'Esal', usuario_id: 1)
 Funcion.create(nombre: 'Tecnico', usuario_id: 1)
 Funcion.create(nombre: 'Cobrador', usuario_id: 1)
+Funcion.create(nombre: 'Representante', usuario_id: 1)
 TipoFacturacion.create(nombre: 'ANTICIPADA', usuario_id: 1)
 TipoFacturacion.create(nombre: 'VENCIDA', usuario_id: 1)
 Persona.create(tipo_documento_id: 1, documento: '1020470055', nombre1: 'JENIFFER', nombre2: '',
@@ -281,7 +283,6 @@ Entidad.create(funcion_id: 1, persona_id: 4, usuario_id: 1)
 Entidad.create(funcion_id: 7, persona_id: 5, usuario_id: 1)
 Entidad.create(funcion_id: 5, persona_id: 6, usuario_id: 1)
 Entidad.create(funcion_id: 5, persona_id: 7, usuario_id: 1)
-=end
 Senal.create(entidad_id: 1, contrato: '4789963', direccion: 'Calle 11 #24-23', urbanizacion: '', 
 torre: '', apto: '', barrio_id: 1, zona_id: 1, telefono1: '4540312', telefono2: '', contacto: '', estrato: '4',
 vivienda: 'P', observacion: '', fechacontrato: '01/01/2017', permanencia: '', televisores: 2, 
@@ -317,12 +318,14 @@ apto: '', barrio_id: 2, zona_id: 2, telefono1: '4540312', telefono2: '', contact
 observacion: '', fechacontrato: '01/01/2017', permanencia: '', televisores: 2, decos: '',
 precinto: '12321', vendedor_id: 6, tipo_instalacion_id: 1, tecnologia_id: 1, tiposervicio: 'residencial', 
 areainstalacion: 'urbana', usuario_id: 1, tipo_facturacion_id: 1)
+=end
 Empresa.create(tipo: '01', nit: '900353347', razonsocial: 'enlace informatico s.a.s', direccion: 'cra 47 #53-41', 
 telefono1: '4540312', telefono2: '', ciudad_id: 2, entidad_id: 2, logo: '', correo: 'gerencia@enlaceinformatico.com',
 regimen: 's', contribuyente: 's', centrocosto: '0001', usuario_id: 1)
 Resolucion.create(empresa_id: 1, nroResolucion: '18762002425502', tipo: 'AUTORIZADO', prefijo: 'AR',
 rangoRI: '0', rangoRF: '0', rangoI: '0', rangoF: '0', fechainicio: '28/02/2018', 
 fechavence: '28/02/2018', usuario_id: 1)
+=begin
 InfoInternet.create(senal_id: 1, direccionip: '123.455.566.777', velocidad: '3', mac1: '123.0.0.77', mac2: '', 
 serialm: '', marcam: '', mascarasub: '', dns: '128.0.0.0', gateway: '123.4.4.4', nodo: '', 
 clavewifi: '353534545', equipo: 'S', usuario_id: 1)
@@ -357,6 +360,7 @@ PlantillaFact.create(senal_id: 6, concepto_id: 4, estado_id: 1, tarifa_id: 3, fe
 fechafin: '01/01/2118', usuario_id: 1)
 PlantillaFact.create(senal_id: 7, concepto_id: 4, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
 fechafin: '01/01/2118', usuario_id: 1)
+=end
 
     
     

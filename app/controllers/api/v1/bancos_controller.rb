@@ -55,12 +55,12 @@ module Api
             
             # Me busca el banco por el id, la zona o el nombre
             def set_banco_buscar
-                @campo = params[:campo]
-                @valor = params[:valor]
-                if @campo == 'id'
+                campo = params[:campo]
+                valor = params[:valor]
+                if campo == 'id'
                     @banco = Banco.find(params[:valor])
                 else
-                    @banco = Banco.limit(10).where("#{@campo} LIKE '%#{@valor}%'")
+                    @banco = Banco.limit(10).where("#{campo} LIKE '%#{valor}%'")
                 end
                 @banco = [*@banco]
             end
@@ -70,7 +70,7 @@ module Api
 
             def banco_params
                 params.require(:banco).permit(:nit, :nombre, :direccion, :ciudad_id, :telefono1,
-                :telefono2, :contacto, :cuentaBancaria, :cuentaContable, :usuario_id)
+                    :telefono2, :contacto, :cuentaBancaria, :cuentaContable, :usuario_id)
             end 
         end
     end

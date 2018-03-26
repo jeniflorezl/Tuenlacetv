@@ -78,18 +78,18 @@ module Api
                 # Me busca la tarifa por el id, por la zona, el concepto, el plan, el valor, o el
                 # estado
                 def set_tarifa_buscar
-                    @campo = params[:campo]
-                    @valor = params[:valor]
-                    if @campo == 'id'
-                        @tarifa = Tarifa.find(params[:valor])
-                    elsif @campo == 'zona'
-                        @tarifa = Tarifa.limit(10).where(zona_id: @valor)
-                    elsif @campo == 'concepto'
-                        @tarifa = Tarifa.limit(10).where(concepto_id: @valor)
-                    elsif @campo == 'plan'
-                        @tarifa = Tarifa.limit(10).where(plan_id: @valor)
+                    campo = params[:campo]
+                    valor = params[:valor]
+                    if campo == 'id'
+                        @tarifa = Tarifa.find(valor)
+                    elsif campo == 'zona'
+                        @tarifa = Tarifa.limit(10).where(zona_id: valor)
+                    elsif campo == 'concepto'
+                        @tarifa = Tarifa.limit(10).where(concepto_id: valor)
+                    elsif campo == 'plan'
+                        @tarifa = Tarifa.limit(10).where(plan_id: valor)
                     else
-                        @tarifa = Tarifa.limit(10).where(valor: @valor)
+                        @tarifa = Tarifa.limit(10).where(valor: valor)
                     end
                     @tarifa = [*@tarifa]
                     @historial = HistorialTarifa.all
@@ -102,8 +102,8 @@ module Api
 
                 #Le coloco los parametros que necesito de la tarifa para crearla y actualizarla
                 def tarifa_params
-                    params.require(:tarifa).permit(:zona_id, :concepto_id, :plan_id, :valor, :estado_id, 
-                    :usuario_id)
+                    params.require(:tarifa).permit(:zona_id, :concepto_id, :plan_id, :valor, 
+                        :estado_id, :usuario_id)
                 end 
         end
     end

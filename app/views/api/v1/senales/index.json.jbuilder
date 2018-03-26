@@ -1,135 +1,66 @@
 json.senales do
     json.array! @senales do |senal|
-        if (senal.entidad.funcion_id == 1)
-            json.id senal.entidad.id
-            json.tipo_documento senal.entidad.persona.tipo_documento.nombre
-            json.documento senal.entidad.persona.documento
-            if senal.entidad.persona.nombre2.blank?
-                json.nombres senal.entidad.persona.nombre1 + ' ' + senal.entidad.persona.apellido1 + ' ' + senal.entidad.persona.apellido2
+        if senal["funcion_id"] == 1
+            json.id senal["id"]
+            json.tipo_documento senal["tipo_documento"]
+            json.documento senal["documento"]  
+            if senal["nombre2"].blank?
+                json.nombres senal["nombre1"] + ' ' + senal["apellido1"] + ' ' + senal["apellido2"]
             else
-                json.nombres senal.entidad.persona.nombre1 + ' ' + senal.entidad.persona.nombre2 + ' ' + senal.entidad.persona.apellido1 + ' ' + senal.entidad.persona.apellido2
+                json.nombres senal["nombre1"] + ' ' + senal["nombre2"] + ' ' + senal["apellido1"] + ' ' + senal["apellido2"]
             end
-            json.nombre1 senal.entidad.persona.nombre1
-            json.nombre2 senal.entidad.persona.nombre2
-            json.apellido1 senal.entidad.persona.apellido1
-            json.apellido2 senal.entidad.persona.apellido2
-            json.direccionP senal.entidad.persona.direccion
-            json.barrioP senal.entidad.persona.barrio.nombre
-            json.zonaP senal.entidad.persona.zona.nombre
-            json.telefono1P senal.entidad.persona.telefono1
-            json.telefono2P senal.entidad.persona.telefono2
-            json.correo senal.entidad.persona.correo
-            json.fechanac senal.entidad.persona.fechanac
-            if (senal.entidad.persona.tipopersona == 'N')
-                json.tipopersona "Natural"
-            else
-                json.tipopersona "Jurídica"
-            end
-            json.estratoP senal.entidad.persona.estrato
-            if (senal.entidad.persona.condicionfisica == 'N')
-                json.condicionfisica "Normal"
-            else
-                json.condicionfisica "Discapacitada"
-            end
-            json.contrato senal.contrato
-            json.direccion senal.direccion
-            json.urbanizacion senal.urbanizacion
-            json.torre senal.torre
-            json.apto senal.apto
-            json.barrio senal.barrio.nombre
-            json.zona senal.zona.nombre
-            json.telefono1 senal.telefono1
-            json.telefono2 senal.telefono2
-            json.contacto senal.contacto
-            json.estrato senal.estrato
-            json.vivienda senal.vivienda
-            if (senal.vivienda == 'P')
-                json.vivienda "Propia"
-            else
-                json.vivienda "Alquilada"
-            end
-            json.observacion senal.observacion
-            @tv = 0
-            @saldo = 0
-            unless @plantillas_tv.blank?
-                json.plantilla_fact_tv do
-                    json.array! @plantillas_tv do |plantilla|
-                        if (plantilla.senal_id == senal.id)
-                            json.plan_tv plantilla.tarifa.plan.nombre
-                            json.tarifa_tv plantilla.tarifa.valor
-                            json.estado_tv plantilla.estado.nombre
-                            @tv = 1
-                        end
-                    end
-                    json.array! @saldos do |saldo|
-                        if (senal.entidad_id == saldo["entidad_id"])
-                            json.saldo_tv saldo["saldo_tv"]
-                            @saldo = 1
-                        end
-                    end
-                    if (@saldo != 1) and (@tv == 1)
-                        json.saldo_tv 0
-                    end
-                end
-            end
-            json.tv @tv
-            json.fechacontrato senal.fechacontrato
-            json.permanencia senal.permanencia
-            json.televisores senal.televisores
-            json.decos senal.decos
-            json.precinto senal.precinto
-            json.vendedor do
-                json.array! @entidades do |entidad|
-                    vendedor = senal.vendedor_id
-                    if (vendedor == entidad.id)
-                        json.id entidad.id
-                        json.nombres entidad.persona.nombre1 + '' + entidad.persona.nombre2 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
-                    end
-                end
-            end
-            json.tecnico do
-                json.array! @ordenes do |orden|
-                    if (senal.id == orden["senal_id"])
-                        tecnico = orden["tecnico_id"]
-                        json.array! @entidades do |entidad|
-                            if (tecnico == entidad.id)
-                                json.id entidad.id
-                                json.nombres entidad.persona.nombre1 + '' + entidad.persona.nombre2 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
-                            end
-                        end
-                    end
-                end
-            end
-            json.tipo_instalacion senal.tipo_instalacion.nombre
-            json.tecnologia senal.tecnologia.nombre
-            json.tiposervicio senal.tiposervicio
-            if (senal.tiposervicio == 'R')
-                json.tiposervicio "Residencial"
-            else
-                json.tiposervicio "Comercial"
-            end
-            case senal.areainstalacion
-            when "U"
-                json.areainstalacion "Urbana"
-            when "R"
-                json.areainstalacion "Rural"
-            else "E"
-                json.areainstalacion "Extrarural"
-            end
-            json.funcion senal.entidad.funcion.nombre
-            json.tipo_facturacion do
-                json.array! @tipo_facturacion do |tipo|
-                    if (tipo.id == senal.tipo_facturacion_id)
-                        json.tipo senal.tipo_facturacion.nombre
-                    end
-                end
-            end
-            @int = 0
-            @saldo = 0
-            unless @info_internet.blank?
+            json.nombre1 senal["nombre1"]
+            json.nombre2 senal["nombre2"]
+            json.apellido1 senal["apellido1"]
+            json.apellido2 senal["apellido2"]
+            json.direccionP senal["direccionP"]
+            json.barrioP senal["barrioP"]
+            json.zonaP senal["zonaP"]
+            json.telefono1P senal["telefono1P"]
+            json.telefono2P senal["telefono2P"]
+            json.correo senal["correo"]
+            json.fechanac senal["fechanac"]
+            json.tipopersona senal["tipopersona"]
+            json.estratoP senal["estratoP"]
+            json.condicion_fisica senal["condicionfisica"]
+            json.contrato senal["contrato"]
+            json.direccion senal["direccion"]
+            json.urbanizacion senal["urbanizacion"]
+            json.torre senal["torre"]
+            json.apto senal["apto"]
+            json.barrio senal["barrio"]
+            json.zona senal["zona"]
+            json.telefono1 senal["telefono1"]
+            json.telefono2 senal["telefono2"]
+            json.contacto senal["contacto"]
+            json.estrato senal["estrato"]
+            json.vivienda senal["vivienda"]
+            json.observacion senal["observacion"]
+            json.fechacontrato senal["fechacontrato"]
+            json.permanencia senal["permanencia"]
+            json.televisores senal["televisores"]
+            json.decos senal["decps"]
+            json.precinto senal["precinto"]
+            json.vendedor_id senal["vendedor_id"]
+            json.vendedor senal["vendedor"]
+            json.tipo_instalacion senal["tipo_instalacion"]
+            json.tecnologia senal["tecnologia"]
+            json.tiposervicio senal["tiposervicio"]
+            json.areainstalacion senal["areainstalacion"]
+            json.funcion senal["funcion_id"]
+            json.tipo_facturacion senal["tipo_facturacion"]
+            json.tecnico_id senal["tecnico_id"]
+            json.tecnico senal["tecnico"]
+            json.tv senal["tv"]
+            json.plan_tv senal["plan_tv"]
+            json.tarifa_tv senal["tarifa_tv"]
+            json.estado_tv senal["estado_tv"]
+            json.saldo_tv senal["saldo_tv"]
+            json.internet senal["internet"]
+            if senal["internet"] == "1"
                 json.info_internet do
                     json.array! @info_internet do |internet|
-                        if (internet.senal_id == senal.id)
+                        if (senal["senal_id"] == internet.senal_id)
                             json.direccionip internet.direccionip
                             json.velocidad internet.velocidad
                             json.mac1 internet.mac1
@@ -141,41 +72,18 @@ json.senales do
                             json.gateway internet.gateway
                             json.nodo internet.nodo
                             json.clavewifi internet.clavewifi
-                            if (internet.equipo == 'S')
-                                json.equipo "Si"
-                            else
-                                json.equipo "No"
-                            end
-                            json.plantilla_fact_int do
-                                unless @plantillas_int.blank?
-                                    json.array! @plantillas_int do |plantilla|
-                                        if (plantilla.senal_id == senal.id)
-                                            json.plan_int plantilla.tarifa.plan.nombre
-                                            json.tarifa_int plantilla.tarifa.valor
-                                            json.estado_int plantilla.estado.nombre
-                                            @int = 1
-                                        end
-                                    end
-                                    json.array! @saldos do |saldo|
-                                        if (senal.entidad_id == saldo["entidad_id"])
-                                            json.saldo_int saldo["saldo_int"]
-                                            @saldo = 1
-                                        end
-                                    end
-                                    if (@saldo != 1) and (@int == 1)
-                                        json.saldo_tv 0
-                                    end
-                                end
-                            end
+                            json.equipo internet.equipo
+                            json.plan_int senal["plan_int"]
+                            json.tarifa_int senal["tarifa_int"]
+                            json.estado_int senal["estado_int"]
+                            json.saldo_int senal["saldo_int"]
                         end
                     end
-                end     
+                end
             end
-            json.int @int
         end
     end
 end
-
 
 json.servicios do
     json.array! @servicios do |servicio|
@@ -227,7 +135,7 @@ end
 
 json.tarifas_tv do
     json.array! @tarifas do |tarifa|
-        if (tarifa.plan.servicio_id == 1)
+        if tarifa.plan.servicio_id == 1
             json.id tarifa.id
             json.zona tarifa.zona.nombre
             json.concepto tarifa.concepto.nombre
@@ -243,7 +151,7 @@ json.param_valor_afi @param_valor_afi
 
 json.tarifas_int do
     json.array! @tarifas do |tarifa|
-        if (tarifa.plan.servicio_id == 2)
+        if tarifa.plan.servicio_id == 2
             json.id tarifa.id
             json.zona tarifa.zona.nombre
             json.concepto tarifa.concepto.nombre
@@ -287,14 +195,22 @@ end
 json.vendedores do
     json.array! @vendedores do |vendedor|
         json.id vendedor.id
-        json.nombres vendedor.persona.nombre1 + '' + vendedor.persona.nombre2 + ' ' + vendedor.persona.apellido1 + ' ' + vendedor.persona.apellido2
+        if vendedor.persona.nombre2.blank?
+            json.nombres vendedor.persona.nombre1 + ' ' + vendedor.persona.apellido1 + ' ' + vendedor.persona.persona.apellido2
+        else
+            json.nombres vendedor.persona.nombre1 + ' ' + vendedor.persona.nombre2 + ' ' + vendedor.persona.apellido1 + ' ' + vendedor.persona.apellido2
+        end
     end
 end
 
 json.tecnicos do
     json.array! @tecnicos do |tecnico|
         json.id tecnico.id
-        json.nombres tecnico.persona.nombre1 + '' + tecnico.persona.nombre2 + ' ' + tecnico.persona.apellido1 + ' ' + tecnico.persona.apellido2
+        if tecnico.persona.nombre2.blank?
+            json.nombres tecnico.persona.nombre1 + ' ' + tecnico.persona.apellido1 + ' ' + tecnico.persona.persona.apellido2
+        else
+            json.nombres tecnico.persona.nombre1 + ' ' + tecnico.persona.nombre2 + ' ' + tecnico.persona.apellido1 + ' ' + tecnico.persona.apellido2
+        end
     end
 end
 

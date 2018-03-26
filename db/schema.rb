@@ -528,6 +528,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.string "direccion", limit: 200, null: false
     t.bigint "barrio_id", null: false
     t.bigint "zona_id", null: false
+    t.bigint "ciudad_id"
     t.string "telefono1", limit: 20
     t.string "telefono2", limit: 20
     t.string "correo", limit: 50
@@ -539,6 +540,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
     t.index ["barrio_id"], name: "index_personas_on_barrio_id"
+    t.index ["ciudad_id"], name: "index_personas_on_ciudad_id"
     t.index ["tipo_documento_id"], name: "index_personas_on_tipo_documento_id"
     t.index ["usuario_id"], name: "index_personas_on_usuario_id"
     t.index ["zona_id"], name: "index_personas_on_zona_id"
@@ -654,14 +656,6 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
     t.index ["usuario_id"], name: "index_servicios_on_usuario_id"
-  end
-
-  create_table "sysdiagrams", primary_key: "diagram_id", id: :integer, force: :cascade do |t|
-    t.string "name", limit: 128, null: false
-    t.integer "principal_id", null: false
-    t.integer "version"
-    t.binary "definition"
-    t.index ["principal_id", "name"], name: "UK_principal_name", unique: true
   end
 
   create_table "tarifas", force: :cascade do |t|
@@ -885,6 +879,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   add_foreign_key "permanencias", "senales"
   add_foreign_key "permanencias", "usuarios"
   add_foreign_key "personas", "barrios"
+  add_foreign_key "personas", "ciudades"
   add_foreign_key "personas", "tipo_documentos"
   add_foreign_key "personas", "usuarios"
   add_foreign_key "personas", "zonas"

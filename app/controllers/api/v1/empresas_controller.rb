@@ -58,12 +58,12 @@ module Api
             
             # Me busca el empresa por el id, la zona o el nombre
             def set_empresa_buscar
-                @campo = params[:campo]
-                @valor = params[:valor]
+                campo = params[:campo]
+                valor = params[:valor]
                 if @campo == 'id'
-                    @empresa = Empresa.find(params[:valor])
+                    @empresa = Empresa.find(valor)
                 else
-                    @empresa = Empresa.limit(10).where("#{@campo} LIKE '%#{@valor}%'")
+                    @empresa = Empresa.limit(10).where("#{campo} LIKE '%#{valor}%'")
                 end
                 @empresa = [*@empresa]
             end
@@ -73,8 +73,8 @@ module Api
 
             def empresa_params
                 params.require(:empresa).permit(:nit, :razonsocial, :direccion, :telefono1,
-                :telefono2, :ciudad_id, :entidad_id, :logo, :correo, :regimen, :contribuyente, 
-                :centrocosto, :usuario_id)
+                    :telefono2, :ciudad_id, :entidad_id, :logo, :correo, :regimen, :contribuyente, 
+                    :centrocosto, :usuario_id)
             end 
         end
     end

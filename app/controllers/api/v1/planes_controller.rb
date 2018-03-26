@@ -55,14 +55,14 @@ module Api
 
             # Me busca la plan por el id, el servicio, o el nombre
             def set_plan_buscar
-                @campo = params[:campo]
-                @valor = params[:valor]
-                if @campo == 'id'
-                    @plan = Plan.find(params[:valor])
-                elsif @campo == 'servicio'
-                    @plan = Plan.limit(10).where(servicio_id: @valor)
+                campo = params[:campo]
+                valor = params[:valor]
+                if campo == 'id'
+                    @plan = Plan.find(valor)
+                elsif campo == 'servicio'
+                    @plan = Plan.limit(10).where(servicio_id: valor)
                 else
-                    @plan = Plan.limit(10).where("nombre LIKE '%#{@valor}%'")
+                    @plan = Plan.limit(10).where("nombre LIKE '%#{valor}%'")
                 end
                 @plan = [*@plan]
             end

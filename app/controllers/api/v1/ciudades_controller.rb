@@ -27,8 +27,8 @@ module Api
         
             # PATCH/PUT /ciudades/id
             def update
-            t = Time.now
-            @ciudad.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
+                t = Time.now
+                @ciudad.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                 if @ciudad.update(ciudad_params)
                     render json: { status: :updated }
                 else
@@ -41,9 +41,9 @@ module Api
                 if @ciudad
                     @ciudad.destroy
                     render json: { status: :deleted }
-                  else
+                else
                     render json: { post: "not found" }
-                  end
+                end
             end
         
             
@@ -55,12 +55,12 @@ module Api
             end
 
             def set_ciudad_buscar
-                @campo = params[:campo]
-                @valor = params[:valor]
-                if @campo == 'id'
-                  @ciudad = Ciudad.find(params[:valor])
+                campo = params[:campo]
+                valor = params[:valor]
+                if campo == 'id'
+                  @ciudad = Ciudad.find(valor)
                 else
-                  @ciudad = Ciudad.limit(10).where("nombre LIKE '%#{@valor}%'")
+                  @ciudad = Ciudad.limit(10).where("nombre LIKE '%#{valor}%'")
                 end
                 @ciudad = [*@ciudad]
             end

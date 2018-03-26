@@ -56,14 +56,14 @@ module Api
             
             # Me busca el concepto por el id, servicio o el nombre
             def set_concepto_buscar
-                @campo = params[:campo]
-                @valor = params[:valor]
-                if @campo == 'id'
-                    @concepto = Concepto.find(params[:valor])
-                elsif @campo == 'servicio'
-                    @concepto = Concepto.limit(10).where(servicio_id: @valor)
+                campo = params[:campo]
+                valor = params[:valor]
+                if campo == 'id'
+                    @concepto = Concepto.find(valor)
+                elsif campo == 'servicio'
+                    @concepto = Concepto.limit(10).where(servicio_id: valor)
                 else
-                    @concepto = Concepto.limit(10).where("nombre LIKE '%#{@valor}%'")
+                    @concepto = Concepto.limit(10).where("nombre LIKE '%#{valor}%'")
                 end
                 @concepto = [*@concepto]
             end
@@ -73,7 +73,7 @@ module Api
 
             def concepto_params
                 params.require(:concepto).permit(:servicio_id, :codigo, :nombre, :abreviatura,
-                :porcentajeIva, :operacion,:usuario_id)
+                    :porcentajeIva, :operacion,:usuario_id)
             end 
         end
     end

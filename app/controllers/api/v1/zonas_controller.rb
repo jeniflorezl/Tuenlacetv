@@ -54,12 +54,12 @@ module Api
 
             # Me busca la zona por el id o el nombre
             def set_zona_buscar
-                @campo = params[:campo]
-                @valor = params[:valor]
+                campo = params[:campo]
+                valor = params[:valor]
                 if @campo == 'id'
-                    @zona = Zona.find(params[:valor])
+                    @zona = Zona.find(valor)
                 else
-                    @zona = Zona.limit(10).where("nombre LIKE '%#{@valor}%'")
+                    @zona = Zona.limit(10).where("nombre LIKE '%#{valor}%'")
                 end
                 @zona = [*@zona]
             end

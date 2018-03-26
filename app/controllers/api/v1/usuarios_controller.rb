@@ -24,9 +24,7 @@ module Api
                 # POST /usuarios
                 def create
                     if current_user.admin?
-                        #byebug
                         @usuario = Usuario.new(usuario_params)
-                  
                         if @usuario.save 
                             render json: { status: :created }
                         else
@@ -91,12 +89,12 @@ module Api
                 # Me busca la usuario por el id, por la zona, el concepto, el plan, el valor, o el
                 # estado
                 def set_usuario_buscar
-                    @campo = params[:campo]
-                    @valor = params[:valor]
+                    campo = params[:campo]
+                    valor = params[:valor]
                     if @campo == 'id'
-                        @usuario = Usuario.find(params[:valor])
+                        @usuario = Usuario.find(valor)
                     else
-                        @usuario = Usuario.limit(10).where("#{@campo} LIKE '%#{@valor}%'")
+                        @usuario = Usuario.limit(10).where("#{campo} LIKE '%#{valor}%'")
                     end
                     @usuario = [*@usuario]
                 end
@@ -109,7 +107,7 @@ module Api
                 # Reemplazamos :password_digest por :password y :password_confirmation
                 def usuario_params
                     params.permit(:login, :nombre, :password, :password_confirmation,
-                    :nivel,  :estado_id, :tipoImpresora, :usuariocre)
+                        :nivel,  :estado_id, :tipoImpresora, :usuariocre)
                 end 
         end
     end

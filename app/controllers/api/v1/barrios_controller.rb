@@ -55,14 +55,14 @@ module Api
             
             # Me busca el barrio por el id, la zona o el nombre
             def set_barrio_buscar
-                @campo = params[:campo]
-                @valor = params[:valor]
-                if @campo == 'id'
-                    @barrio = Barrio.find(params[:valor])
-                elsif @campo == 'zona'
-                    @barrio = Barrio.limit(10).where(zona_id: @valor)
+                campo = params[:campo]
+                valor = params[:valor]
+                if campo == 'id'
+                    @barrio = Barrio.find(valor)
+                elsif campo == 'zona'
+                    @barrio = Barrio.limit(10).where(zona_id: valor)
                 else
-                    @barrio = Barrio.limit(10).where("nombre LIKE '%#{@valor}%'")
+                    @barrio = Barrio.limit(10).where("nombre LIKE '%#{valor}%'")
                 end
                 @barrio = [*@barrio]
             end
