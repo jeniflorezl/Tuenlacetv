@@ -16,7 +16,7 @@ module Api
                 @ciudades = Ciudad.all
                 @planes_tv = Plan.where(servicio_id: 1)
                 @planes_int = Plan.where(servicio_id: 2)
-                @tarifas_tv = Tarifa.where(estado_id: 1)
+                @tarifas = Tarifa.where(estado_id: 1)
                 @valor_afi_tv = Tarifa.find_by(concepto_id: 1).valor
                 @valor_afi_int = Tarifa.find_by(concepto_id: 2).valor
                 @param_valor_afi = Parametro.find_by(descripcion: 'Permite modificar valor de afiliación').valor

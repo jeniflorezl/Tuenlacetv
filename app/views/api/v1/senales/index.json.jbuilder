@@ -58,28 +58,22 @@ json.senales do
             json.saldo_tv senal["saldo_tv"]
             json.internet senal["internet"]
             if senal["internet"] == "1"
-                json.info_internet do
-                    json.array! @info_internet do |internet|
-                        if (senal["senal_id"] == internet.senal_id)
-                            json.direccionip internet.direccionip
-                            json.velocidad internet.velocidad
-                            json.mac1 internet.mac1
-                            json.mac2 internet.mac2
-                            json.serialm internet.serialm
-                            json.marcam internet.marcam
-                            json.mascarasub internet.mascarasub
-                            json.dns internet.dns
-                            json.gateway internet.gateway
-                            json.nodo internet.nodo
-                            json.clavewifi internet.clavewifi
-                            json.equipo internet.equipo
-                            json.plan_int senal["plan_int"]
-                            json.tarifa_int senal["tarifa_int"]
-                            json.estado_int senal["estado_int"]
-                            json.saldo_int senal["saldo_int"]
-                        end
-                    end
-                end
+                json.direccionip senal["direccionip"]
+                json.velocidad senal["velocidad"]
+                json.mac1 senal["mac1"]
+                json.mac2 senal["mac2"]
+                json.serialm senal["serialm"]
+                json.marcam senal["marcam"]
+                json.mascarasub senal["mascarasub"]
+                json.dns senal["dns"]
+                json.gateway senal["gateway"]
+                json.nodo senal["nodo"]
+                json.clavewifi senal["clavewifi"]
+                json.equipo senal["equipo"]
+                json.plan_int senal["plan_int"]
+                json.tarifa_int senal["tarifa_int"]
+                json.estado_int senal["estado_int"]
+                json.saldo_int senal["saldo_int"]
             end
         end
     end
