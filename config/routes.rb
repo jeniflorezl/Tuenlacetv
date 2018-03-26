@@ -13,8 +13,9 @@ Rails.application.routes.draw do
       resources :senales
       resources :usuarios
       resources :empresas
-      resources :facturacion
       resources :tipo_facturacion
+      resources :facturacion
+      resources :pagos
       get 'paises/bd/:db', to: 'paises#index'
       get 'paises/:campo/:valor/:db', to: 'paises#show'
       get 'departamentos/bd/:db', to: 'departamentos#index'
@@ -47,6 +48,8 @@ Rails.application.routes.draw do
       get 'tipo_facturacion/:campo/:valor/:db', to: 'tipo_facturacion#show'
       get 'facturacion/bd/:db', to: 'facturacion#index'
       post 'facturacion/factura_manual/:db', to: 'facturacion#create_factura'
+      get 'pagos/bd/:db', to: 'pagos#index'
+      get 'pagos/:campo/:valor/:db', to: 'pagos#show'
       post 'signin', to: 'sesion#create'
       delete 'signout', to: 'sesion#destroy'
     end
