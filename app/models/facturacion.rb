@@ -61,6 +61,7 @@ class Facturacion < ApplicationRecord
   end
 
   def self.generar_facturacion(tipo_fact, f_elaboracion, f_inicio, f_fin, f_vence, f_corte, f_vencidos, observa, zona, usuario_id)
+    byebug
     fecha_elab = Date.parse f_elaboracion
     mes_f = fecha_elab.month.to_s
     ano_f = fecha_elab.year.to_s
@@ -125,6 +126,7 @@ class Facturacion < ApplicationRecord
         senales.each do |senal|
           plantillas = PlantillaFact.where("concepto_id = #{concepto_tv.id} and senal_id = #{senal.id}")
           plantillas.each do |plantilla|
+            byebug
             if plantilla.estado_id == estado
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
                 tarifa_tv = plantilla.tarifa.valor
@@ -168,8 +170,9 @@ class Facturacion < ApplicationRecord
                   entidad = Entidad.find(senal.entidad_id).persona_id
                   condfisica = Persona.find(entidad).condicionfisica
                   if condfisica == 'D'
+                    byebug
                     porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
-                    descuento = valor_mens * (porcentaje / 100)
+                    descuento = valor_mens * (porcentaje.to_f / 100)
                     valor_mens = valor_mens - descuento
                   end
                   if iva_tv > 0
@@ -243,6 +246,7 @@ class Facturacion < ApplicationRecord
           end
         end
         senales.each do |senal|
+          byebug
           plantillas = PlantillaFact.where("concepto_id = #{concepto_int.id} and senal_id = #{senal.id}")
           plantillas.each do |plantilla|
             if plantilla.estado_id == estado
@@ -356,6 +360,7 @@ class Facturacion < ApplicationRecord
           end
         end
         senales.each do |senal|
+          byebug
           plantillas = PlantillaFact.where("concepto_id <> '#{concepto_tv.id}' and concepto_id <> '#{concepto_int.id}' and senal_id = #{senal.id}")
           plantillas.each do |plantilla|
             concepto = plantilla.concepto_id
@@ -474,6 +479,7 @@ class Facturacion < ApplicationRecord
         senales.each do |senal|
           plantillas = PlantillaFact.where("senal_id = #{senal.id}")
           plantillas.each do |plantilla|
+            byebug
             concepto = plantilla.concepto_id
             iva_cpto = Concepto.find(concepto).porcentajeIva
             if plantilla.estado_id == estado
@@ -517,11 +523,12 @@ class Facturacion < ApplicationRecord
                     dias = 30
                   end
                   if concepto == concepto_tv.id
+                    byebug
                     entidad = Entidad.find(senal.entidad_id).persona_id
                     condfisica = Persona.find(entidad).condicionfisica
                     if condfisica == 'D'
                       porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
-                      descuento = valor_mens * (porcentaje / 100)
+                      descuento = valor_mens * (porcentaje.to_f / 100)
                       valor_mens = valor_mens - descuento
                     end
                   end

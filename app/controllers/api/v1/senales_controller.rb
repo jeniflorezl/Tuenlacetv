@@ -2,6 +2,7 @@ module Api
     module V1
         class SenalesController < ApplicationController
             before_action :set_senal_buscar, only: [:show]
+            before_action :set_entidad_buscar, only: [:show_entidad]
             before_action :set_senal, only: [:update, :destroy]
 
             # GET /senales
@@ -51,6 +52,9 @@ module Api
             # GET /senales/funcion
             # GET /senales/estado
             def show
+            end
+
+            def show_entidad
             end
 
             # POST /senales
@@ -263,6 +267,20 @@ module Api
                 SQL
                 ActiveRecord::Base.connection.clear_query_cache
                 @saldos = ActiveRecord::Base.connection.select_all(query)
+            end
+
+            # Me busca la persona por cualquier campo
+            def set_entidad_buscar
+                funcion_id = params[:funcion_id]
+                campo = params[:campo]
+                valor = params[:valor]
+                @persona = Persona.where("#{campo} LIKE '%#{valor}%'")
+                #query = <<-SQL 
+                #SELECT TOP(10) * FROM personas WHERE ;
+                #SQL
+                #@entidad = ActiveRecord::Base.connection.select_all(query)
+                @persona = [*@persona]
+                @entidades = Entidad.where(funcion_id: funcion_id)
             end
 
 

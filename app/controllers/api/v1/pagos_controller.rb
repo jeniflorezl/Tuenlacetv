@@ -22,19 +22,22 @@ module Api
             
             # POST /pagos
             def create
-                @empresa = Empresa.new(empresa_params)
-                @empresa.tipo = '01'
-                if @empresa.save 
+                if Pago.generar_pago(params[:entidad_id], params[:documento_id], params[:fechatrn],
+                    params[:fechaven], params[:valor], params[:observacion], params[:forma_pago_id],
+                    params[:banco_id], params[:cobrador_id], params[:detalle], params[:usuario_id])
                     render json: { status: :created }
                 else
-                    render json: @empresa.errors, status: :unprocessable_entity
+                    render json: { error: "Error en proceso" }
                 end
             end
 
             # DELETE /empresas/id
-            def destroy
-                if @empresa
-                    @empresa.destroy()
+            def anular
+                if @pago
+                    query = <<-SQL 
+                    UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{@pago[0]["id"]}
+                    SQL
+                    ActiveRecord::Base.connection.select_all(query)
                     render json: { status: :deleted }
                 else
                     render json: { post: "not found" }
@@ -43,31 +46,25 @@ module Api
 
             private
 
-            def set_empresa
-                @empresa = Empresa.find(params[:id])
-                @entidades = Entidad.all
+            def set_pago
+                query = <<-SQL 
+                SELECT * FROM pagos WHERE id=#{params[:id]};
+                SQL
+                ActiveRecord::Base.connection.clear_query_cache
+                @pago = ActiveRecord::Base.connection.select_all(query)
             end
             
             # Me busca el empresa por el id, la zona o el nombre
-            def set_empresa_buscar
+            def set_pago_buscar
                 campo = params[:campo]
                 valor = params[:valor]
-                if @campo == 'id'
-                    @empresa = Empresa.find(valor)
-                else
-                    @empresa = Empresa.limit(10).where("#{campo} LIKE '%#{valor}%'")
-                end
-                @empresa = [*@empresa]
+                query = <<-SQL 
+                SELECT * FROM pagos WHERE #{campo} LIKE '%#{valor}%';
+                SQL
+                ActiveRecord::Base.connection.clear_query_cache
+                @pago = ActiveRecord::Base.connection.select_all(query)
+                @pago = [*@pago]
             end
-
-
-            #Le coloco los parametros que necesito del empresa para crearlo y actualizarlo
-
-            def empresa_params
-                params.require(:empresa).permit(:nit, :razonsocial, :direccion, :telefono1,
-                    :telefono2, :ciudad_id, :entidad_id, :logo, :correo, :regimen, :contribuyente, 
-                    :centrocosto, :usuario_id)
-            end 
         end
     end
 end
