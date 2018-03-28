@@ -8,7 +8,7 @@ module Api
             # GET /senales
             def index
                 query = <<-SQL 
-                SELECT * FROM VwSenales;
+                SELECT * FROM VwSenales WHERE funcion_id = 1;
                 SQL
                 @senales = ActiveRecord::Base.connection.select_all(query)
                 @servicios = Servicio.all
@@ -35,8 +35,10 @@ module Api
 
             def index_entidad
                 funcion = params[:funcion_id]
-                @entidades = Entidad.where(funcion_id: funcion)
-                @personas = Persona.all
+                query = <<-SQL 
+                SELECT * FROM VwSenales WHERE funcion_id = #{funcion};
+                SQL
+                @entidades = ActiveRecord::Base.connection.select_all(query)
             end
 
             # GET /senales/id
@@ -259,7 +261,7 @@ module Api
                 campo = params[:campo]
                 valor = params[:valor]
                 query = <<-SQL 
-                SELECT TOP(10) * FROM VwSenales WHERE #{campo} LIKE '%#{valor}%';
+                SELECT TOP(10) * FROM VwSenales WHERE #{campo} LIKE '%#{valor}%' and funcion_id = 1;
                 SQL
                 @senal = ActiveRecord::Base.connection.select_all(query)
                 @senal = [*@senal]
@@ -279,13 +281,11 @@ module Api
                 funcion_id = params[:funcion_id]
                 campo = params[:campo]
                 valor = params[:valor]
-                @persona = Persona.where("#{campo} LIKE '%#{valor}%'")
-                #query = <<-SQL 
-                #SELECT TOP(10) * FROM personas WHERE ;
-                #SQL
-                #@entidad = ActiveRecord::Base.connection.select_all(query)
-                @persona = [*@persona]
-                @entidades = Entidad.where(funcion_id: funcion_id)
+                query = <<-SQL 
+                SELECT TOP(10) * FROM VwSenales WHERE #{campo} LIKE '%#{valor}%' and funcion_id = #{funcion_id};
+                SQL
+                @entidad = ActiveRecord::Base.connection.select_all(query)
+                @entidad = [*@entidad]
             end
 
 

@@ -55,6 +55,7 @@ json.senales do
         json.tarifa_tv senal["tarifa_tv"]
         json.estado_tv senal["estado_tv"]
         json.saldo_tv senal["saldo_tv"]
+        json.fecha_ult_pago senal["fecha_ult_pago"]
         json.internet senal["internet"]
         if senal["internet"] == "1"
             json.direccionip senal["direccionip"]

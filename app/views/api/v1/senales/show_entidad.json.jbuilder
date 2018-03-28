@@ -1,26 +1,26 @@
 json.entidades do
-    json.array! @persona do |persona|
-        json.array! @entidades do |entidad|
-            if entidad.persona_id == persona.id
-                json.id entidad.id
-                json.tipo_documento persona.tipo_documento.nombre
-                json.documento persona.documento
-                json.nombres persona.nombre1 + '' + persona.nombre2 + ' ' + persona.apellido1 + ' ' + persona.apellido2
-                json.nombre1 persona.nombre1
-                json.nombre2 persona.nombre2
-                json.apellido1 persona.apellido1
-                json.apellido2 persona.apellido2
-                json.direccionP persona.direccion
-                json.barrioP persona.barrio.nombre
-                json.zonaP persona.zona.nombre
-                json.telefono1P persona.telefono1
-                json.telefono2P persona.telefono2
-                json.correo persona.correo
-                json.fechanac persona.fechanac
-                json.tipopersona persona.tipopersona
-                json.estratoP persona.estrato
-                json.condicion_fisica persona.condicionfisica
-            end
+    json.array! @entidad do |entidad|
+        json.id entidad["id"]
+        json.tipo_documento entidad["tipo_documento"]
+        json.documento entidad["documento"]  
+        if entidad["nombre2"].blank?
+            json.nombres entidad["nombre1"] + ' ' + entidad["apellido1"] + ' ' + entidad["apellido2"]
+        else
+            json.nombres entidad["nombre1"] + ' ' + entidad["nombre2"] + ' ' + entidad["apellido1"] + ' ' + entidad["apellido2"]
         end
+        json.nombre1 entidad["nombre1"]
+        json.nombre2 entidad["nombre2"]
+        json.apellido1 entidad["apellido1"]
+        json.apellido2 entidad["apellido2"]
+        json.direccionP entidad["direccionP"]
+        json.barrioP entidad["barrioP"]
+        json.zonaP entidad["zonaP"]
+        json.telefono1P entidad["telefono1P"]
+        json.telefono2P entidad["telefono2P"]
+        json.correo entidad["correo"]
+        json.fechanac entidad["fechanac"]
+        json.tipopersona entidad["tipopersona"]
+        json.estratoP entidad["estratoP"]
+        json.condicion_fisica entidad["condicionfisica"]
     end
 end
