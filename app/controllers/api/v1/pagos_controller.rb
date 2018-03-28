@@ -4,7 +4,7 @@ module Api
             before_action :set_empresa_buscar, only: [:show]
             before_action :set_empresa, only: [:update, :destroy]
 
-            # GET /facturas
+            # GET /pagos
             def index
                 query = <<-SQL 
                 SELECT * FROM pagos;
@@ -31,7 +31,7 @@ module Api
                 end
             end
 
-            # DELETE /empresas/id
+            # POST /pagos/id
             def anular
                 if @pago
                     query = <<-SQL 
@@ -54,7 +54,7 @@ module Api
                 @pago = ActiveRecord::Base.connection.select_all(query)
             end
             
-            # Me busca el empresa por el id, la zona o el nombre
+            # Me busca el pago por cualquier campo
             def set_pago_buscar
                 campo = params[:campo]
                 valor = params[:valor]

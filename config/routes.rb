@@ -50,7 +50,9 @@ Rails.application.routes.draw do
       get 'facturacion/bd/:db', to: 'facturacion#index'
       post 'facturacion/factura_manual/:db', to: 'facturacion#create_factura'
       get 'pagos/bd/:db', to: 'pagos#index'
+      get 'pagos/detalle_facturas/:entidad_id/:db', to: 'pagos#index_pago'
       get 'pagos/:campo/:valor/:db', to: 'pagos#show'
+      post 'pagos/anular_pago/:id', to: 'pagos#anular'
       post 'signin', to: 'sesion#create'
       delete 'signout', to: 'sesion#destroy'
     end

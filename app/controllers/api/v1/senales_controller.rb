@@ -124,11 +124,13 @@ module Api
                 message1 = ''
                 message2 = ''
                 t = Time.now
+                byebug
                 @persona.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                 if @persona.update(persona_params)
                     @senal.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                     if @senal.update(senal_params)
                         if params[:tv] == 1
+                            byebug
                             if @plantilla_tv.blank?
                                 if Senal.afiliacion_tv(@senal, @entidad, params[:valorafi_tv], 
                                     params[:valor_dcto_tv], params[:tarifa_id_tv], params[:tecnico_id])
@@ -144,6 +146,7 @@ module Api
                             result = 1
                         end
                         if params[:internet] == 1
+                            byebug
                             if @info_internet
                                 @info_internet.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                                 @info_internet.update(internet_params)
@@ -168,6 +171,7 @@ module Api
                         end
                     end
                     if params[:tv] == 1
+                        byebug
                         if result == 1
                             message1 = "actualizado servicio tv"
                         else
@@ -175,6 +179,7 @@ module Api
                         end
                     end
                     if params[:internet] == 1
+                        byebug
                         if result1 == 1
                             message2 = "actualizado servicio internet"
                         else

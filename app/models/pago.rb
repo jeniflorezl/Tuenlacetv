@@ -33,7 +33,9 @@ class Pago < ApplicationRecord
         ActiveRecord::Base.connection.clear_query_cache
         pago_id = ActiveRecord::Base.connection.select_all(query)
         pago_id = (pago_id[0]["id"]).to_i
+        byebug
         detalle.each do |d|
+          byebug
           query = <<-SQL 
           SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{d["factura_id"]};
           SQL
@@ -49,6 +51,7 @@ class Pago < ApplicationRecord
             SQL
             ActiveRecord::Base.connection.select_all(query)
           end
+
         end
         return true
       end
@@ -64,53 +67,64 @@ class Pago < ApplicationRecord
     saldo_tv = saldos[0]["saldo_tv"]
     saldo_int = saldos[0]["saldo_int"]
     query = <<-SQL 
-    SELECT * FROM facturacion WHERE entidad_id = #{entidad_id};
+    SELECT * FROM facturacion WHERE entidad_id = #{entidad_id} ORDER BY id;
     SQL
     facturas = ActiveRecord::Base.connection.select_all(query)
     query = <<-SQL 
     SELECT * FROM pagos WHERE entidad_id = #{entidad_id};
     SQL
     pagos = ActiveRecord::Base.connection.select_all(query)
-    while saldo_tv > 0 && saldo_int > 0
+    if pagos.blank?
       facturas.reverse_each do |f|
-        valor1 = (f["valor"] + f["iva"]).to_i
-        valor2 = (f["valor"] + f["iva"]).to_i
-        query = <<-SQL 
-        SELECT * FROM detalle_factura WHERE factura_id = #{f["id"]};
-        SQL
-        dfactura = ActiveRecord::Base.connection.select_all(query)
+        dfactura = DetalleFactura.where(factura_id: f["id"])
         dfactura.reverse_each do |df|
-          pagos.reverse_each do |p|
-            query = <<-SQL 
-            SELECT * FROM abonos WHERE pago_id = #{p["id"]};
-            SQL
-            abonos = ActiveRecord::Base.connection.select_all(query)
-            abonos.reverse_each do |a|
-              if f["id"] == a["factura_id"]
-                valor1 = valor1 - a["abono"].to_i
+          concepto_id = df["concepto_id"]
+          concepto = Concepto.find(concepto_id)
+          detalle_facts[i] = { 'concepto' => concepto.codigo, 'desc' => concepto.nombre, 
+            'nrodcto' => f["nrofact"], 'fechatrn' => f["fechatrn"], 'fechaven' => f["fechaven"],
+            'valor' => df["valor"], 'iva' => df["iva"], 'saldo' => df["valor"] + df["iva"], 'abono' => 0,
+            'total' => df["valor"] + df["iva"] }
+          i += 1
+        end
+      end
+    else
+      while saldo_tv > 0 && saldo_int > 0
+        facturas.reverse_each do |f|
+          valor1 = (f["valor"] + f["iva"]).to_i
+          valor2 = (f["valor"] + f["iva"]).to_i
+          dfactura = DetalleFactura.where(factura_id: f["id"])
+          dfactura.reverse_each do |df|
+            valor_df = df["valor"] + df["iva"]
+            pagos.reverse_each do |p|
+              abonos = Abono.where(pago_id: p["id"])
+              abonos.reverse_each do |a|
+                if f["id"] == a["factura_id"] && df["concepto_id"] == a["concepto_id"]
+                  valor1 = valor1 - a["abono"].to_i
+                  valor_df = valor_df - a["abono"].to_i
+                end
               end
-            end
-            if valor1== 0
-              concepto_id = df["concepto_id"]
-              concepto = Concepto.find(concepto_id)
-              servicio_id = concepto.servicio_id
-              if  servicio_id == 1
-                saldo_tv = saldo_tv - valor2
-              else
-                saldo_int = saldo_int - valor2
+              if valor1 == 0
+                concepto_id = df["concepto_id"]
+                concepto = Concepto.find(concepto_id)
+                servicio_id = concepto.servicio_id
+                if  servicio_id == 1
+                  saldo_tv = saldo_tv - valor2
+                else
+                  saldo_int = saldo_int - valor2
+                end
+              elsif valor_df == 0
+                total = valor2 - valor1
+                detalle_facts[i] = { 'concepto' => concepto.codigo, 'desc' => concepto.nombre, 
+                  'nrodcto' => f["nrofact"], 'fechatrn' => f["fechatrn"], 'fechaven' => f["fechaven"],
+                  'valor' => df["valor"], 'iva' => df["valor"], 'saldo' => valor2, 'abono' => valor1,
+                  'total' => total }
               end
-            else
-              total = valor2 - valor1
-              detalle_facts[i] = { 'concepto' => concepto.codigo, 'desc' => concepto.nombre, 
-                'nrodcto' => f["nrofact"], 'fechatrn' => f["fechatrn"], 'fechaven' => f["fechaven"],
-                'valor' => df["valor"], 'iva' => df["valor"], 'saldo' => valor2, 'abono' => valor1,
-                'total' => total }
             end
           end
+          i += 1
         end
-        i += 1
-      end
-    end 
+      end 
+    end
     detalle_facts
   end
 end
