@@ -58,8 +58,10 @@ class Pago < ApplicationRecord
   end
 
   def self.detalle_facturas(entidad_id)
+    byebug
     detalle_facts = Array.new
     i = 0
+    ban = 0
     query = <<-SQL 
     SELECT saldo_tv, saldo_int FROM VwEstadoDeCuentaTotal WHERE entidad_id = #{entidad_id};
     SQL
@@ -76,8 +78,10 @@ class Pago < ApplicationRecord
     pagos = ActiveRecord::Base.connection.select_all(query)
     if pagos.blank?
       facturas.reverse_each do |f|
+      byebug
         dfactura = DetalleFactura.where(factura_id: f["id"])
         dfactura.reverse_each do |df|
+          byebug
           concepto_id = df["concepto_id"]
           concepto = Concepto.find(concepto_id)
           detalle_facts[i] = { 'concepto' => concepto.codigo, 'desc' => concepto.nombre, 
@@ -88,40 +92,45 @@ class Pago < ApplicationRecord
         end
       end
     else
-      while saldo_tv > 0 && saldo_int > 0
-        facturas.reverse_each do |f|
-          valor1 = (f["valor"] + f["iva"]).to_i
-          valor2 = (f["valor"] + f["iva"]).to_i
-          dfactura = DetalleFactura.where(factura_id: f["id"])
-          dfactura.reverse_each do |df|
-            valor_df = df["valor"] + df["iva"]
-            pagos.reverse_each do |p|
-              abonos = Abono.where(pago_id: p["id"])
-              abonos.reverse_each do |a|
-                if f["id"] == a["factura_id"] && df["concepto_id"] == a["concepto_id"]
-                  valor1 = valor1 - a["abono"].to_i
-                  valor_df = valor_df - a["abono"].to_i
-                end
-              end
-              if valor1 == 0
-                concepto_id = df["concepto_id"]
-                concepto = Concepto.find(concepto_id)
-                servicio_id = concepto.servicio_id
-                if  servicio_id == 1
-                  saldo_tv = saldo_tv - valor2
-                else
-                  saldo_int = saldo_int - valor2
-                end
-              elsif valor_df == 0
-                total = valor2 - valor1
-                detalle_facts[i] = { 'concepto' => concepto.codigo, 'desc' => concepto.nombre, 
-                  'nrodcto' => f["nrofact"], 'fechatrn' => f["fechatrn"], 'fechaven' => f["fechaven"],
-                  'valor' => df["valor"], 'iva' => df["valor"], 'saldo' => valor2, 'abono' => valor1,
-                  'total' => total }
+      byebug
+      facturas.reverse_each do |f|
+        byebug
+        valor_fact = (f["valor"] + f["iva"]).to_i
+        dfactura = DetalleFactura.where(factura_id: f["id"])
+        dfactura.reverse_each do |df|
+          byebug
+          valor_df = (df["valor"] + df["iva"]).to_i
+          pagos.reverse_each do |p|
+            abonos = Abono.where(pago_id: p["id"])
+            abonos.reverse_each do |a|
+              byebug
+              if f["id"] == a["factura_id"] && df["concepto_id"] == a["concepto_id"]
+                valor_fact = valor_fact - a["abono"].to_i
+                valor_df = valor_df - a["abono"].to_i
               end
             end
           end
-          i += 1
+          if valor_fact != 0 
+            concepto_id = df["concepto_id"]
+            concepto = Concepto.find(concepto_id)
+            servicio_id = concepto.servicio_id
+            if  servicio_id == 1
+              saldo_tv = saldo_tv - valor_fact
+            else
+              saldo_int = saldo_int - valor_fact
+            end
+          end
+          if valor_df != 0
+            byebug
+            detalle_facts[i] = { 'concepto' => concepto.codigo, 'desc' => concepto.nombre, 
+              'nrodcto' => f["nrofact"], 'fechatrn' => f["fechatrn"], 'fechaven' => f["fechaven"],
+              'valor' => df["valor"], 'iva' => df["iva"], 'saldo' => valor_fact, 'abono' => 0,
+              'total' => 0 }
+          end
+        end
+        i += 1
+        if saldo_tv == 0 && saldo_int == 0
+          break
         end
       end 
     end
