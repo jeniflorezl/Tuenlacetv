@@ -1,47 +1,35 @@
 json.pagos do
     json.array! @pagos do |pago|
+        json.id pago["id"]
         json.entidad_id pago["entidad_id"]
-        json.nombre do
-            json.array! @entidades do |entidad|
-                if pago["entidad_id"] == entidad["id"]
-                    if entidad["nombre2"].blank?
-                        json.nombres entidad["nombre1"] + ' ' + entidad["apellido1"] + ' ' + entidad["apellido2"]
-                    else
-                        json.nombres entidad["nombre1"] + ' ' + entidad["nombre2"] + ' ' + entidad["apellido1"] + ' ' + entidad["apellido2"]
-                    end
-                end
-                if pago["cobrador_id"] == entidad["id"]
-                    if entidad["nombre2"].blank?
-                        json.nombres entidad["nombre1"] + ' ' + entidad["apellido1"] + ' ' + entidad["apellido2"]
-                    else
-                        json.nombres entidad["nombre1"] + ' ' + entidad["nombre2"] + ' ' + entidad["apellido1"] + ' ' + entidad["apellido2"]
-                    end
-                end
-            end
-        end
-        json.documentos do
-            json.array! @documentos do |documento|
-                if pago["documento_id"] == documento.id
-                    json.documento documento.nombre
-                end
-            end
-        end
+        json.tipo_documento pago["tipo_documento"]
+        json.documento_persona pago["documento_persona"]
+        json.nombres pago["nombres"]
+        json.telefonos pago["telefonos"]
+        json.direccion pago["direccion"]
+        json.barrio pago["barrio"]
+        json.zona pago["zona"]
+        json.estado_tv pago["estado_tv"]
+        json.estado_int pago["estado_int"]
+        json.fechacontrato pago["fechacontrato"]
+        json.fecha_ult_pago pago["fecha_ult_pago"]
+        json.documento pago["documento"]
         json.nropago pago["nropago"]
         json.fechatrn pago["fechatrn"]
         json.fechaven pago["fechaven"]
         json.valor pago["valor"]
-        #json.estado pago.estado.nombre
-
+        json.estado pago["estado"]
         json.observacion pago["observacion"]
-        #json.forma_pago pago.forma_pago.nombre
-        #json.banco pago.banco.nombre
+        json.forma_pago pago["forma_pago"]
+        json.banco pago["banco"]
+        json.cobrador pago["cobrador"]
     end
 end
 
-json.documentos do
-    json.array! @documentos do |documento|
-        json.id documento.id
-        json.nombre documento.nombre
+json.conceptos do
+    json.array! @conceptos do |concepto|
+        json.id concepto.id
+        json.nombre concepto.nombre
     end
 end
 

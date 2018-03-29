@@ -137,6 +137,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.char "abreviatura", limit: 3, null: false
     t.float "porcentajeIva", null: false
     t.char "operacion", limit: 1, null: false
+    t.char "clase", limit: 1
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
