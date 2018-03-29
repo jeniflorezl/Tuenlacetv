@@ -7,14 +7,9 @@ module Api
             # GET /pagos
             def index
                 query = <<-SQL 
-                SELECT * FROM pagos;
+                SELECT * FROM VwPagos;
                 SQL
                 @pagos = ActiveRecord::Base.connection.select_all(query)
-                @entidades = Entidad.all
-                @personas = Persona.all
-                @documentos = Documento.all
-                @formas_pago = FormaPago.all
-                @bancos = Banco.all
             end
 
             def index_anticipados

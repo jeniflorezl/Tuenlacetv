@@ -7,6 +7,7 @@ class CreateConceptos < ActiveRecord::Migration[5.1]
       t.char :abreviatura, limit: 3, null:false
       t.float :porcentajeIva, null:false
       t.char :operacion, limit: 1, null:false
+      t.char :clase, limit: 1
       t.datetime :fechacre, null:false
       t.datetime :fechacam, null:false
       t.references :usuario, foreign_key: true, null:false

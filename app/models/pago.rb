@@ -87,7 +87,7 @@ class Pago < ApplicationRecord
           detalle_facts[i] = { 'concepto' => concepto.codigo, 'desc' => concepto.nombre, 
             'nrodcto' => f["nrofact"], 'fechatrn' => f["fechatrn"], 'fechaven' => f["fechaven"],
             'valor' => df["valor"], 'iva' => df["iva"], 'saldo' => df["valor"] + df["iva"], 'abono' => 0,
-            'total' => df["valor"] + df["iva"] }
+            'total' => 0 }
           i += 1
         end
       end
