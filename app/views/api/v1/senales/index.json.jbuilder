@@ -3,11 +3,7 @@ json.senales do
         json.id senal["id"]
         json.tipo_documento senal["tipo_documento"]
         json.documento senal["documento"]  
-        if senal["nombre2"].blank?
-            json.nombres senal["nombre1"] + ' ' + senal["apellido1"] + ' ' + senal["apellido2"]
-        else
-            json.nombres senal["nombre1"] + ' ' + senal["nombre2"] + ' ' + senal["apellido1"] + ' ' + senal["apellido2"]
-        end
+        json.nombres senal["nombres"]
         json.nombre1 senal["nombre1"]
         json.nombre2 senal["nombre2"]
         json.apellido1 senal["apellido1"]

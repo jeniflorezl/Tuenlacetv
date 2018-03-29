@@ -1,35 +1,40 @@
 json.pagos do
     json.array! @pagos do |pago|
         json.entidad_id pago["entidad_id"]
-        json.array! @entidades do |entidad|
-            if pago["entidad_id"] == entidad.id
-                json.array! @personas do |persona|
-                    if entidad.persona_id == persona.id
-                        if persona.nombre2.blank?
-                            json.nombres persona.nombre1 + ' ' + persona.apellido1 + ' ' + persona.apellido2
-                            break
-                        else
-                            json.nombres persona.nombre1 + ' ' + persona.nombre2 + ' ' + persona.apellido1 + ' ' + persona.apellido2
-                            break
-                        end
+        json.nombre do
+            json.array! @entidades do |entidad|
+                if pago["entidad_id"] == entidad["id"]
+                    if entidad["nombre2"].blank?
+                        json.nombres entidad["nombre1"] + ' ' + entidad["apellido1"] + ' ' + entidad["apellido2"]
+                    else
+                        json.nombres entidad["nombre1"] + ' ' + entidad["nombre2"] + ' ' + entidad["apellido1"] + ' ' + entidad["apellido2"]
+                    end
+                end
+                if pago["cobrador_id"] == entidad["id"]
+                    if entidad["nombre2"].blank?
+                        json.nombres entidad["nombre1"] + ' ' + entidad["apellido1"] + ' ' + entidad["apellido2"]
+                    else
+                        json.nombres entidad["nombre1"] + ' ' + entidad["nombre2"] + ' ' + entidad["apellido1"] + ' ' + entidad["apellido2"]
                     end
                 end
             end
         end
-        json.documento pago.documento.nombre
-        json.nropago pago.nropago
-        json.fechatrn pago.fechatrn
-        json.fechaven pago.fechaven
-        json.valor pago.valor
-        json.estado pago.estado.nombre
-        json.observacion pago.observacion
-        json.forma_pago pago.forma_pago.nombre
-        json.banco pago.banco.nombre
-        if pago.cobrador.entidad.persona.nombre2.blank?
-            json.cobrador pago.cobrador.entidad.persona.nombre1 + ' ' + pago.cobrador.entidad.persona.apellido1 + ' ' + pago.cobrador.entidad.persona.apellido2
-        else
-            json.cobrador pago.cobrador.entidad.persona.nombre1 + ' ' + pago.cobrador.entidad.persona.nombre2 + ' ' + pago.cobrador.entidad.persona.apellido1 + ' ' + pago.cobrador.entidad.persona.apellido2
+        json.documentos do
+            json.array! @documentos do |documento|
+                if pago["documento_id"] == documento.id
+                    json.documento documento.nombre
+                end
+            end
         end
+        json.nropago pago["nropago"]
+        json.fechatrn pago["fechatrn"]
+        json.fechaven pago["fechaven"]
+        json.valor pago["valor"]
+        #json.estado pago.estado.nombre
+
+        json.observacion pago["observacion"]
+        #json.forma_pago pago.forma_pago.nombre
+        #json.banco pago.banco.nombre
     end
 end
 

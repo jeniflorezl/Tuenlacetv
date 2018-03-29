@@ -2,8 +2,8 @@ json.senales do
     json.array! @senal do |senal|
         json.contrato senal["contrato"]
         json.codigo senal["id"]
-        json.documento senal["documento"]  
-        json.nombres senal["nombre1"] + '' + senal["nombre2"] + '' + senal["apellido1"] + '' + senal["apellido2"]
+        json.documento senal["documento"]
+        json.nombres senal["nombres"]
         json.direccion senal["direccion"]
         json.barrio senal["barrio"]
         json.zona senal["zona"]

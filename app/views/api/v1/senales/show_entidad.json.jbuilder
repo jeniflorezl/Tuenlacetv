@@ -3,11 +3,7 @@ json.entidades do
         json.id entidad["id"]
         json.tipo_documento entidad["tipo_documento"]
         json.documento entidad["documento"]  
-        if entidad["nombre2"].blank?
-            json.nombres entidad["nombre1"] + ' ' + entidad["apellido1"] + ' ' + entidad["apellido2"]
-        else
-            json.nombres entidad["nombre1"] + ' ' + entidad["nombre2"] + ' ' + entidad["apellido1"] + ' ' + entidad["apellido2"]
-        end
+        json.nombres entidad["nombres"]
         json.nombre1 entidad["nombre1"]
         json.nombre2 entidad["nombre2"]
         json.apellido1 entidad["apellido1"]

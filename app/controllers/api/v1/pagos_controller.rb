@@ -10,8 +10,10 @@ module Api
                 SELECT * FROM pagos;
                 SQL
                 @pagos = ActiveRecord::Base.connection.select_all(query)
-                @entidades = Entidad.all
-                @personas = Persona.all
+                query = <<-SQL 
+                SELECT * FROM VwSenales;
+                SQL
+                @entidades = ActiveRecord::Base.connection.select_all(query)
                 @documentos = Documento.all
                 @formas_pago = FormaPago.all
                 @bancos = Banco.all
