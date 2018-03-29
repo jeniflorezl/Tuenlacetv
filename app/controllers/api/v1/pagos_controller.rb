@@ -10,6 +10,9 @@ module Api
                 SELECT * FROM VwPagos;
                 SQL
                 @pagos = ActiveRecord::Base.connection.select_all(query)
+                @conceptos = Concepto.where(clase: 'P')
+                @formas_pago = FormaPago.all
+                @bancos = Banco.all
             end
 
             def index_anticipados

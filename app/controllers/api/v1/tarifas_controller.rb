@@ -6,12 +6,14 @@ module Api
             
                 # GET /tarifas
                 def index
-                    @tarifas = Tarifa.all
+                    query = <<-SQL 
+                    SELECT * FROM VwTarifas;
+                    SQL
+                    @tarifas = ActiveRecord::Base.connection.select_all(query)
                     @zonas = Zona.all
                     @conceptos = Concepto.all
                     @planes = Plan.all
                     @estados = Estado.where("abreviatura = 'A' or abreviatura = 'IN'")
-                    @historial = HistorialTarifa.all
                 end
             
                 # GET /tarifas/id
@@ -39,16 +41,24 @@ module Api
             
                 # PATCH/PUT /tarifas/id
                 def update
+                    ban = 0
                     t = Time.now
                     @tarifa.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                     if @tarifa.update(tarifa_params)
                         htarifa = HistorialTarifa.find_by(tarifa_id: @tarifa.id)
-                        if (htarifa.fechainicio == params[:fechainicio]) and (htarifa.fechavence == params[:fechaven])
-                            htarifa.update(tarifa_id: @tarifa.id, zona_id: @tarifa.zona_id,
-                                concepto_id: @tarifa.concepto_id, plan_id: @tarifa.plan_id, valor: @tarifa.valor,
-                                fechainicio: params[:fechainicio], fechavence: params[:fechaven], 
-                                ccosto: Empresa.first.centrocosto, usuario_id: @tarifa.usuario_id)
+                        if htarifa
+                            if (htarifa.fechainicio == params[:fechainicio]) and (htarifa.fechavence == params[:fechaven])
+                                htarifa.update(tarifa_id: @tarifa.id, zona_id: @tarifa.zona_id,
+                                    concepto_id: @tarifa.concepto_id, plan_id: @tarifa.plan_id, valor: @tarifa.valor,
+                                    fechainicio: params[:fechainicio], fechavence: params[:fechaven], 
+                                    ccosto: Empresa.first.centrocosto, usuario_id: @tarifa.usuario_id)
+                            else
+                                ban = 1
+                            end
                         else
+                            ban = 1
+                        end
+                        if ban == 1
                             HistorialTarifa.create(tarifa_id: @tarifa.id, zona_id: @tarifa.zona_id,
                                 concepto_id: @tarifa.concepto_id, plan_id: @tarifa.plan_id, valor: @tarifa.valor,
                                 fechainicio: params[:fechainicio], fechavence: params[:fechaven], 
@@ -80,19 +90,11 @@ module Api
                 def set_tarifa_buscar
                     campo = params[:campo]
                     valor = params[:valor]
-                    if campo == 'id'
-                        @tarifa = Tarifa.find(valor)
-                    elsif campo == 'zona'
-                        @tarifa = Tarifa.limit(10).where(zona_id: valor)
-                    elsif campo == 'concepto'
-                        @tarifa = Tarifa.limit(10).where(concepto_id: valor)
-                    elsif campo == 'plan'
-                        @tarifa = Tarifa.limit(10).where(plan_id: valor)
-                    else
-                        @tarifa = Tarifa.limit(10).where(valor: valor)
-                    end
+                    query = <<-SQL 
+                    SELECT TOP(10) * FROM VwTarifas WHERE #{campo} LIKE '%#{valor}%';
+                    SQL
+                    @tarifa = ActiveRecord::Base.connection.select_all(query)
                     @tarifa = [*@tarifa]
-                    @historial = HistorialTarifa.all
                 end
 
                 def set_tarifa
