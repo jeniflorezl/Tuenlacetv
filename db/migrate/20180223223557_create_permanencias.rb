@@ -1,7 +1,7 @@
 class CreatePermanencias < ActiveRecord::Migration[5.1]
   def up
     create_table :permanencias do |t|
-      t.references :senal, foreign_key: true, null:false
+      t.references :entidad, foreign_key: true, null:false
       t.datetime :fechaDcto, null:false
       t.datetime :fechacre, null:false
       t.datetime :fechacam, null:false

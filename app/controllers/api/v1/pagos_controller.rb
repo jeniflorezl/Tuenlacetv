@@ -15,40 +15,14 @@ module Api
                 @bancos = Banco.all
             end
 
-            def index_anticipados
-                query = <<-SQL 
-                SELECT * FROM pagos;
-                SQL
-                @pagos = ActiveRecord::Base.connection.select_all(query)
-                @documentos = Documento.all
-                @formas_pago = FormaPago.all
-                @bancos = Banco.all
-            end
-
             def index_pago
                 @detalle_facts = Pago.detalle_facturas(params[:entidad_id])
             end
-
-            def index_pago_anticipado
-                @detalle_facts = Pago.detalle_facturas(params[:entidad_id])
-            end
-
             
             # POST /pagos
             def create
                 if Pago.generar_pago(params[:entidad_id], params[:documento_id], params[:fechatrn],
-                    params[:fechaven], params[:valor], params[:observacion], params[:forma_pago_id],
-                    params[:banco_id], params[:cobrador_id], params[:detalle], params[:usuario_id])
-                    render json: { status: :created }
-                else
-                    render json: { error: "Error en proceso" }
-                end
-            end
-
-            # POST /pagos
-            def create_pago_anticipado
-                if Pago.generar_pago(params[:entidad_id], params[:documento_id], params[:fechatrn],
-                    params[:fechaven], params[:valor], params[:observacion], params[:forma_pago_id],
+                    params[:valor], params[:observacion], params[:forma_pago_id],
                     params[:banco_id], params[:cobrador_id], params[:detalle], params[:usuario_id])
                     render json: { status: :created }
                 else
@@ -58,18 +32,6 @@ module Api
 
             # POST /pagos/id
             def anular
-                if @pago
-                    query = <<-SQL 
-                    UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{@pago[0]["id"]}
-                    SQL
-                    ActiveRecord::Base.connection.select_all(query)
-                    render json: { status: :deleted }
-                else
-                    render json: { post: "not found" }
-                end
-            end
-
-            def anular_pago_anticipado
                 if @pago
                     query = <<-SQL 
                     UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{@pago[0]["id"]}

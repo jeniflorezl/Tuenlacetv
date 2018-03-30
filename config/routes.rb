@@ -16,6 +16,7 @@ Rails.application.routes.draw do
       resources :tipo_facturacion
       resources :facturacion
       resources :pagos
+      resources :pagos_anticipados
       get 'paises/bd/:db', to: 'paises#index'
       get 'paises/:campo/:valor/:db', to: 'paises#show'
       get 'departamentos/bd/:db', to: 'departamentos#index'
@@ -53,6 +54,10 @@ Rails.application.routes.draw do
       get 'pagos/detalle_facturas/:entidad_id/:db', to: 'pagos#index_pago'
       get 'pagos/:campo/:valor/:db', to: 'pagos#show'
       post 'pagos/anular_pago/:id', to: 'pagos#anular'
+      get 'pagos_anticipados/bd/:db', to: 'pagos#index'
+      get 'pagos_anticipados/detalle_facturas/:entidad_id/:db', to: 'pagos_anticipados#index_pago'
+      get 'pagos_anticipados/:campo/:valor/:db', to: 'pagos_anticipados#show'
+      post 'pagos_anticipados/anular_pago/:id', to: 'pagos#anular'
       post 'signin', to: 'sesion#create'
       delete 'signout', to: 'sesion#destroy'
     end

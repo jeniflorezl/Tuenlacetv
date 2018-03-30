@@ -1,7 +1,7 @@
 class CreateInfoInternet < ActiveRecord::Migration[5.1]
   def up
     create_table :info_internet do |t|
-      t.references :senal, foreign_key: true, null:false
+      t.references :entidad, foreign_key: true, null:false
       t.string :direccionip, limit: 20
       t.integer :velocidad
       t.string :mac1, limit: 20
