@@ -1,7 +1,7 @@
 class CreateDirCorrespondencia < ActiveRecord::Migration[5.1]
   def up
     create_table :dir_correspondencia do |t|
-      t.references :senal, foreign_key: true, null:false
+      t.references :entidad, foreign_key: true, null:false
       t.string :direccion, limit: 100, null:false
       t.datetime :fechacre, null:false
       t.datetime :fechacam, null:false

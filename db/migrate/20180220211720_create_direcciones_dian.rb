@@ -1,7 +1,7 @@
 class CreateDireccionesDian < ActiveRecord::Migration[5.1]
   def up
     create_table :direcciones_dian do |t|
-      t.references :senal, foreign_key: true, null:false
+      t.references :entidad, foreign_key: true, null:false
       t.references :nomenclatura, foreign_key: true, null:false
       t.integer :nrox
       t.string :letrax, limit: 3 
