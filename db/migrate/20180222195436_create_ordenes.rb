@@ -2,7 +2,7 @@ class CreateOrdenes < ActiveRecord::Migration[5.1]
   def up
     create_table :ordenes, {:id => false} do |t|
       t.integer :id, null:false
-      t.references :senal, foreign_key: true, null:false
+      t.references :entidad, foreign_key: true, null:false
       t.references :concepto, foreign_key: true, null:false
       t.datetime :fechatrn, null:false
       t.datetime :fechaven, null:false

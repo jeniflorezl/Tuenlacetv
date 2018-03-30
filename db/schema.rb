@@ -49,7 +49,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   end
 
   create_table "anticipos", force: :cascade do |t|
-    t.bigint "senal_id", null: false
+    t.bigint "entidad_id", null: false
     t.integer "factura_id", null: false
     t.bigint "doc_factura_id", null: false
     t.char "prefijo", limit: 6, null: false
@@ -65,7 +65,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.bigint "usuario_id", null: false
     t.index ["doc_factura_id"], name: "index_anticipos_on_doc_factura_id"
     t.index ["doc_pagos_id"], name: "index_anticipos_on_doc_pagos_id"
-    t.index ["senal_id"], name: "index_anticipos_on_senal_id"
+    t.index ["entidad_id"], name: "index_anticipos_on_entidad_id"
     t.index ["usuario_id"], name: "index_anticipos_on_usuario_id"
   end
 
@@ -208,17 +208,17 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   end
 
   create_table "dir_correspondencia", force: :cascade do |t|
-    t.bigint "senal_id", null: false
+    t.bigint "entidad_id", null: false
     t.string "direccion", limit: 100, null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
-    t.index ["senal_id"], name: "index_dir_correspondencia_on_senal_id"
+    t.index ["entidad_id"], name: "index_dir_correspondencia_on_entidad_id"
     t.index ["usuario_id"], name: "index_dir_correspondencia_on_usuario_id"
   end
 
   create_table "direcciones_dian", force: :cascade do |t|
-    t.bigint "senal_id", null: false
+    t.bigint "entidad_id", null: false
     t.bigint "nomenclatura_id", null: false
     t.integer "nrox"
     t.string "letrax", limit: 3
@@ -229,8 +229,8 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
+    t.index ["entidad_id"], name: "index_direcciones_dian_on_entidad_id"
     t.index ["nomenclatura_id"], name: "index_direcciones_dian_on_nomenclatura_id"
-    t.index ["senal_id"], name: "index_direcciones_dian_on_senal_id"
     t.index ["usuario_id"], name: "index_direcciones_dian_on_usuario_id"
   end
 
@@ -377,7 +377,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   end
 
   create_table "info_internet", force: :cascade do |t|
-    t.bigint "senal_id", null: false
+    t.bigint "entidad_id", null: false
     t.string "direccionip", limit: 20
     t.integer "velocidad"
     t.string "mac1", limit: 20
@@ -393,7 +393,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
-    t.index ["senal_id"], name: "index_info_internet_on_senal_id"
+    t.index ["entidad_id"], name: "index_info_internet_on_entidad_id"
     t.index ["usuario_id"], name: "index_info_internet_on_usuario_id"
   end
 
@@ -422,13 +422,13 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   end
 
   create_table "notas", force: :cascade do |t|
-    t.bigint "senal_id", null: false
+    t.bigint "entidad_id", null: false
     t.string "nota", limit: 300
     t.datetime "fecha", null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
-    t.index ["senal_id"], name: "index_notas_on_senal_id"
+    t.index ["entidad_id"], name: "index_notas_on_entidad_id"
     t.index ["usuario_id"], name: "index_notas_on_usuario_id"
   end
 
@@ -453,7 +453,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
 
   create_table "ordenes", primary_key: ["concepto_id", "nrorden"], force: :cascade do |t|
     t.integer "id", null: false
-    t.bigint "senal_id", null: false
+    t.bigint "entidad_id", null: false
     t.bigint "concepto_id", null: false
     t.datetime "fechatrn", null: false
     t.datetime "fechaven", null: false
@@ -465,8 +465,8 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
     t.index ["concepto_id"], name: "index_ordenes_on_concepto_id"
+    t.index ["entidad_id"], name: "index_ordenes_on_entidad_id"
     t.index ["estado_id"], name: "index_ordenes_on_estado_id"
-    t.index ["senal_id"], name: "index_ordenes_on_senal_id"
     t.index ["tecnico_id"], name: "index_ordenes_on_tecnico_id"
     t.index ["usuario_id"], name: "index_ordenes_on_usuario_id"
   end
@@ -477,7 +477,6 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.bigint "documento_id", null: false
     t.integer "nropago", null: false
     t.datetime "fechatrn", null: false
-    t.datetime "fechaven", null: false
     t.money "valor", precision: 19, scale: 4, null: false
     t.bigint "estado_id", null: false
     t.string "observacion", limit: 300
@@ -510,12 +509,12 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   end
 
   create_table "permanencias", force: :cascade do |t|
-    t.bigint "senal_id", null: false
+    t.bigint "entidad_id", null: false
     t.datetime "fechaDcto", null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
-    t.index ["senal_id"], name: "index_permanencias_on_senal_id"
+    t.index ["entidad_id"], name: "index_permanencias_on_entidad_id"
     t.index ["usuario_id"], name: "index_permanencias_on_usuario_id"
   end
 
@@ -558,7 +557,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   end
 
   create_table "plantilla_fact", force: :cascade do |t|
-    t.bigint "senal_id"
+    t.bigint "entidad_id", null: false
     t.bigint "concepto_id"
     t.bigint "estado_id", null: false
     t.bigint "tarifa_id"
@@ -568,8 +567,8 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
     t.index ["concepto_id"], name: "index_plantilla_fact_on_concepto_id"
+    t.index ["entidad_id"], name: "index_plantilla_fact_on_entidad_id"
     t.index ["estado_id"], name: "index_plantilla_fact_on_estado_id"
-    t.index ["senal_id"], name: "index_plantilla_fact_on_senal_id"
     t.index ["tarifa_id"], name: "index_plantilla_fact_on_tarifa_id"
     t.index ["usuario_id"], name: "index_plantilla_fact_on_usuario_id"
   end
@@ -783,12 +782,12 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   add_foreign_key "agencias", "usuarios"
   add_foreign_key "anticipos", "documentos", column: "doc_factura_id"
   add_foreign_key "anticipos", "documentos", column: "doc_pagos_id"
+  add_foreign_key "anticipos", "entidades"
   add_foreign_key "anticipos", "facturacion", column: "doc_factura_id", primary_key: "documento_id", name: "FK_anticipos_facturas"
   add_foreign_key "anticipos", "facturacion", column: "nrofact", primary_key: "nrofact", name: "FK_anticipos_facturas"
   add_foreign_key "anticipos", "facturacion", column: "prefijo", primary_key: "prefijo", name: "FK_anticipos_facturas"
   add_foreign_key "anticipos", "pagos", column: "doc_pagos_id", primary_key: "documento_id", name: "FK_anticipos_pagos"
   add_foreign_key "anticipos", "pagos", column: "nropago", primary_key: "nropago", name: "FK_anticipos_pagos"
-  add_foreign_key "anticipos", "senales"
   add_foreign_key "anticipos", "usuarios"
   add_foreign_key "articulos", "grupos"
   add_foreign_key "articulos", "unidades"
@@ -819,10 +818,10 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   add_foreign_key "detalle_orden", "ordenes", column: "concepto_id", primary_key: "concepto_id", name: "FK_ordenes"
   add_foreign_key "detalle_orden", "ordenes", column: "nrorden", primary_key: "nrorden", name: "FK_ordenes"
   add_foreign_key "detalle_orden", "usuarios"
-  add_foreign_key "dir_correspondencia", "senales"
+  add_foreign_key "dir_correspondencia", "entidades"
   add_foreign_key "dir_correspondencia", "usuarios"
+  add_foreign_key "direcciones_dian", "entidades"
   add_foreign_key "direcciones_dian", "nomenclaturas"
-  add_foreign_key "direcciones_dian", "senales"
   add_foreign_key "direcciones_dian", "usuarios"
   add_foreign_key "direcciones_zonas", "usuarios"
   add_foreign_key "direcciones_zonas", "zonas"
@@ -852,7 +851,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   add_foreign_key "historial_tarifas", "planes"
   add_foreign_key "historial_tarifas", "usuarios"
   add_foreign_key "historial_tarifas", "zonas"
-  add_foreign_key "info_internet", "senales"
+  add_foreign_key "info_internet", "entidades"
   add_foreign_key "info_internet", "usuarios"
   add_foreign_key "mvto_rorden", "conceptos"
   add_foreign_key "mvto_rorden", "ordenes", column: "concepto_id", primary_key: "concepto_id", name: "FK_mvtororden_ordenes"
@@ -860,14 +859,14 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   add_foreign_key "mvto_rorden", "registro_orden"
   add_foreign_key "mvto_rorden", "usuarios"
   add_foreign_key "nomenclaturas", "usuarios"
-  add_foreign_key "notas", "senales"
+  add_foreign_key "notas", "entidades"
   add_foreign_key "notas", "usuarios"
   add_foreign_key "notas_fact", "usuarios"
   add_foreign_key "notas_fact", "zonas"
   add_foreign_key "ordenes", "conceptos"
+  add_foreign_key "ordenes", "entidades"
   add_foreign_key "ordenes", "entidades", column: "tecnico_id"
   add_foreign_key "ordenes", "estados"
-  add_foreign_key "ordenes", "senales"
   add_foreign_key "ordenes", "usuarios"
   add_foreign_key "pagos", "bancos"
   add_foreign_key "pagos", "documentos"
@@ -877,7 +876,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   add_foreign_key "pagos", "formas_pago"
   add_foreign_key "pagos", "usuarios"
   add_foreign_key "paises", "usuarios"
-  add_foreign_key "permanencias", "senales"
+  add_foreign_key "permanencias", "entidades"
   add_foreign_key "permanencias", "usuarios"
   add_foreign_key "personas", "barrios"
   add_foreign_key "personas", "ciudades"
@@ -887,8 +886,8 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   add_foreign_key "planes", "servicios"
   add_foreign_key "planes", "usuarios"
   add_foreign_key "plantilla_fact", "conceptos"
+  add_foreign_key "plantilla_fact", "entidades"
   add_foreign_key "plantilla_fact", "estados"
-  add_foreign_key "plantilla_fact", "senales"
   add_foreign_key "plantilla_fact", "tarifas"
   add_foreign_key "plantilla_fact", "usuarios"
   add_foreign_key "polit_permanencia", "usuarios"

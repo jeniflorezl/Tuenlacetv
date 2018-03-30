@@ -69,7 +69,17 @@ module Api
                 funcion = params[:funcion_id]
                 @persona = Persona.new(persona_params)
                 if @persona.save
-                    @entidad = Entidad.new(funcion_id: funcion, persona_id: @persona.id, usuario_id: @persona.usuario_id)
+                    query = <<-SQL 
+                    SELECT MAX(id) as ultimo FROM entidades;
+                    SQL
+                    ActiveRecord::Base.connection.clear_query_cache
+                    ultimo = ActiveRecord::Base.connection.select_all(query)
+                    if ultimo[0]["ultimo"] == nil
+                        ultimo = 1
+                    else
+                        ultimo = (ultimo[0]["ultimo"]).to_i + 1
+                    end
+                    @entidad = Entidad.new(id: ultimo, funcion_id: funcion, persona_id: @persona.id, usuario_id: @persona.usuario_id)
                     if @entidad.save && funcion == "1"
                         @senal = Senal.new(senal_params)
                         @senal.entidad_id = @entidad.id

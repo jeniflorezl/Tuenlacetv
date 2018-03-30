@@ -6,7 +6,6 @@ class CreatePagos < ActiveRecord::Migration[5.1]
       t.references :documento, foreign_key: true, null:false
       t.integer :nropago, null:false
       t.datetime :fechatrn, null:false
-      t.datetime :fechaven, null:false
       t.money :valor, null:false
       t.references :estado, foreign_key: true, null:false
       t.string :observacion, limit: 300

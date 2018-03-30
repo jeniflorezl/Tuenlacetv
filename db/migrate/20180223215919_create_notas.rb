@@ -1,7 +1,7 @@
 class CreateNotas < ActiveRecord::Migration[5.1]
   def up
     create_table :notas do |t|
-      t.references :senal, foreign_key: true, null:false
+      t.references :entidad, foreign_key: true, null:false
       t.string :nota, limit: 300
       t.datetime :fecha, null:false
       t.datetime :fechacre, null:false

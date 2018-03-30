@@ -11,8 +11,57 @@ class Pago < ApplicationRecord
 
   private
 
-  def self.generar_pago(entidad_id, documento_id, fechatrn, fechaven, valor, observacion, forma_pago_id,
+  def self.generar_pago(entidad_id, documento_id, fechatrn, valor, observacion, forma_pago_id,
     banco_id, cobrador_id, detalle, usuario_id)
+    query = <<-SQL 
+    SELECT MAX(nropago) as ultimo FROM pagos;
+    SQL
+    ActiveRecord::Base.connection.clear_query_cache
+    ultimo = ActiveRecord::Base.connection.select_all(query)
+    if ultimo[0]["ultimo"] == nil
+      ultimo=1
+    else
+      ultimo = (ultimo[0]["ultimo"]).to_i + 1
+    end
+    pago = Pago.new(entidad_id: entidad_id, documento_id: documento_id, nropago: ultimo, fechatrn: fechatrn,
+      fechaven: fechatrn, valor: valor, estado_id: 9, observacion: observacion, forma_pago_id: forma_pago_id,
+      banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
+      if pago.save
+        query = <<-SQL 
+        SELECT id FROM pagos WHERE nropago=#{pago.nropago};
+        SQL
+        ActiveRecord::Base.connection.clear_query_cache
+        pago_id = ActiveRecord::Base.connection.select_all(query)
+        pago_id = (pago_id[0]["id"]).to_i
+        byebug
+        detalle.each do |d|
+          byebug
+          query = <<-SQL 
+          SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{d["factura_id"]};
+          SQL
+          ActiveRecord::Base.connection.clear_query_cache
+          factura = ActiveRecord::Base.connection.select_all(query)
+          abono = Abono.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
+            factura_id: d["factura_id"], doc_factura_id: factura[0]["documento_id"],
+            prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
+            fechabono: fechatrn, saldo: d["saldo"], abono: d["abono"], usuario_id: pago.usuario_id)
+          if d["total"] == 0
+            query = <<-SQL 
+            UPDATE facturacion set estado_id = 9 WHERE id = #{d["factura_id"]};
+            SQL
+            ActiveRecord::Base.connection.select_all(query)
+          end
+
+        end
+        return true
+      end
+  end
+
+  def self.generar_pago_anticipado(entidad_id, documento_id, fechatrn, fechapxa, cuotas, valor, observacion, forma_pago_id,
+    banco_id, cobrador_id, detalle, usuario_id)
+    byebug
+    i = 0
+    senal_id = Senal.find_by(entidad_id: entidad_id)
     query = <<-SQL 
     SELECT MAX(nropago) as ultimo FROM pagos;
     SQL
@@ -51,8 +100,27 @@ class Pago < ApplicationRecord
             SQL
             ActiveRecord::Base.connection.select_all(query)
           end
-
         end
+        valor_anticipo = valor / cuotas
+        fecha1 = Date.parse fechapxa
+        fecha2 = fecha1 + 29
+        cuotas.each do |c|
+          query = <<-SQL 
+          SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{d[i]["factura_id"]};
+          SQL
+          ActiveRecord::Base.connection.clear_query_cache
+          factura = ActiveRecord::Base.connection.select_all(query)
+          anticipo = Anticipo.new(senal_id: senal_id, factura_id: d[i]["factura_id"], doc_factura_id: factura[0]["documento_id"],
+            prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], pago_id: pago_id, doc_pagos_id: pago.documento_id,
+            nropago: pago.nropago, fechatrn: fecha1, fechaven: fecha2, valor: valor_anticipo, usuario_id: pago.usuario_id)
+          i += 1
+          fecha1 = fecha1 + 31
+          fecha2 = fecha1 + 29
+        end
+        query = <<-SQL 
+        UPDATE plantilla_fact set fechaini = #{fechapxa} WHERE senal_id = #{senal_id};
+        SQL
+        ActiveRecord::Base.connection.select_all(query)
         return true
       end
   end
