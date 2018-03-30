@@ -57,11 +57,10 @@ class Pago < ApplicationRecord
       end
   end
 
-  def self.generar_pago_anticipado(entidad_id, documento_id, fechatrn, fechapxa, cuotas, valor, observacion, forma_pago_id,
-    banco_id, cobrador_id, detalle, usuario_id)
+  def self.generar_pago_anticipado(entidad_id, documento_id, servicio_id, fechatrn, fechapxa, cuotas, valor, observacion, forma_pago_id,
+    banco_id, cobrador_id, usuario_id)
     byebug
     i = 0
-    senal_id = Senal.find_by(entidad_id: entidad_id)
     query = <<-SQL 
     SELECT MAX(nropago) as ultimo FROM pagos;
     SQL
@@ -117,10 +116,6 @@ class Pago < ApplicationRecord
           fecha1 = fecha1 + 31
           fecha2 = fecha1 + 29
         end
-        query = <<-SQL 
-        UPDATE plantilla_fact set fechaini = #{fechapxa} WHERE senal_id = #{senal_id};
-        SQL
-        ActiveRecord::Base.connection.select_all(query)
         return true
       end
   end
@@ -203,5 +198,38 @@ class Pago < ApplicationRecord
       end 
     end
     detalle_facts
+  end
+
+  def sefl.anular_pago(pago_id)
+    query = <<-SQL 
+    UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{pago_id}
+    SQL
+    ActiveRecord::Base.connection.select_all(query)
+  end
+
+  def sefl.anular_pago_anticipado(pago_anticipado_id)
+    ban = 0
+    query = <<-SQL 
+    SELECT * FROM pagos WHERE id = #{pago_anticipado_id}
+    SQL
+    pago = ActiveRecord::Base.connection.select_all(query)
+    query = <<-SQL 
+    SELECT * FROM facturacion WHERE entidad_id = #{entidad_id}
+    SQL
+    facturas = ActiveRecord::Base.connection.select_all(query)
+    facturas.each do |f|
+      if f["fechatrn"] == pago[0]["fechatrn"]
+        ban = 1
+      end
+    end
+    if ban == 1
+      return false
+    else
+      query = <<-SQL 
+      UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{pago_anticipado_id}
+      DELETE anticipados WHERE entidad_id = #{pago[0]["entidad_id"]} and pago_id = #{pago[0]["id"]}
+      SQL
+      ActiveRecord::Base.connection.select_all(query)
+    end
   end
 end

@@ -185,7 +185,7 @@ json.vendedores do
     json.array! @vendedores do |vendedor|
         json.id vendedor.id
         if vendedor.persona.nombre2.blank?
-            json.nombres vendedor.persona.nombre1 + ' ' + vendedor.persona.apellido1 + ' ' + vendedor.persona.persona.apellido2
+            json.nombres vendedor.persona.nombre1 + ' ' + vendedor.persona.apellido1 + ' ' + vendedor.persona.apellido2
         else
             json.nombres vendedor.persona.nombre1 + ' ' + vendedor.persona.nombre2 + ' ' + vendedor.persona.apellido1 + ' ' + vendedor.persona.apellido2
         end
@@ -196,7 +196,7 @@ json.tecnicos do
     json.array! @tecnicos do |tecnico|
         json.id tecnico.id
         if tecnico.persona.nombre2.blank?
-            json.nombres tecnico.persona.nombre1 + ' ' + tecnico.persona.apellido1 + ' ' + tecnico.persona.persona.apellido2
+            json.nombres tecnico.persona.nombre1 + ' ' + tecnico.persona.apellido1 + ' ' + tecnico.persona.apellido2
         else
             json.nombres tecnico.persona.nombre1 + ' ' + tecnico.persona.nombre2 + ' ' + tecnico.persona.apellido1 + ' ' + tecnico.persona.apellido2
         end

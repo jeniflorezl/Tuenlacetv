@@ -27,9 +27,6 @@ module Api
                 @funciones = Funcion.all
                 @vendedores = Entidad.where(funcion_id: 5)
                 @tecnicos = Entidad.where(funcion_id: 7)
-                @plantillas_tv = PlantillaFact.where(concepto_id: 3)
-                @plantillas_int = PlantillaFact.where(concepto_id: 4)
-                @info_internet = InfoInternet.all
                 @tipo_facturacion = TipoFacturacion.all
             end
 
@@ -82,7 +79,7 @@ module Api
                         end
                     else
                         query = <<-SQL 
-                        SELECT MAX(id) as ultimo FROM entidades WHERE id<=50000;
+                        SELECT MAX(id) as ultimo FROM entidades WHERE id<50000;
                         SQL
                         ActiveRecord::Base.connection.clear_query_cache
                         ultimo = ActiveRecord::Base.connection.select_all(query)

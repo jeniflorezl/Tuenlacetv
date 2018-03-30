@@ -29,11 +29,11 @@ module Api
             # POST /pagos_anticipados/id
             def anular_pago_anticipado
                 if @pago_anticipado
-                    query = <<-SQL 
-                    UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{@pago_anticipado[0]["id"]}
-                    SQL
-                    ActiveRecord::Base.connection.select_all(query)
-                    render json: { status: :deleted }
+                    if Pago.anular_pago_anticipado(@pago[0]["id"])
+                        render json: { status: :deleted }
+                    else
+                        render json: { error: "error al anular pago anticipado" }
+                    end
                 else
                     render json: { post: "not found" }
                 end

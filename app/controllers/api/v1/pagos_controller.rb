@@ -33,11 +33,11 @@ module Api
             # POST /pagos/id
             def anular
                 if @pago
-                    query = <<-SQL 
-                    UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{@pago[0]["id"]}
-                    SQL
-                    ActiveRecord::Base.connection.select_all(query)
-                    render json: { status: :deleted }
+                    if Pago.anular_pago(@pago[0]["id"])
+                        render json: { status: :deleted }
+                    else
+                        render json: { error: "error al anular pago" }
+                    end
                 else
                     render json: { post: "not found" }
                 end

@@ -131,7 +131,7 @@ class Facturacion < ApplicationRecord
       ano = fecha1.year
       if documentos.valor == 'S'
         senales.each do |senal|
-          plantillas = PlantillaFact.where("concepto_id = #{concepto_tv.id} and senal_id = #{senal.id}")
+          plantillas = PlantillaFact.where("concepto_id = #{concepto_tv.id} and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
             byebug
             if plantilla.estado_id == estado
@@ -157,14 +157,24 @@ class Facturacion < ApplicationRecord
                   end
                 end
                 if detallefact.blank? || fact_tv != 1
-                  fecha2 = Date.parse plantilla.fechaini.to_s
-                  dias = (fecha1 - fecha2).to_i + 1
-                  if dias < 30
-                    if fecha1.month == 2
-                      valor_mens = tarifa
+                  query = <<-SQL 
+                  SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and fechatrn = '#{f_inicio}';
+                  SQL
+                  ActiveRecord::Base.connection.clear_query_cache
+                  anticipo = ActiveRecord::Base.connection.select_all(query)
+                  if anticipo.blank?
+                    fecha2 = Date.parse plantilla.fechaini.to_s
+                    dias = (fecha1 - fecha2).to_i + 1
+                    if dias < 30
+                      if fecha1.month == 2
+                        valor_mens = tarifa
+                      else
+                        valor_dia = tarifa / 30
+                        valor_mens = valor_dia * dias
+                      end
                     else
-                      valor_dia = tarifa / 30
-                      valor_mens = valor_dia * dias
+                      valor_mens = tarifa
+                      dias = 30
                     end
                   else
                     valor_mens = tarifa
@@ -250,7 +260,7 @@ class Facturacion < ApplicationRecord
         end
         senales.each do |senal|
           byebug
-          plantillas = PlantillaFact.where("concepto_id = #{concepto_int.id} and senal_id = #{senal.id}")
+          plantillas = PlantillaFact.where("concepto_id = #{concepto_int.id} and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
             if plantilla.estado_id == estado
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
@@ -360,7 +370,7 @@ class Facturacion < ApplicationRecord
         end
         senales.each do |senal|
           byebug
-          plantillas = PlantillaFact.where("concepto_id <> '#{concepto_tv.id}' and concepto_id <> '#{concepto_int.id}' and senal_id = #{senal.id}")
+          plantillas = PlantillaFact.where("concepto_id <> '#{concepto_tv.id}' and concepto_id <> '#{concepto_int.id}' and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
             concepto = plantilla.concepto_id
             iva_cpto = Concepto.find(concepto).porcentajeIva
@@ -472,7 +482,7 @@ class Facturacion < ApplicationRecord
         end
       else
         senales.each do |senal|
-          plantillas = PlantillaFact.where("senal_id = #{senal.id}")
+          plantillas = PlantillaFact.where("entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
             byebug
             concepto_id = plantilla.concepto_id
@@ -661,8 +671,7 @@ class Facturacion < ApplicationRecord
         else
           ultimo = (ultimo[0]["ultimo"]).to_i + 1
         end
-        senal = Senal.find_by(entidad_id: entidad_id)
-        plantilla = PlantillaFact.where("senal_id = #{senal.id} and concepto_id = #{concepto_tv.id}")
+        plantilla = PlantillaFact.where("entidad_id = #{entidad_id} and concepto_id = #{concepto_tv.id}")
         fecha2 = Date.parse plantilla[0]["fechaini"].to_s
         dias = (fecha1 - fecha2).to_i + 1
         if dias < 30
@@ -677,7 +686,7 @@ class Facturacion < ApplicationRecord
           iva = valor_fact - valor_sin_iva
           valor_fact = valor_sin_iva
         end
-        facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: 1, fechatrn: f_elaboracion,
+        facturacion = Facturacion.new(entidad_id: entidad_id, documento_id: 1, fechatrn: f_elaboracion,
           fechaven: f_fin, valor: valor_fact, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
           estado_id: estadoD.id, observacion: observa, reporta: '1', usuario_id: usuario_id)
         if facturacion.save
@@ -730,8 +739,7 @@ class Facturacion < ApplicationRecord
         else
           ultimo = (ultimo[0]["ultimo"]).to_i + 1
         end
-        senal = Senal.find_by(entidad_id: entidad_id)
-        plantilla = PlantillaFact.where("senal_id = #{senal.id} and concepto_id = #{concepto_int.id}")
+        plantilla = PlantillaFact.where("entidad_id = #{entidad_id} and concepto_id = #{concepto_int.id}")
         fecha2 = Date.parse plantilla[0]["fechaini"].to_s
         dias = (fecha1 - fecha2).to_i + 1
         if dias < 30
@@ -746,7 +754,7 @@ class Facturacion < ApplicationRecord
           iva = valor_fact - valor_sin_iva
           valor_fact = valor_sin_iva
         end
-        facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: 1, fechatrn: f_elaboracion,
+        facturacion = Facturacion.new(entidad_id: entidad_id, documento_id: 1, fechatrn: f_elaboracion,
           fechaven: f_fin, valor: valor_fact, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
           estado_id: estadoD.id, observacion: observa, reporta: '1', usuario_id: usuario_id)
         if facturacion.save

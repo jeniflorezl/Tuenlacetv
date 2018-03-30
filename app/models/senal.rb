@@ -33,14 +33,12 @@ class Senal < ApplicationRecord
 
   private
 
-  def self.afiliacion_tv(senal_tv, entidad_tv, valorAfiTv, valorDcto, tarifaTv, tecnico)
-    senal = senal_tv
-    entidad = entidad_tv
+  def self.afiliacion_tv(senal, entidad, valorAfiTv, valorDcto, tarifaTv, tecnico)
     ultimo = 0
     conceptord = Concepto.find(11)
     conceptoplant = Concepto.find(3)
     conceptofact = Concepto.find(1)
-    plantilla = PlantillaFact.new(senal_id: senal.id, concepto_id: conceptoplant.id, estado_id: @estadoU.id, tarifa_id: tarifaTv, 
+    plantilla = PlantillaFact.new(entidad_id: entidad.id, concepto_id: conceptoplant.id, estado_id: @estadoU.id, tarifa_id: tarifaTv, 
       fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: senal.usuario_id)
     if plantilla.save
       if @consecutivos == 'S'
@@ -59,7 +57,7 @@ class Senal < ApplicationRecord
       else
         ultimo = (ultimo[0]["ultimo"]).to_i + 1
       end
-      orden = Orden.new(senal_id: senal.id, concepto_id: conceptord.id, fechatrn: senal.fechacontrato,
+      orden = Orden.new(entidad_id: entidad.id, concepto_id: conceptord.id, fechatrn: senal.fechacontrato,
         fechaven: senal.fechacontrato, nrorden: ultimo, estado_id: @estadoD.id, observacion: 'Registro creado en proceso de afiliación',
         tecnico_id: tecnico, usuario_id: senal.usuario_id)
       if orden.save
@@ -122,14 +120,12 @@ class Senal < ApplicationRecord
   end
 
 
-  def self.afiliacion_int(senal_int, entidad_int, valorAfiInt, valorDcto, tarifaInt, tecnico)
-    senal = senal_int
-    entidad = entidad_int
+  def self.afiliacion_int(senal, entidad, valorAfiInt, valorDcto, tarifaInt, tecnico)
     ultimo = 0
     conceptord = Concepto.find(12)
     conceptoplant = Concepto.find(4)
     conceptofact = Concepto.find(2)
-    plantillaint = PlantillaFact.new(senal_id: senal.id, concepto_id: conceptoplant.id, estado_id: @estadoU.id, tarifa_id: tarifaInt, 
+    plantillaint = PlantillaFact.new(entidad_id: entidad.id, concepto_id: conceptoplant.id, estado_id: @estadoU.id, tarifa_id: tarifaInt, 
       fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: senal.usuario_id)
     if plantillaint.save
       if @consecutivos == 'S'
@@ -148,7 +144,7 @@ class Senal < ApplicationRecord
       else
         ultimo = (ultimo[0]["ultimo"]).to_i + 1
       end
-      ordenin = Orden.new(senal_id: senal.id, concepto_id: conceptord.id, fechatrn: @t.strftime("%d/%m/%Y %H:%M:%S"),
+      ordenin = Orden.new(entidad_id: entidad.id, concepto_id: conceptord.id, fechatrn: @t.strftime("%d/%m/%Y %H:%M:%S"),
       fechaven: @t.strftime("%d/%m/%Y %H:%M:%S"), nrorden: ultimo, estado_id: @estadoD.id, observacion: 'Registro creado en proceso de afiliación',
       tecnico_id: tecnico, usuario_id: senal.usuario_id)
       if ordenin.save
@@ -176,7 +172,7 @@ class Senal < ApplicationRecord
             if valorDcto > 0
               valor = valorAfiInt - valorDcto
             else
-              valor = valorAfiInt - valorDcto
+              valor = valorAfiInt
             end
             iva_cpto = conceptofact.porcentajeIva
             if iva_cpto > 0
