@@ -36,8 +36,8 @@ class Facturacion < ApplicationRecord
           query = <<-SQL 
           SELECT * FROM facturacion WHERE fechatrn >= #{fecha1} and fechaven <= #{fecha3} ORDER BY id;
           SQL
-          ActiveRecord::Base.connection.clear_query_cache
-          factura = ActiveRecord::Base.connection.select_all(query)
+          Facturacion.connection.clear_query_cache
+          factura = Facturacion.connection.select_all(query)
           fact_ini = factura.first
           nrofact_ini = fact_ini["nrofact"]
           fact_fin = factura.last
@@ -140,8 +140,8 @@ class Facturacion < ApplicationRecord
                 query = <<-SQL 
                 SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and fechatrn >= '01/#{mes}/#{ano}';
                 SQL
-                ActiveRecord::Base.connection.clear_query_cache
-                factura = ActiveRecord::Base.connection.select_all(query)
+                Facturacion.connection.clear_query_cache
+                factura = Facturacion.connection.select_all(query)
                 i = 0
                 j = 0
                 fact_tv = 0
@@ -160,8 +160,8 @@ class Facturacion < ApplicationRecord
                   query = <<-SQL 
                   SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and fechatrn = '#{f_inicio}';
                   SQL
-                  ActiveRecord::Base.connection.clear_query_cache
-                  anticipo = ActiveRecord::Base.connection.select_all(query)
+                  Facturacion.connection.clear_query_cache
+                  anticipo = Facturacion.connection.select_all(query)
                   if anticipo.blank?
                     fecha2 = Date.parse plantilla.fechaini.to_s
                     dias = (fecha1 - fecha2).to_i + 1
@@ -202,8 +202,8 @@ class Facturacion < ApplicationRecord
                     SELECT MAX(nrofact) as ultimo FROM facturacion;
                     SQL
                   end
-                  ActiveRecord::Base.connection.clear_query_cache
-                  ultimo = ActiveRecord::Base.connection.select_all(query)
+                  Facturacion.connection.clear_query_cache
+                  ultimo = Facturacion.connection.select_all(query)
                   if ultimo[0]["ultimo"] == nil
                     ultimo=1
                   else
@@ -216,8 +216,8 @@ class Facturacion < ApplicationRecord
                       query = <<-SQL 
                       SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact} and documento_id = #{doc_tv};
                       SQL
-                      ActiveRecord::Base.connection.clear_query_cache
-                      facturacion_id = ActiveRecord::Base.connection.select_all(query)
+                      Facturacion.connection.clear_query_cache
+                      facturacion_id = Facturacion.connection.select_all(query)
                       facturacion_id = (facturacion_id[0]["id"]).to_i
                       detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
                         prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_tv.id, cantidad: 1, 
@@ -250,7 +250,7 @@ class Facturacion < ApplicationRecord
                     UPDATE facturacion set fechaven = #{f_fin}, valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact} WHERE nrofact = #{factura[j]["nrofact"]};
                     UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_tv}, iva = #{iva} WHERE nrofact = #{factura[j]["nrofact"]};
                     SQL
-                    ActiveRecord::Base.connection.select_all(query)
+                    Facturacion.connection.select_all(query)
                     result = 1
                   end
                 end
@@ -268,8 +268,8 @@ class Facturacion < ApplicationRecord
                 query = <<-SQL 
                 SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and fechatrn >= '01/#{mes}/#{ano}';
                 SQL
-                ActiveRecord::Base.connection.clear_query_cache
-                factura = ActiveRecord::Base.connection.select_all(query)
+                Facturacion.connection.clear_query_cache
+                factura = Facturacion.connection.select_all(query)
                 i = 0
                 j = 0
                 fact_int = 0
@@ -312,8 +312,8 @@ class Facturacion < ApplicationRecord
                     SELECT MAX(nrofact) as ultimo FROM facturacion;
                     SQL
                   end
-                  ActiveRecord::Base.connection.clear_query_cache
-                  ultimo = ActiveRecord::Base.connection.select_all(query)
+                  Facturacion.connection.clear_query_cache
+                  ultimo = Facturacion.connection.select_all(query)
                   if ultimo[0]["ultimo"] == nil
                     ultimo=1
                   else
@@ -326,8 +326,8 @@ class Facturacion < ApplicationRecord
                     query = <<-SQL 
                     SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact} and documento_id = #{doc_int};
                     SQL
-                    ActiveRecord::Base.connection.clear_query_cache
-                    facturacion_id = ActiveRecord::Base.connection.select_all(query)
+                    Facturacion.connection.clear_query_cache
+                    facturacion_id = Facturacion.connection.select_all(query)
                     facturacion_id = (facturacion_id[0]["id"]).to_i
                     detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
                     prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_int.id, cantidad: 1, 
@@ -360,7 +360,7 @@ class Facturacion < ApplicationRecord
                     UPDATE facturacion set fechaven = #{f_fin}, valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact} WHERE nrofact = #{factura[j]["nrofact"]};
                     UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_int}, iva = #{iva} WHERE nrofact = #{factura[j]["nrofact"]};
                     SQL
-                    ActiveRecord::Base.connection.select_all(query)
+                    Facturacion.connection.select_all(query)
                     result = 1
                   end
                 end
@@ -380,8 +380,8 @@ class Facturacion < ApplicationRecord
                 query = <<-SQL 
                 SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and fechatrn >= '01/#{mes}/#{ano}';
                 SQL
-                ActiveRecord::Base.connection.clear_query_cache
-                factura = ActiveRecord::Base.connection.select_all(query)
+                Facturacion.connection.clear_query_cache
+                factura = Facturacion.connection.select_all(query)
                 i = 0
                 j = 0
                 fact_concepto = 0
@@ -424,8 +424,8 @@ class Facturacion < ApplicationRecord
                     SELECT MAX(nrofact) as ultimo FROM facturacion;
                     SQL
                   end
-                  ActiveRecord::Base.connection.clear_query_cache
-                  ultimo = ActiveRecord::Base.connection.select_all(query)
+                  Facturacion.connection.clear_query_cache
+                  ultimo = Facturacion.connection.select_all(query)
                   if ultimo[0]["ultimo"] == nil
                     ultimo=1
                   else
@@ -438,8 +438,8 @@ class Facturacion < ApplicationRecord
                     query = <<-SQL 
                     SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact} and documento_id = #{doc_tv};
                     SQL
-                    ActiveRecord::Base.connection.clear_query_cache
-                    facturacion_id = ActiveRecord::Base.connection.select_all(query)
+                    Facturacion.connection.clear_query_cache
+                    facturacion_id = Facturacion.connection.select_all(query)
                     facturacion_id = (facturacion_id[0]["id"]).to_i
                     detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
                     prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto, cantidad: 1, 
@@ -472,7 +472,7 @@ class Facturacion < ApplicationRecord
                     UPDATE facturacion set fechaven = #{f_fin}, valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact} WHERE nrofact = #{factura[j]["nrofact"]};
                     UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_cpto}, iva = #{iva} WHERE nrofact = #{factura[j]["nrofact"]};
                     SQL
-                    ActiveRecord::Base.connection.select_all(query)
+                    Facturacion.connection.select_all(query)
                     result = 1
                   end
                 end
@@ -496,8 +496,8 @@ class Facturacion < ApplicationRecord
                 query = <<-SQL 
                 SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and fechatrn >= '01/#{mes}/#{ano}';
                 SQL
-                ActiveRecord::Base.connection.clear_query_cache
-                factura = ActiveRecord::Base.connection.select_all(query)
+                Facturacion.connection.clear_query_cache
+                factura = Facturacion.connection.select_all(query)
                 i = 0
                 j = 0
                 fact_concepto = 0
@@ -554,8 +554,8 @@ class Facturacion < ApplicationRecord
                     SELECT MAX(nrofact) as ultimo FROM facturacion;
                     SQL
                   end
-                  ActiveRecord::Base.connection.clear_query_cache
-                  ultimo = ActiveRecord::Base.connection.select_all(query)
+                  Facturacion.connection.clear_query_cache
+                  ultimo = Facturacion.connection.select_all(query)
                   if ultimo[0]["ultimo"] == nil
                     ultimo=1
                   else
@@ -568,8 +568,8 @@ class Facturacion < ApplicationRecord
                     query = <<-SQL 
                     SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact} and documento_id = #{doc_fact};
                     SQL
-                    ActiveRecord::Base.connection.clear_query_cache
-                    facturacion_id = ActiveRecord::Base.connection.select_all(query)
+                    Facturacion.connection.clear_query_cache
+                    facturacion_id = Facturacion.connection.select_all(query)
                     facturacion_id = (facturacion_id[0]["id"]).to_i
                     detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
                     prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_id, cantidad: 1, 
@@ -602,7 +602,7 @@ class Facturacion < ApplicationRecord
                     UPDATE facturacion set fechaven = #{f_fin}, valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact} WHERE nrofact = #{factura[j]["nrofact"]};
                     UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_cpto}, iva = #{iva} WHERE nrofact = #{factura[j]["nrofact"]};
                     SQL
-                    ActiveRecord::Base.connection.select_all(query)
+                    Facturacion.connection.select_all(query)
                     result = 1 
                   end
                 end
@@ -639,16 +639,16 @@ class Facturacion < ApplicationRecord
     query = <<-SQL 
     SELECT * FROM facturacion WHERE entidad_id = #{entidad_id} and fechatrn >= '01/#{mes}/#{ano}';
     SQL
-    ActiveRecord::Base.connection.clear_query_cache
-    factura = ActiveRecord::Base.connection.select_all(query)
+    Facturacion.connection.clear_query_cache
+    factura = Facturacion.connection.select_all(query)
     if servicio_id == serv_tv
       unless factura.blank?
         factura.each do |row|
           query = <<-SQL 
           SELECT * FROM detalle_factura WHERE nrofact=#{row["nrofact"]};
           SQL
-          ActiveRecord::Base.connection.clear_query_cache
-          detallefact = ActiveRecord::Base.connection.select_all(query)
+          Facturacion.connection.clear_query_cache
+          detallefact = Facturacion.connection.select_all(query)
           if (detallefact[0]["concepto_id"] == concepto_tv.id) 
             fact = 1
           end
@@ -664,8 +664,8 @@ class Facturacion < ApplicationRecord
           SELECT MAX(nrofact) as ultimo FROM facturacion;
           SQL
         end
-        ActiveRecord::Base.connection.clear_query_cache
-        ultimo = ActiveRecord::Base.connection.select_all(query)
+        Facturacion.connection.clear_query_cache
+        ultimo = Facturacion.connection.select_all(query)
         if ultimo[0]["ultimo"] == nil
           ultimo=1
         else
@@ -693,8 +693,8 @@ class Facturacion < ApplicationRecord
           query = <<-SQL 
           SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact};
           SQL
-          ActiveRecord::Base.connection.clear_query_cache
-          facturacion_id = ActiveRecord::Base.connection.select_all(query)
+          Facturacion.connection.clear_query_cache
+          facturacion_id = Facturacion.connection.select_all(query)
           facturacion_id = (facturacion_id[0]["id"]).to_i
           detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
           prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_tv.id, cantidad: 1, 
@@ -715,8 +715,8 @@ class Facturacion < ApplicationRecord
           query = <<-SQL 
           SELECT * FROM detalle_factura WHERE nrofact=#{row["nrofact"]};
           SQL
-          ActiveRecord::Base.connection.clear_query_cache
-          detallefact = ActiveRecord::Base.connection.select_all(query)
+          Facturacion.connection.clear_query_cache
+          detallefact = Facturacion.connection.select_all(query)
           if detallefact[0]["concepto_id"] == concepto_int.id
             fact = 1
           end
@@ -732,8 +732,8 @@ class Facturacion < ApplicationRecord
           SELECT MAX(nrofact) as ultimo FROM facturacion;
           SQL
         end
-        ActiveRecord::Base.connection.clear_query_cache
-        ultimo = ActiveRecord::Base.connection.select_all(query)
+        Facturacion.connection.clear_query_cache
+        ultimo = Facturacion.connection.select_all(query)
         if ultimo[0]["ultimo"] == nil
           ultimo=1
         else
@@ -761,8 +761,8 @@ class Facturacion < ApplicationRecord
           query = <<-SQL 
           SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact};
           SQL
-          ActiveRecord::Base.connection.clear_query_cache
-          facturacion_id = ActiveRecord::Base.connection.select_all(query)
+          Facturacion.connection.clear_query_cache
+          facturacion_id = Facturacion.connection.select_all(query)
           facturacion_id = (facturacion_id[0]["id"]).to_i
           detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
           prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_int.id, cantidad: 1, 

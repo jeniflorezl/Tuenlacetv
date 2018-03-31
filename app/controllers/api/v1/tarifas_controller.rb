@@ -9,7 +9,7 @@ module Api
                     query = <<-SQL 
                     SELECT * FROM VwTarifas;
                     SQL
-                    @tarifas = ActiveRecord::Base.connection.select_all(query)
+                    @tarifas = Tarifa.connection.select_all(query)
                     @zonas = Zona.all
                     @conceptos = Concepto.all
                     @planes = Plan.all

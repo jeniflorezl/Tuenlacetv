@@ -1,4 +1,4 @@
 class DirCorrespondencia < ApplicationRecord
-  belongs_to :senal
+  belongs_to :entidad
   belongs_to :usuario
 end

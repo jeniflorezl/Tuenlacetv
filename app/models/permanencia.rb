@@ -1,3 +1,3 @@
 class Permanencia < ApplicationRecord
-  belongs_to :senal
+  belongs_to :entidad
 end

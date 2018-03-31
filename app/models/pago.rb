@@ -16,8 +16,8 @@ class Pago < ApplicationRecord
     query = <<-SQL 
     SELECT MAX(nropago) as ultimo FROM pagos;
     SQL
-    ActiveRecord::Base.connection.clear_query_cache
-    ultimo = ActiveRecord::Base.connection.select_all(query)
+    Pago.connection.clear_query_cache
+    ultimo = Pago.connection.select_all(query)
     if ultimo[0]["ultimo"] == nil
       ultimo=1
     else
@@ -30,8 +30,8 @@ class Pago < ApplicationRecord
         query = <<-SQL 
         SELECT id FROM pagos WHERE nropago=#{pago.nropago};
         SQL
-        ActiveRecord::Base.connection.clear_query_cache
-        pago_id = ActiveRecord::Base.connection.select_all(query)
+        Pago.connection.clear_query_cache
+        pago_id = Pago.connection.select_all(query)
         pago_id = (pago_id[0]["id"]).to_i
         byebug
         detalle.each do |d|
@@ -39,8 +39,8 @@ class Pago < ApplicationRecord
           query = <<-SQL 
           SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{d["factura_id"]};
           SQL
-          ActiveRecord::Base.connection.clear_query_cache
-          factura = ActiveRecord::Base.connection.select_all(query)
+          Pago.connection.clear_query_cache
+          factura = Pago.connection.select_all(query)
           abono = Abono.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
             factura_id: d["factura_id"], doc_factura_id: factura[0]["documento_id"],
             prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
@@ -49,7 +49,7 @@ class Pago < ApplicationRecord
             query = <<-SQL 
             UPDATE facturacion set estado_id = 9 WHERE id = #{d["factura_id"]};
             SQL
-            ActiveRecord::Base.connection.select_all(query)
+            Pago.connection.select_all(query)
           end
 
         end
@@ -64,8 +64,8 @@ class Pago < ApplicationRecord
     query = <<-SQL 
     SELECT MAX(nropago) as ultimo FROM pagos;
     SQL
-    ActiveRecord::Base.connection.clear_query_cache
-    ultimo = ActiveRecord::Base.connection.select_all(query)
+    Pago.connection.clear_query_cache
+    ultimo = Pago.connection.select_all(query)
     if ultimo[0]["ultimo"] == nil
       ultimo=1
     else
@@ -78,8 +78,8 @@ class Pago < ApplicationRecord
         query = <<-SQL 
         SELECT id FROM pagos WHERE nropago=#{pago.nropago};
         SQL
-        ActiveRecord::Base.connection.clear_query_cache
-        pago_id = ActiveRecord::Base.connection.select_all(query)
+        Pago.connection.clear_query_cache
+        pago_id = Pago.connection.select_all(query)
         pago_id = (pago_id[0]["id"]).to_i
         byebug
         detalle.each do |d|
@@ -87,8 +87,8 @@ class Pago < ApplicationRecord
           query = <<-SQL 
           SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{d["factura_id"]};
           SQL
-          ActiveRecord::Base.connection.clear_query_cache
-          factura = ActiveRecord::Base.connection.select_all(query)
+          Pago.connection.clear_query_cache
+          factura = Pago.connection.select_all(query)
           abono = Abono.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
             factura_id: d["factura_id"], doc_factura_id: factura[0]["documento_id"],
             prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
@@ -97,7 +97,7 @@ class Pago < ApplicationRecord
             query = <<-SQL 
             UPDATE facturacion set estado_id = 9 WHERE id = #{d["factura_id"]};
             SQL
-            ActiveRecord::Base.connection.select_all(query)
+            Pago.connection.select_all(query)
           end
         end
         valor_anticipo = valor / cuotas
@@ -107,8 +107,8 @@ class Pago < ApplicationRecord
           query = <<-SQL 
           SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{d[i]["factura_id"]};
           SQL
-          ActiveRecord::Base.connection.clear_query_cache
-          factura = ActiveRecord::Base.connection.select_all(query)
+          Pago.connection.clear_query_cache
+          factura = Pago.connection.select_all(query)
           anticipo = Anticipo.new(senal_id: senal_id, factura_id: d[i]["factura_id"], doc_factura_id: factura[0]["documento_id"],
             prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], pago_id: pago_id, doc_pagos_id: pago.documento_id,
             nropago: pago.nropago, fechatrn: fecha1, fechaven: fecha2, valor: valor_anticipo, usuario_id: pago.usuario_id)
@@ -128,17 +128,17 @@ class Pago < ApplicationRecord
     query = <<-SQL 
     SELECT saldo_tv, saldo_int FROM VwEstadoDeCuentaTotal WHERE entidad_id = #{entidad_id};
     SQL
-    saldos = ActiveRecord::Base.connection.select_all(query)
+    saldos = Pago.connection.select_all(query)
     saldo_tv = saldos[0]["saldo_tv"]
     saldo_int = saldos[0]["saldo_int"]
     query = <<-SQL 
     SELECT * FROM facturacion WHERE entidad_id = #{entidad_id} ORDER BY id;
     SQL
-    facturas = ActiveRecord::Base.connection.select_all(query)
+    facturas = Pago.connection.select_all(query)
     query = <<-SQL 
     SELECT * FROM pagos WHERE entidad_id = #{entidad_id};
     SQL
-    pagos = ActiveRecord::Base.connection.select_all(query)
+    pagos = Pago.connection.select_all(query)
     if pagos.blank?
       facturas.reverse_each do |f|
       byebug
@@ -204,7 +204,7 @@ class Pago < ApplicationRecord
     query = <<-SQL 
     UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{pago_id}
     SQL
-    ActiveRecord::Base.connection.select_all(query)
+    Pago.connection.select_all(query)
   end
 
   def sefl.anular_pago_anticipado(pago_anticipado_id)
@@ -212,11 +212,11 @@ class Pago < ApplicationRecord
     query = <<-SQL 
     SELECT * FROM pagos WHERE id = #{pago_anticipado_id}
     SQL
-    pago = ActiveRecord::Base.connection.select_all(query)
+    pago = Pago.connection.select_all(query)
     query = <<-SQL 
     SELECT * FROM facturacion WHERE entidad_id = #{entidad_id}
     SQL
-    facturas = ActiveRecord::Base.connection.select_all(query)
+    facturas = Pago.connection.select_all(query)
     facturas.each do |f|
       if f["fechatrn"] == pago[0]["fechatrn"]
         ban = 1
@@ -229,7 +229,7 @@ class Pago < ApplicationRecord
       UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{pago_anticipado_id}
       DELETE anticipados WHERE entidad_id = #{pago[0]["entidad_id"]} and pago_id = #{pago[0]["id"]}
       SQL
-      ActiveRecord::Base.connection.select_all(query)
+      Pago.connection.select_all(query)
     end
   end
 end

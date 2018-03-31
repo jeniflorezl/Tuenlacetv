@@ -9,7 +9,7 @@ module Api
                 query = <<-SQL 
                 SELECT * FROM VwPagos;
                 SQL
-                @pagos = ActiveRecord::Base.connection.select_all(query)
+                @pagos = Pago.connection.select_all(query)
                 @conceptos = Concepto.where(clase: 'P')
                 @formas_pago = FormaPago.all
                 @bancos = Banco.all
@@ -49,8 +49,8 @@ module Api
                 query = <<-SQL 
                 SELECT * FROM pagos WHERE id=#{params[:id]};
                 SQL
-                ActiveRecord::Base.connection.clear_query_cache
-                @pago = ActiveRecord::Base.connection.select_all(query)
+                Pago.connection.clear_query_cache
+                @pago = Pago.connection.select_all(query)
             end
             
             # Me busca el pago por cualquier campo
@@ -60,7 +60,7 @@ module Api
                 query = <<-SQL 
                 SELECT * FROM pagos WHERE #{campo} LIKE '%#{valor}%';
                 SQL
-                ActiveRecord::Base.connection.clear_query_cache
+                Pago.connection.clear_query_cache
                 @pago = ActiveRecord::Base.connection.select_all(query)
                 @pago = [*@pago]
             end

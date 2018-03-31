@@ -23,9 +23,9 @@ class Senal < ApplicationRecord
 
   def uppercase
     self.direccion.upcase!
-    self.urbanizacion.upcase!
-    self.torre.upcase!
-    self.apto.upcase!
+    self.urbanizacion.upcase! unless self.urbanizacion.blank?
+    self.torre.upcase! unless self.torre.blank?
+    self.apto.upcase! unless self.apto.blank?
     self.vivienda.upcase!
     self.tiposervicio.upcase!
     self.areainstalacion.upcase!
@@ -34,6 +34,7 @@ class Senal < ApplicationRecord
   private
 
   def self.afiliacion_tv(senal, entidad, valorAfiTv, valorDcto, tarifaTv, tecnico)
+    byebug
     ultimo = 0
     conceptord = Concepto.find(11)
     conceptoplant = Concepto.find(3)
@@ -50,8 +51,8 @@ class Senal < ApplicationRecord
         SELECT MAX(nrorden) as ultimo FROM ordenes;
         SQL
       end
-      ActiveRecord::Base.connection.clear_query_cache
-      ultimo = ActiveRecord::Base.connection.select_all(query)
+      Senal.connection.clear_query_cache
+      ultimo = Senal.connection.select_all(query)
       if ultimo[0]["ultimo"] == nil
         ultimo=1
       else
@@ -61,7 +62,13 @@ class Senal < ApplicationRecord
         fechaven: senal.fechacontrato, nrorden: ultimo, estado_id: @estadoD.id, observacion: 'Registro creado en proceso de afiliación',
         tecnico_id: tecnico, usuario_id: senal.usuario_id)
       if orden.save
-        detalleo = DetalleOrden.new(orden_id: orden.id, concepto_id: orden.concepto_id, nrorden: orden.nrorden,
+        query = <<-SQL 
+        SELECT id FROM ordenes WHERE nrorden=#{orden.nrorden};
+        SQL
+        Senal.connection.clear_query_cache
+        orden_id = Senal.connection.select_all(query)
+        orden_id = (orden_id[0]["id"]).to_i
+        detalleo = DetalleOrden.new(orden_id: orden_id, concepto_id: orden.concepto_id, nrorden: orden.nrorden,
           cantidad: 0, valor: 0, porcentajeIva: 0, iva: 0, costo: 0, observacion: orden.observacion, usuario_id: orden.usuario_id)
         if detalleo.save
           if valorAfiTv > 0
@@ -75,8 +82,8 @@ class Senal < ApplicationRecord
               SELECT MAX(nrofact) as ultimo FROM facturacion;
               SQL
             end
-            ActiveRecord::Base.connection.clear_query_cache
-            ultimo = ActiveRecord::Base.connection.select_all(query)
+            Senal.connection.clear_query_cache
+            ultimo = Senal.connection.select_all(query)
             if ultimo[0]["ultimo"] == nil
               ultimo=1
             else
@@ -100,8 +107,8 @@ class Senal < ApplicationRecord
               query = <<-SQL 
               SELECT id FROM facturacion WHERE nrofact=#{factura.nrofact};
               SQL
-              ActiveRecord::Base.connection.clear_query_cache
-              factura_id = ActiveRecord::Base.connection.select_all(query)
+              Senal.connection.clear_query_cache
+              factura_id = Senal.connection.select_all(query)
               factura_id = (factura_id[0]["id"]).to_i
               detallef = DetalleFactura.new(factura_id: factura_id, documento_id: factura.documento_id, 
                 prefijo: factura.prefijo, nrofact: factura.nrofact, concepto_id: conceptofact.id, cantidad: 1, 
@@ -121,6 +128,7 @@ class Senal < ApplicationRecord
 
 
   def self.afiliacion_int(senal, entidad, valorAfiInt, valorDcto, tarifaInt, tecnico)
+    byebug
     ultimo = 0
     conceptord = Concepto.find(12)
     conceptoplant = Concepto.find(4)
@@ -137,8 +145,8 @@ class Senal < ApplicationRecord
         SELECT MAX(nrorden) as ultimo FROM ordenes;
         SQL
       end
-      ActiveRecord::Base.connection.clear_query_cache
-      ultimo = ActiveRecord::Base.connection.select_all(query)
+      Senal.connection.clear_query_cache
+      ultimo = Senal.connection.select_all(query)
       if ultimo[0]["ultimo"] == nil
         ultimo=1
       else
@@ -148,7 +156,13 @@ class Senal < ApplicationRecord
       fechaven: @t.strftime("%d/%m/%Y %H:%M:%S"), nrorden: ultimo, estado_id: @estadoD.id, observacion: 'Registro creado en proceso de afiliación',
       tecnico_id: tecnico, usuario_id: senal.usuario_id)
       if ordenin.save
-        detalleoin = DetalleOrden.new(orden_id: ordenin.id, concepto_id: ordenin.concepto_id, nrorden: ordenin.nrorden,
+        query = <<-SQL 
+        SELECT id FROM ordenes WHERE nrorden=#{ordenin.nrorden};
+        SQL
+        Senal.connection.clear_query_cache
+        ordenin_id = Senal.connection.select_all(query)
+        ordenin_id = (ordenin_id[0]["id"]).to_i
+        detalleoin = DetalleOrden.new(orden_id: ordenin_id, concepto_id: ordenin.concepto_id, nrorden: ordenin.nrorden,
           cantidad: 0, valor: 0, porcentajeIva: 0, iva: 0, costo: 0, observacion: ordenin.observacion, usuario_id: ordenin.usuario_id)
         if detalleoin.save
           if valorAfiInt > 0
@@ -162,8 +176,8 @@ class Senal < ApplicationRecord
               SELECT MAX(nrofact) as ultimo FROM facturacion;
               SQL
             end
-            ActiveRecord::Base.connection.clear_query_cache
-            ultimo = ActiveRecord::Base.connection.select_all(query)
+            Senal.connection.clear_query_cache
+            ultimo = Senal.connection.select_all(query)
             if ultimo[0]["ultimo"] == nil
               ultimo=1
             else
@@ -187,8 +201,8 @@ class Senal < ApplicationRecord
               query = <<-SQL 
               SELECT id FROM facturacion WHERE nrofact=#{facturain.nrofact};
               SQL
-              ActiveRecord::Base.connection.clear_query_cache
-              facturain_id = ActiveRecord::Base.connection.select_all(query)
+              Senal.connection.clear_query_cache
+              facturain_id = Senal.connection.select_all(query)
               facturain_id = (facturain_id[0]["id"]).to_i
               detallefin = DetalleFactura.new(factura_id: facturain_id, documento_id: facturain.documento_id, 
                 prefijo: facturain.prefijo, nrofact: facturain.nrofact, concepto_id: conceptofact.id, cantidad: 1, 
@@ -203,6 +217,40 @@ class Senal < ApplicationRecord
           end
         end
       end
+    end
+  end
+
+  def self.eliminar_suscriptor(entidad, persona, senal, info_internet, plantilla_tv, plantilla_int)
+    query = <<-SQL 
+    SELECT TOP 1 * FROM pagos WHERE entidad_id = #{entidad.id};
+    SQL
+    Senal.connection.clear_query_cache
+    pago = Senal.connection.select_all(query)
+    query = <<-SQL 
+    SELECT TOP 1 * FROM facturacion WHERE entidad_id = #{entidad.id};
+    SQL
+    Senal.connection.clear_query_cache
+    factura = Senal.connection.select_all(query)
+    if pago.blank? && factura.blank?
+      if plantilla_tv
+          plantilla_tv.destroy_all()
+      end
+      query = <<-SQL 
+      DELETE FROM ordenes WHERE entidad_id = #{entidad.id};
+      SQL
+      Senal.connection.select_all(query)
+      if info_internet
+          info_internet.destroy()
+          if plantilla_int
+            plantilla_int.destroy_all()
+          end
+      end
+      @senal.destroy()
+      @entidad.destroy()
+      @persona.destroy()
+      return true
+    else
+      return false
     end
   end
 end

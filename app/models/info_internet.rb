@@ -1,10 +1,10 @@
 class InfoInternet < ApplicationRecord
+  belongs_to :entidad
   belongs_to :usuario
-  belongs_to :senal
-
+  
   before_save :uppercase
 
-  validates :senal, :direccionip, :velocidad, :mac1, :usuario, presence: true #obligatorio
+  validates :entidad, :direccionip, :velocidad, :mac1, :usuario, presence: true #obligatorio
 
   def uppercase
     self.serialm.upcase!

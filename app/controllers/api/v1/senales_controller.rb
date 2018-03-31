@@ -10,7 +10,7 @@ module Api
                 query = <<-SQL 
                 SELECT * FROM VwSenales WHERE funcion_id = 1;
                 SQL
-                @senales = ActiveRecord::Base.connection.select_all(query)
+                @senales = Senal.connection.select_all(query)
                 @servicios = Servicio.all
                 @barrios = Barrio.all
                 @zonas = Zona.all
@@ -32,10 +32,10 @@ module Api
 
             def index_entidad
                 funcion = params[:funcion_id]
-                query = <<-SQL 
+                query = <<-SQL
                 SELECT * FROM VwSenales WHERE funcion_id = #{funcion};
                 SQL
-                @entidades = ActiveRecord::Base.connection.select_all(query)
+                @entidades = Senal.connection.select_all(query)
             end
 
             # GET /senales/id
@@ -66,12 +66,13 @@ module Api
                 funcion = params[:funcion_id]
                 @persona = Persona.new(persona_params)
                 if @persona.save
+                    byebug
                     if funcion != "1"
                         query = <<-SQL 
                         SELECT MAX(id) as ultimo FROM entidades WHERE id>=50000;
                         SQL
-                        ActiveRecord::Base.connection.clear_query_cache
-                        ultimo = ActiveRecord::Base.connection.select_all(query)
+                        Senal.connection.clear_query_cache
+                        ultimo = Senal.connection.select_all(query)
                         if ultimo[0]["ultimo"] == nil
                             ultimo = 50000
                         else
@@ -81,8 +82,8 @@ module Api
                         query = <<-SQL 
                         SELECT MAX(id) as ultimo FROM entidades WHERE id<50000;
                         SQL
-                        ActiveRecord::Base.connection.clear_query_cache
-                        ultimo = ActiveRecord::Base.connection.select_all(query)
+                        Senal.connection.clear_query_cache
+                        ultimo = Senal.connection.select_all(query)
                         if ultimo[0]["ultimo"] == nil
                             ultimo = 1
                         else
@@ -90,49 +91,51 @@ module Api
                         end
                     end
                     @entidad = Entidad.new(id: ultimo, funcion_id: funcion, persona_id: @persona.id, usuario_id: @persona.usuario_id)
-                    if @entidad.save && funcion == "1"
-                        @senal = Senal.new(senal_params)
-                        @senal.entidad_id = @entidad.id
-                        if @senal.save
-                            if params[:tv] == 1
-                                if Senal.afiliacion_tv(@senal, @entidad, params[:valorafi_tv], 
-                                    params[:valor_dcto_tv], params[:tarifa_id_tv], params[:tecnico_id])
-                                    result = 1
-                                else
-                                    result = 2
-                                end
-                            end
-                            if params[:internet] == 1
-                                @info_internet = InfoInternet.new(internet_params)
-                                @info_internet.senal_id = @senal.id
-                                if @info_internet.save
-                                    if Senal.afiliacion_int(@senal, @entidad, params[:valorafi_int], 
-                                        params[:valor_dcto_int],params[:tarifa_id_int], params[:tecnico_id])
-                                        result1 = 1
+                    if @entidad.save 
+                        if funcion == "1"
+                            @senal = Senal.new(senal_params)
+                            @senal.entidad_id = @entidad.id
+                            if @senal.save
+                                if params[:tv] == 1
+                                    if Senal.afiliacion_tv(@senal, @entidad, params[:valorafi_tv], 
+                                        params[:valor_dcto_tv], params[:tarifa_id_tv], params[:tecnico_id])
+                                        result = 1
                                     else
-                                        result1 = 2
+                                        result = 2
+                                    end
+                                end
+                                if params[:internet] == 1
+                                    @info_internet = InfoInternet.new(internet_params)
+                                    @info_internet.entidad_id = @entidad.id
+                                    if @info_internet.save
+                                        if Senal.afiliacion_int(@senal, @entidad, params[:valorafi_int], 
+                                            params[:valor_dcto_int],params[:tarifa_id_int], params[:tecnico_id])
+                                            result1 = 1
+                                        else
+                                            result1 = 2
+                                        end
                                     end
                                 end
                             end
-                        end
-                        if params[:tv] == 1
-                            if result == 1
-                                message1 = "creado servicio tv"
-                            else
-                                message1 = @senal.errors
+                            if params[:tv] == 1
+                                if result == 1
+                                    message1 = "creado servicio tv"
+                                else
+                                    message1 = @senal.errors
+                                end
                             end
-                        end
-                        if params[:internet] == 1
-                            if result1 == 1
-                                message2 = "creado servicio internet"
-                            else
-                                message2 = @info_internet.errors
+                            if params[:internet] == 1
+                                if result1 == 1
+                                    message2 = "creado servicio internet"
+                                else
+                                    message2 = @info_internet.errors
+                                end
                             end
+                            render :json => {:message1 => message1,
+                                :message2 => message2 }.to_json
+                        else
+                            render json: { error: "Persona creada con exito" }
                         end
-                        render :json => {:message1 => message1,
-                            :message2 => message2 }.to_json
-                    else
-                        render json: { error: "Persona creada con exito" }
                     end
                 else
                     render json: { error: "Ya existe un suscriptor con esa información" }
@@ -172,13 +175,20 @@ module Api
                             if @info_internet
                                 @info_internet.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                                 @info_internet.update(internet_params)
-                                unless @plantilla_int.blank?
+                                if @plantilla_int.blank?
+                                    if Senal.afiliacion_int(@senal, @entidad, params[:valorafi_int], 
+                                        params[:valor_dcto_int],params[:tarifa_id_int], params[:tecnico_id])
+                                        result1 = 1
+                                    else
+                                        result1 = 2
+                                    end
+                                else
                                     @plantilla_int.update(tarifa_id: params[:tarifa_id_int])
                                     result1 = 1
                                 end
                             else
                                 @info_internet = InfoInternet.new(internet_params)
-                                @info_internet.senal_id = @senal.id
+                                @info_internet.entidad_id = @entidad.id
                                 if @info_internet.save
                                     if Senal.afiliacion_int(@senal, @entidad, params[:valorafi_int], 
                                         params[:valor_dcto_int],params[:tarifa_id_int], params[:tecnico_id])
@@ -218,30 +228,8 @@ module Api
             # DELETE /senales/id
             def destroy
                 if @senal
-                    query = <<-SQL 
-                    SELECT TOP 1 * FROM pagos WHERE entidad_id = #{@entidad.id};
-                    SQL
-                    ActiveRecord::Base.connection.clear_query_cache
-                    pago = ActiveRecord::Base.connection.select_all(query)
-                    query = <<-SQL 
-                    SELECT TOP 1 * FROM facturacion WHERE entidad_id = #{@entidad.id};
-                    SQL
-                    ActiveRecord::Base.connection.clear_query_cache
-                    factura = ActiveRecord::Base.connection.select_all(query)
-                    if pago.blank? && factura.blank?
-                        if @plantilla_tv
-                            @plantilla_tv.destroy_all()
-                        end
-                        query = <<-SQL 
-                        DELETE FROM ordenes WHERE senal_id = #{@senal.id};
-                        SQL
-                        ActiveRecord::Base.connection.select_all(query)
-                        if @info_internet
-                            @info_internet.destroy()
-                        end
-                        @senal.destroy()
-                        @entidad.destroy()
-                        @persona.destroy()
+                    if Senal.eliminar_suscriptor(@entidad, @persona, @senal, @info_internet, 
+                        @plantilla_tv, @plantilla_int)
                         render json: { status: :deleted }
                     else
                         render json: { error: "El suscriptor no se puede eliminar" }
@@ -255,14 +243,14 @@ module Api
                 query = <<-SQL 
                 SELECT * FROM VwSenales;
                 SQL
-                @senal = ActiveRecord::Base.connection.select_all(query)
+                @senal = Senal.connection.select_all(query)
                 @senales = Senal.all
                 @plantillas = PlantillaFact.all
                 query = <<-SQL 
                 SELECT * FROM VwEstadoDeCuentaTotal;
                 SQL
-                ActiveRecord::Base.connection.clear_query_cache
-                @saldos = ActiveRecord::Base.connection.select_all(query)
+                Senal.connection.clear_query_cache
+                @saldos = Senal.connection.select_all(query)
             end
 
             private
@@ -271,9 +259,9 @@ module Api
                 @entidad = Entidad.find(params[:id])
                 @persona = Persona.find(@entidad.persona_id)
                 @senal = Senal.find_by(entidad_id: @entidad.id)
-                @plantilla_tv = PlantillaFact.where("senal_id = ? AND concepto_id = ?", @senal.id, 3)
-                @plantilla_int = PlantillaFact.where("senal_id = ? AND concepto_id = ?", @senal.id, 4)
-                @info_internet = InfoInternet.find_by(senal_id: @senal.id)
+                @info_internet = InfoInternet.find_by(entidad_id: @entidad.id)
+                @plantilla_tv = PlantillaFact.where("entidad_id = ? AND concepto_id = ?", @entidad.id, 3)
+                @plantilla_int = PlantillaFact.where("entidad_id = ? AND concepto_id = ?", @entidad.id, 4)
             end
             
             # Me busca la senal por cualquier campo
@@ -283,7 +271,7 @@ module Api
                 query = <<-SQL 
                 SELECT TOP(10) * FROM VwSenales WHERE #{campo} LIKE '%#{valor}%' and funcion_id = 1;
                 SQL
-                @senal = ActiveRecord::Base.connection.select_all(query)
+                @senal = Senal.connection.select_all(query)
                 @senal = [*@senal]
                 @info_internet = InfoInternet.all
                 @senales = Senal.all
@@ -292,8 +280,8 @@ module Api
                 query = <<-SQL 
                 SELECT * FROM VwEstadoDeCuentaTotal;
                 SQL
-                ActiveRecord::Base.connection.clear_query_cache
-                @saldos = ActiveRecord::Base.connection.select_all(query)
+                Senal.connection.clear_query_cache
+                @saldos = Senal.connection.select_all(query)
             end
 
             # Me busca la persona por cualquier campo
@@ -304,7 +292,7 @@ module Api
                 query = <<-SQL 
                 SELECT TOP(10) * FROM VwSenales WHERE #{campo} LIKE '%#{valor}%' and funcion_id = #{funcion_id};
                 SQL
-                @entidad = ActiveRecord::Base.connection.select_all(query)
+                @entidad = Senal.connection.select_all(query)
                 @entidad = [*@entidad]
             end
 
@@ -316,7 +304,7 @@ module Api
                     :torre, :apto, :barrio_id, :zona_id, :telefono1, :telefono2, :contacto, :estrato,
                     :vivienda, :observacion, :fechacontrato, :permanencia, :televisores,  
                     :decos, :precinto, :vendedor_id, :tipo_instalacion_id, :tecnologia_id,
-                    :tiposervicio,:areainstalacion, :usuario_id, :tipo_facturacion_id)
+                    :tiposervicio, :areainstalacion, :usuario_id, :tipo_facturacion_id)
             end 
 
             def persona_params

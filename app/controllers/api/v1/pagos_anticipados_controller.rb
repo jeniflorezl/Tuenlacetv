@@ -9,7 +9,7 @@ module Api
                 query = <<-SQL 
                 SELECT * FROM Vwpago_anticipadosAnticipados;
                 SQL
-                @pagos_anticipados = ActiveRecord::Base.connection.select_all(query)
+                @pagos_anticipados = Pago.connection.select_all(query)
                 @documentos = Documento.all
                 @formas_pago_anticipado = Formapago_anticipado.all
                 @bancos = Banco.all
@@ -45,8 +45,8 @@ module Api
                 query = <<-SQL 
                 SELECT * FROM pago_anticipados WHERE id=#{params[:id]};
                 SQL
-                ActiveRecord::Base.connection.clear_query_cache
-                @pago_anticipado = ActiveRecord::Base.connection.select_all(query)
+                Pago.connection.clear_query_cache
+                @pago_anticipado = Pago.connection.select_all(query)
             end
             
             # Me busca el pago_anticipado por cualquier campo
@@ -56,8 +56,8 @@ module Api
                 query = <<-SQL 
                 SELECT * FROM VwPagosAnticipados WHERE #{campo} LIKE '%#{valor}%';
                 SQL
-                ActiveRecord::Base.connection.clear_query_cache
-                @pago_anticipado = ActiveRecord::Base.connection.select_all(query)
+                Pago.connection.clear_query_cache
+                @pago_anticipado = Pago.connection.select_all(query)
                 @pago_anticipado = [*@pago_anticipado]
             end
         end
