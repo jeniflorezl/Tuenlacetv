@@ -3,6 +3,8 @@ class Concepto < ApplicationRecord
   belongs_to :usuario
   has_many :tarifas
 
+  before_validation :codigo_concepto
+  
   before_save :uppercase
 
   validates :servicio, :codigo, :nombre, :porcentajeIva, :abreviatura, :operacion,
@@ -13,5 +15,13 @@ class Concepto < ApplicationRecord
   def uppercase
     self.nombre.upcase!
     self.abreviatura.upcase!
+  end
+
+  def codigo_concepto
+    if self.codigo.length == 1
+      self.codigo = '00' + self.codigo
+    elsif self.codigo.length == 2
+      self.codigo = '0' + self.codigo
+    end
   end
 end

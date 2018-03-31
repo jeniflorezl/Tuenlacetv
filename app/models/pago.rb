@@ -24,7 +24,7 @@ class Pago < ApplicationRecord
       ultimo = (ultimo[0]["ultimo"]).to_i + 1
     end
     pago = Pago.new(entidad_id: entidad_id, documento_id: documento_id, nropago: ultimo, fechatrn: fechatrn,
-      fechaven: fechatrn, valor: valor, estado_id: 9, observacion: observacion, forma_pago_id: forma_pago_id,
+      valor: valor, estado_id: 9, observacion: observacion, forma_pago_id: forma_pago_id,
       banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
       if pago.save
         query = <<-SQL 
@@ -72,7 +72,7 @@ class Pago < ApplicationRecord
       ultimo = (ultimo[0]["ultimo"]).to_i + 1
     end
     pago = Pago.new(entidad_id: entidad_id, documento_id: documento_id, nropago: ultimo, fechatrn: fechatrn,
-      fechaven: fechaven, valor: valor, estado_id: 9, observacion: observacion, forma_pago_id: forma_pago_id,
+      valor: valor, estado_id: 9, observacion: observacion, forma_pago_id: forma_pago_id,
       banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
       if pago.save
         query = <<-SQL 
@@ -109,7 +109,7 @@ class Pago < ApplicationRecord
           SQL
           Pago.connection.clear_query_cache
           factura = Pago.connection.select_all(query)
-          anticipo = Anticipo.new(senal_id: senal_id, factura_id: d[i]["factura_id"], doc_factura_id: factura[0]["documento_id"],
+          anticipo = Anticipo.new(entidad_id: entidad_id, factura_id: d[i]["factura_id"], doc_factura_id: factura[0]["documento_id"],
             prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], pago_id: pago_id, doc_pagos_id: pago.documento_id,
             nropago: pago.nropago, fechatrn: fecha1, fechaven: fecha2, valor: valor_anticipo, usuario_id: pago.usuario_id)
           i += 1
@@ -200,14 +200,14 @@ class Pago < ApplicationRecord
     detalle_facts
   end
 
-  def sefl.anular_pago(pago_id)
+  def self.anular_pago(pago_id)
     query = <<-SQL 
     UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{pago_id}
     SQL
     Pago.connection.select_all(query)
   end
 
-  def sefl.anular_pago_anticipado(pago_anticipado_id)
+  def self.anular_pago_anticipado(pago_anticipado_id)
     ban = 0
     query = <<-SQL 
     SELECT * FROM pagos WHERE id = #{pago_anticipado_id}

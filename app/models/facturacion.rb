@@ -181,7 +181,7 @@ class Facturacion < ApplicationRecord
                     dias = 30
                   end
                   entidad = Entidad.find(senal.entidad_id).persona_id
-                  condfisica = Persona.find(entidad).condicionfisica
+                  condfisica = senal.entidad.persona.condicionfisica
                   if condfisica == 'D'
                     byebug
                     porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
