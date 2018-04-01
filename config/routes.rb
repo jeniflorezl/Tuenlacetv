@@ -50,6 +50,7 @@ Rails.application.routes.draw do
       get 'facturacion/info/bd/:db', to: 'facturacion#info_fact_manual'
       post 'facturacion/factura_manual', to: 'facturacion#create_factura'
       get 'facturacion/generar_impresion/:db', to: 'facturacion#generar_facturacion'
+      post 'facturacion/anular_factura', to: 'facturacion#anular_factura'
       get 'pagos/bd/:db', to: 'pagos#index'
       get 'pagos/detalle_facturas/:entidad_id/:db', to: 'pagos#index_pago'
       get 'pagos/:campo/:valor/:db', to: 'pagos#show'

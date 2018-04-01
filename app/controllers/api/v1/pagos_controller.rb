@@ -34,7 +34,7 @@ module Api
             def anular
                 if @pago
                     if Pago.anular_pago(@pago[0]["id"])
-                        render json: { status: :deleted }
+                        render json: { status: :anulado }
                     else
                         render json: { error: "error al anular pago" }
                     end

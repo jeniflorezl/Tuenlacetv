@@ -49,13 +49,18 @@ module Api
                 when 3
                     render json: { error: "mes diferente al corriente" }
                 when 4
-                    render json: { error: "ya tiene factura en el mes" }
+                    render json: { error: "ya tiene factura en el mes corriente" }
                 else
                     render json: { error: "tipo facturacion diferente" }
                 end
             end
 
             def anular_factura
+                if Facturacion.anular_factura(params[:entidad_id], params[:nrodcto])
+                    render json: { status: :anulada }
+                else
+                    render json: { error: "no se anulo factura" }
+                end
             end
 
             def generar_facturacion

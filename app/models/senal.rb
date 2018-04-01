@@ -235,19 +235,26 @@ class Senal < ApplicationRecord
       if plantilla_tv
           plantilla_tv.destroy_all()
       end
-      query = <<-SQL 
-      DELETE FROM ordenes WHERE entidad_id = #{entidad.id};
+      query = <<-SQL
+      SELECT id FROM ordenes WHERE entidad_id = #{entidad.id}; 
       SQL
-      Senal.connection.select_all(query)
+      orden_id = Senal.connection.select_all(query)
+      unless orden_id.blank?
+        query = <<-SQL
+        DELETE detalle_orden WHERE orden_id = #{orden_id[0]["id"]}; 
+        DELETE ordenes WHERE entidad_id = #{entidad.id};
+        SQL
+        Senal.connection.select_all(query)
+      end
       if info_internet
           info_internet.destroy()
           if plantilla_int
             plantilla_int.destroy_all()
           end
       end
-      @senal.destroy()
-      @entidad.destroy()
-      @persona.destroy()
+      senal.destroy()
+      entidad.destroy()
+      persona.destroy()
       return true
     else
       return false
