@@ -34,7 +34,7 @@ json.senales do
         json.fechacontrato senal["fechacontrato"]
         json.permanencia senal["permanencia"]
         json.televisores senal["televisores"]
-        json.decos senal["decps"]
+        json.decos senal["decos"]
         json.precinto senal["precinto"]
         json.vendedor_id senal["vendedor_id"]
         json.vendedor senal["vendedor"]
