@@ -67,19 +67,26 @@ class Facturacion < ApplicationRecord
 
   def self.generar_facturacion(tipo_fact, f_elaboracion, f_inicio, f_fin, f_vence, f_corte, f_vencidos, observa, zona, usuario_id)
     byebug
-    fecha_elab = Date.parse f_elaboracion
-    mes_f = fecha_elab.month.to_s
-    ano_f = fecha_elab.year.to_s
-    dia_f = fecha_elab.day.to_s
-    fecha = ano_f + '/' + mes_f + '/' + dia_f
+    fecha1_nota = Date.parse f_inicio.to_s
+    #mes_f = fecha_elab.month.to_s
+    #ano_f = fecha_elab.year.to_s
+    #dia_f = fecha_elab.day.to_s
+    #fecha1_nota = ano_f + '/' + mes_f + '/' + dia_f
+    fecha2_nota = Date.parse f_fin.to_s
+    #mes_f = fecha_elab.month.to_s
+    #ano_f = fecha_elab.year.to_s
+    #dia_f = fecha_elab.day.to_s 
+    #fecha1_nota = self.formato_fecha(f_inicio)
+    #fecha2_nota = self.formato_fecha(f_fin)
     resp = 0
     resp1 = 0
-    notasfact = NotaFact.where("fechaElaboracion = '#{fecha}'")
+    respuesta = 0
+    notasfact = NotaFact.where("fechaInicio = '#{fecha1_nota}' and fechaFin = '#{fecha2_nota}'")
     unless notasfact.blank?
-      if zona == 'Todos'
-        return false
-      elsif notasfact[0]["zona_id"] == nil
-        return false
+      if notasfact[0]["zona_id"] == nil && zona == 'Todos'
+        return respuesta = 3
+      elsif notasfact[0]["zona_id"] == zona
+        return respuesta = 4
       else
         zonas = Zona.all
         zonas.each do |z|
@@ -97,7 +104,7 @@ class Facturacion < ApplicationRecord
       end
     end
     if resp1 == 1
-      return false
+      return respuesta = 4
     else
       documentos = Parametro.find_by(descripcion: 'Maneja internet en documentos separado')
       concepto_tv = Concepto.find(3)
@@ -608,9 +615,9 @@ class Facturacion < ApplicationRecord
         end
       end
       if (result1 != 2)
-        return true
+        return respuesta = 1
       else
-        return false
+        return respuesta = 2
       end
     end
   end
@@ -619,171 +626,174 @@ class Facturacion < ApplicationRecord
     byebug
     t = Time.now
     nombre_mes = Facturacion.mes(t.strftime("%B"))
-    fecha_actual = t.strftime "%d/%m/%Y"
-    #if ()
-    entidad = Entidad.find(entidad_id)
-    fecha1 = Date.parse f_fin
-    mes = fecha1.month
-    ano = fecha1.year
-    concepto_tv = Concepto.find(3)
-    iva_tv = concepto_tv.porcentajeIva
-    concepto_int = Concepto.find(4)
-    iva_int = concepto_int.porcentajeIva
-    fact = 0
-    doc_tv = Documento.find_by(nombre: 'FACTURA DE VENTA TELEVISION').id
-    doc_int = Documento.find_by(nombre: 'FACTURA DE VENTA INTERNET').id
-    serv_tv = Servicio.find_by(nombre: 'TELEVISION').id
-    serv_int = Servicio.find_by(nombre: 'INTERNET').id
-    pref = Resolucion.last.prefijo
-    consecutivos = Parametro.find_by(descripcion: 'Maneja consecutivos separados').valor
-    estadoD = Estado.find_by(abreviatura: 'PE')
-    
-    query = <<-SQL 
-    SELECT * FROM facturacion WHERE entidad_id = #{entidad_id} and fechatrn >= '01/#{mes}/#{ano}';
-    SQL
-    Facturacion.connection.clear_query_cache
-    factura = Facturacion.connection.select_all(query)
-    if servicio_id == serv_tv
-      unless factura.blank?
-        factura.each do |row|
-          query = <<-SQL 
-          SELECT * FROM detalle_factura WHERE nrofact=#{row["nrofact"]};
-          SQL
-          Facturacion.connection.clear_query_cache
-          detallefact = Facturacion.connection.select_all(query)
-          if (detallefact[0]["concepto_id"] == concepto_tv.id) 
-            fact = 1
+    fecha_actual = t.strftime "01/%m/%Y"
+    if f_inicio <= fecha_actual
+      entidad = Entidad.find(entidad_id)
+      fecha1 = Date.parse f_fin
+      mes = fecha1.month
+      ano = fecha1.year
+      concepto_tv = Concepto.find(3)
+      iva_tv = concepto_tv.porcentajeIva
+      concepto_int = Concepto.find(4)
+      iva_int = concepto_int.porcentajeIva
+      fact = 0
+      doc_tv = Documento.find_by(nombre: 'FACTURA DE VENTA TELEVISION').id
+      doc_int = Documento.find_by(nombre: 'FACTURA DE VENTA INTERNET').id
+      serv_tv = Servicio.find_by(nombre: 'TELEVISION').id
+      serv_int = Servicio.find_by(nombre: 'INTERNET').id
+      pref = Resolucion.last.prefijo
+      consecutivos = Parametro.find_by(descripcion: 'Maneja consecutivos separados').valor
+      estadoD = Estado.find_by(abreviatura: 'PE')
+      
+      query = <<-SQL 
+      SELECT * FROM facturacion WHERE entidad_id = #{entidad_id} and fechatrn >= '01/#{mes}/#{ano}';
+      SQL
+      Facturacion.connection.clear_query_cache
+      factura = Facturacion.connection.select_all(query)
+      if servicio_id == serv_tv
+        unless factura.blank?
+          factura.each do |row|
+            query = <<-SQL 
+            SELECT * FROM detalle_factura WHERE nrofact=#{row["nrofact"]};
+            SQL
+            Facturacion.connection.clear_query_cache
+            detallefact = Facturacion.connection.select_all(query)
+            if (detallefact[0]["concepto_id"] == concepto_tv.id) 
+              fact = 1
+            end
           end
         end
-      end
-      if fact != 1
-        if consecutivos == 'S'
-          query = <<-SQL 
-          SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=#{doc_tv};
-          SQL
-        else
-          query = <<-SQL 
-          SELECT MAX(nrofact) as ultimo FROM facturacion;
-          SQL
-        end
-        Facturacion.connection.clear_query_cache
-        ultimo = Facturacion.connection.select_all(query)
-        if ultimo[0]["ultimo"] == nil
-          ultimo=1
-        else
-          ultimo = (ultimo[0]["ultimo"]).to_i + 1
-        end
-        plantilla = PlantillaFact.where("entidad_id = #{entidad_id} and concepto_id = #{concepto_tv.id}")
-        fecha2 = Date.parse plantilla[0]["fechaini"].to_s
-        dias = (fecha1 - fecha2).to_i + 1
-        if dias < 30
-          if fecha1.month == 2
+        if fact != 1
+          if consecutivos == 'S'
+            query = <<-SQL 
+            SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=#{doc_tv};
+            SQL
+          else
+            query = <<-SQL 
+            SELECT MAX(nrofact) as ultimo FROM facturacion;
+            SQL
+          end
+          Facturacion.connection.clear_query_cache
+          ultimo = Facturacion.connection.select_all(query)
+          if ultimo[0]["ultimo"] == nil
+            ultimo=1
+          else
+            ultimo = (ultimo[0]["ultimo"]).to_i + 1
+          end
+          plantilla = PlantillaFact.where("entidad_id = #{entidad_id} and concepto_id = #{concepto_tv.id}")
+          fecha2 = Date.parse plantilla[0]["fechaini"].to_s
+          dias = (fecha1 - fecha2).to_i + 1
+          if dias < 30
+            if fecha1.month == 2
+              dias = 30
+            end
+          else
             dias = 30
           end
-        else
-          dias = 30
-        end
-        if entidad.persona.condicionfisica == 'D'
-          porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
-          descuento = valor_fact * (porcentaje.to_f / 100)
-          valor_fact = valor_fact - descuento
-        end
-        if iva_tv > 0
-          valor_sin_iva = valor_fact / (iva_tv / 100 + 1)
-          iva = valor_fact - valor_sin_iva
-          valor_fact = valor_sin_iva
-        end
-        facturacion = Facturacion.new(entidad_id: entidad_id, documento_id: doc_tv, fechatrn: f_elaboracion,
-          fechaven: f_fin, valor: valor_fact, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
-          estado_id: estadoD.id, observacion: observa, reporta: '1', usuario_id: usuario_id)
-        if facturacion.save
-          query = <<-SQL 
-          SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact};
-          SQL
-          Facturacion.connection.clear_query_cache
-          facturacion_id = Facturacion.connection.select_all(query)
-          facturacion_id = (facturacion_id[0]["id"]).to_i
-          detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
-          prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_tv.id, cantidad: 1, 
-          valor: facturacion.valor, porcentajeIva: iva_tv, iva: facturacion.iva, observacion: 'TELEVISION' + ' ' + nombre_mes,
-          operacion: '+', usuario_id: usuario_id)
-          if detallef.save
-            return true
-          else
-            return false
+          if entidad.persona.condicionfisica == 'D'
+            porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
+            descuento = valor_fact * (porcentaje.to_f / 100)
+            valor_fact = valor_fact - descuento
           end
+          if iva_tv > 0
+            valor_sin_iva = valor_fact / (iva_tv / 100 + 1)
+            iva = valor_fact - valor_sin_iva
+            valor_fact = valor_sin_iva
+          end
+          facturacion = Facturacion.new(entidad_id: entidad_id, documento_id: doc_tv, fechatrn: f_elaboracion,
+            fechaven: f_fin, valor: valor_fact, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
+            estado_id: estadoD.id, observacion: observa, reporta: '1', usuario_id: usuario_id)
+          if facturacion.save
+            query = <<-SQL 
+            SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact};
+            SQL
+            Facturacion.connection.clear_query_cache
+            facturacion_id = Facturacion.connection.select_all(query)
+            facturacion_id = (facturacion_id[0]["id"]).to_i
+            detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
+            prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_tv.id, cantidad: 1, 
+            valor: facturacion.valor, porcentajeIva: iva_tv, iva: facturacion.iva, observacion: 'TELEVISION' + ' ' + nombre_mes,
+            operacion: '+', usuario_id: usuario_id)
+            if detallef.save
+              return true
+            else
+              return false
+            end
+          end
+        else
+          return false
         end
       else
-        return false
+        unless factura.blank?
+          factura.each do |row|
+            query = <<-SQL 
+            SELECT * FROM detalle_factura WHERE nrofact=#{row["nrofact"]};
+            SQL
+            Facturacion.connection.clear_query_cache
+            detallefact = Facturacion.connection.select_all(query)
+            if detallefact[0]["concepto_id"] == concepto_int.id
+              fact = 1
+            end
+          end
+        end
+        if fact != 1
+          if consecutivos == 'S'
+            query = <<-SQL 
+            SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=#{doc_int};
+            SQL
+          else
+            query = <<-SQL 
+            SELECT MAX(nrofact) as ultimo FROM facturacion;
+            SQL
+          end
+          Facturacion.connection.clear_query_cache
+          ultimo = Facturacion.connection.select_all(query)
+          if ultimo[0]["ultimo"] == nil
+            ultimo=1
+          else
+            ultimo = (ultimo[0]["ultimo"]).to_i + 1
+          end
+          plantilla = PlantillaFact.where("entidad_id = #{entidad_id} and concepto_id = #{concepto_int.id}")
+          fecha2 = Date.parse plantilla[0]["fechaini"].to_s
+          dias = (fecha1 - fecha2).to_i + 1
+          if dias < 30
+            if fecha1.month == 2
+              dias = 30
+            end
+          else
+            dias = 30
+          end
+          if iva_int > 0
+            valor_sin_iva = valor_fact / (iva_int / 100 + 1)
+            iva = valor_fact - valor_sin_iva
+            valor_fact = valor_sin_iva
+          end
+          facturacion = Facturacion.new(entidad_id: entidad_id, documento_id: doc_int, fechatrn: f_elaboracion,
+            fechaven: f_fin, valor: valor_fact, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
+            estado_id: estadoD.id, observacion: observa, reporta: '1', usuario_id: usuario_id)
+          if facturacion.save
+            query = <<-SQL 
+            SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact};
+            SQL
+            Facturacion.connection.clear_query_cache
+            facturacion_id = Facturacion.connection.select_all(query)
+            facturacion_id = (facturacion_id[0]["id"]).to_i
+            detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
+            prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_int.id, cantidad: 1, 
+            valor: facturacion.valor, porcentajeIva: iva_int, iva: facturacion.iva, observacion: 'INTERNET' + ' ' + nombre_mes,
+            operacion: '+', usuario_id: usuario_id)
+            if detallef.save
+              return true
+            else
+                return false
+            end
+          end
+        else
+          return false
+        end
       end
     else
-      unless factura.blank?
-        factura.each do |row|
-          query = <<-SQL 
-          SELECT * FROM detalle_factura WHERE nrofact=#{row["nrofact"]};
-          SQL
-          Facturacion.connection.clear_query_cache
-          detallefact = Facturacion.connection.select_all(query)
-          if detallefact[0]["concepto_id"] == concepto_int.id
-            fact = 1
-          end
-        end
-      end
-      if fact != 1
-        if consecutivos == 'S'
-          query = <<-SQL 
-          SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=#{doc_int};
-          SQL
-        else
-          query = <<-SQL 
-          SELECT MAX(nrofact) as ultimo FROM facturacion;
-          SQL
-        end
-        Facturacion.connection.clear_query_cache
-        ultimo = Facturacion.connection.select_all(query)
-        if ultimo[0]["ultimo"] == nil
-          ultimo=1
-        else
-          ultimo = (ultimo[0]["ultimo"]).to_i + 1
-        end
-        plantilla = PlantillaFact.where("entidad_id = #{entidad_id} and concepto_id = #{concepto_int.id}")
-        fecha2 = Date.parse plantilla[0]["fechaini"].to_s
-        dias = (fecha1 - fecha2).to_i + 1
-        if dias < 30
-          if fecha1.month == 2
-            dias = 30
-          end
-        else
-          dias = 30
-        end
-        if iva_int > 0
-          valor_sin_iva = valor_fact / (iva_int / 100 + 1)
-          iva = valor_fact - valor_sin_iva
-          valor_fact = valor_sin_iva
-        end
-        facturacion = Facturacion.new(entidad_id: entidad_id, documento_id: doc_int, fechatrn: f_elaboracion,
-          fechaven: f_fin, valor: valor_fact, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
-          estado_id: estadoD.id, observacion: observa, reporta: '1', usuario_id: usuario_id)
-        if facturacion.save
-          query = <<-SQL 
-          SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact};
-          SQL
-          Facturacion.connection.clear_query_cache
-          facturacion_id = Facturacion.connection.select_all(query)
-          facturacion_id = (facturacion_id[0]["id"]).to_i
-          detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
-          prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_int.id, cantidad: 1, 
-          valor: facturacion.valor, porcentajeIva: iva_int, iva: facturacion.iva, observacion: 'INTERNET' + ' ' + nombre_mes,
-          operacion: '+', usuario_id: usuario_id)
-          if detallef.save
-            return true
-          else
-              return false
-          end
-        end
-      else
-        return false
-      end
+      return false
     end
   end
 
