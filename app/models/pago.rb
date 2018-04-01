@@ -37,17 +37,22 @@ class Pago < ApplicationRecord
         detalle.each do |d|
           byebug
           query = <<-SQL 
-          SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{d["factura_id"]};
+          SELECT factura_id FROM detalle_factura WHERE nrofact=#{d["nrodcto"]};
+          SQL
+          Pago.connection.clear_query_cache
+          factura_id = Pago.connection.select_all(query)
+          query = <<-SQL 
+          SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{factura_id[0]["factura_id"]};
           SQL
           Pago.connection.clear_query_cache
           factura = Pago.connection.select_all(query)
           abono = Abono.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
-            factura_id: d["factura_id"], doc_factura_id: factura[0]["documento_id"],
+            factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
             prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
             fechabono: fechatrn, saldo: d["saldo"], abono: d["abono"], usuario_id: pago.usuario_id)
           if d["total"] == 0
             query = <<-SQL 
-            UPDATE facturacion set estado_id = 9 WHERE id = #{d["factura_id"]};
+            UPDATE facturacion set estado_id = 9 WHERE id = #{factura_id[0]["factura_id"]};
             SQL
             Pago.connection.select_all(query)
           end
@@ -132,7 +137,7 @@ class Pago < ApplicationRecord
     saldo_tv = saldos[0]["saldo_tv"]
     saldo_int = saldos[0]["saldo_int"]
     query = <<-SQL 
-    SELECT * FROM facturacion WHERE entidad_id = #{entidad_id} ORDER BY id;
+    SELECT * FROM facturacion WHERE entidad_id = #{entidad_id} and estado_id <> 7 ORDER BY id;
     SQL
     facturas = Pago.connection.select_all(query)
     query = <<-SQL 

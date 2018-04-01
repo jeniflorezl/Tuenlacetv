@@ -454,7 +454,7 @@ class Facturacion < ApplicationRecord
                     facturacion_id = (facturacion_id[0]["id"]).to_i
                     detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
                     prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto, cantidad: 1, 
-                    valor: facturacion.valor, porcentajeIva: iva_cpto, iva: facturacion.iva, observacion: 'INTERNET' + ' ' + nombre_mes,
+                    valor: facturacion.valor, porcentajeIva: iva_cpto, iva: facturacion.iva, observacion: observa.upcase! + ' ' + nombre_mes,
                     operacion: '+', usuario_id: usuario_id)
                     if detallef.save
                       result = 1
@@ -480,8 +480,8 @@ class Facturacion < ApplicationRecord
                       valor_fact = valor_sin_iva
                     end
                     query = <<-SQL 
-                    UPDATE facturacion set fechaven = #{f_fin}, valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact} WHERE nrofact = #{factura[j]["nrofact"]};
-                    UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_cpto}, iva = #{iva} WHERE nrofact = #{factura[j]["nrofact"]};
+                    UPDATE facturacion set fechaven = #{f_fin}, valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = #{observa.upcase!} WHERE nrofact = #{factura[j]["nrofact"]};
+                    UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_cpto}, iva = #{iva}, observacion: #{observa.upcase!} + ' ' + #{nombre_mes} WHERE nrofact = #{factura[j]["nrofact"]};
                     SQL
                     Facturacion.connection.select_all(query)
                     result = 1
@@ -574,7 +574,7 @@ class Facturacion < ApplicationRecord
                   end
                   facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: doc_fact, fechatrn: fecha_elaboracion,
                     fechaven: f_fin, valor: valor_mens, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
-                    estado_id: estadoD.id, observacion: observa, reporta: '1', usuario_id: usuario_id)
+                    estado_id: estadoD.id, observacion: observa.upcase!, reporta: '1', usuario_id: usuario_id)
                   if facturacion.save
                     query = <<-SQL 
                     SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact} and documento_id = #{doc_fact};
@@ -610,8 +610,8 @@ class Facturacion < ApplicationRecord
                       valor_fact = valor_sin_iva
                     end
                     query = <<-SQL 
-                    UPDATE facturacion set fechaven = #{f_fin}, valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact} WHERE nrofact = #{factura[j]["nrofact"]};
-                    UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_cpto}, iva = #{iva} WHERE nrofact = #{factura[j]["nrofact"]};
+                    UPDATE facturacion set fechaven = #{f_fin}, valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = #{observa.upcase!} WHERE nrofact = #{factura[j]["nrofact"]};
+                    UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_cpto}, iva = #{iva}, observacion = #{observacion_d} + ' ' + #{nombre_mes} WHERE nrofact = #{factura[j]["nrofact"]};
                     SQL
                     Facturacion.connection.select_all(query)
                     result = 1 
@@ -810,8 +810,9 @@ class Facturacion < ApplicationRecord
   end
 
   def self.anular_factura(entidad_id, nrodcto)
+    resp = 0
     query = <<-SQL 
-    SELECT factura_id FROM facturacion WHERE entidad_id = #{entidad_id} and nrofact = #{nrodcto};
+    SELECT factura_id FROM detalle_factura WHERE nrofact = #{nrodcto};
     SQL
     Facturacion.connection.clear_query_cache
     factura_id = Facturacion.connection.select_all(query)
@@ -827,15 +828,15 @@ class Facturacion < ApplicationRecord
       Facturacion.connection.clear_query_cache
       abonos = Facturacion.connection.select_all(query)
       abonos.each do |a|
-        if a["factura_id"] == factura_id
+        if a["factura_id"] == factura_id[0]["factura_id"]
           resp = 1
         end
       end
     end
     if resp != 1
       query = <<-SQL 
-      UPDATE facturacion SET valor = 0, iva = 0, estado_id = 7, observacion = 'ANULADA' WHERE factura_id = #{factura_id};
-      UPDATE detalle_factura SET valor = 0, porcentajeIva = 0, iva = 0, observacion = 'ANULADA' WHERE factura_id = #{factura_id};
+      UPDATE facturacion SET valor = 0, iva = 0, estado_id = 7, observacion = 'ANULADA' WHERE id = #{factura_id[0]["factura_id"]};
+      UPDATE detalle_factura SET valor = 0, porcentajeIva = 0, iva = 0, observacion = 'ANULADA' WHERE factura_id = #{factura_id[0]["factura_id"]};
       SQL
       Facturacion.connection.clear_query_cache
       Facturacion.connection.select_all(query)
