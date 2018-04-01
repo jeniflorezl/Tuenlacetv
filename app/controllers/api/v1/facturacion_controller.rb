@@ -35,7 +35,7 @@ module Api
                     params[:valor], params[:observa], params[:usuario_id])
                     render json: { status: :created }
                 else
-                    render json: { error: "error en el proceso" }
+                    render json: { error: "no se pudo crear la factura" }
                 end
             end
 

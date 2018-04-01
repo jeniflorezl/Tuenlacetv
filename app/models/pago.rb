@@ -6,7 +6,7 @@ class Pago < ApplicationRecord
   belongs_to :banco
   belongs_to :usuario
 
-  validates :entidad, :documento, :nropago, :fechatrn, :fechaven, :valor, :estado, 
+  validates :entidad, :documento, :nropago, :fechatrn, :valor, :estado, 
   :forma_pago, :banco, :usuario, presence: true #obligatorio
 
   private
