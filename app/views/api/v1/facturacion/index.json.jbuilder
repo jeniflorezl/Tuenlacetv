@@ -1,6 +1,5 @@
 json.facturaciones do
     json.array! @facturaciones do |f|
-        json.
         json.nrofact_ini f['nrofact_ini']
         json.nrofact_fin f['nrofact_fin']
         json.fecha_elaboracion f['f_elaboracion']

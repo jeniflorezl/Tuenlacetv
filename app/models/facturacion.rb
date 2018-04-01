@@ -1,5 +1,6 @@
 class Facturacion < ApplicationRecord
   require 'date'
+  require 'prawn'
   extend NombreMeses
 
   belongs_to :entidad
@@ -17,35 +18,35 @@ class Facturacion < ApplicationRecord
     i = 0
     ban = 0
     notas_fact = NotaFact.all
+    byebug
     notas_fact.each do |nota|
       fecha_ela = nota["fechaElaboracion"]
       if  i == 1 && fecha_ela != fact_generadas[i-1]['f_elaboracion']
         ban = 1
       end
       if ban != 1
-        byebug
-          fecha_ela = Date.parse fecha_ela.to_s
-          fecha1 = self.formato_fecha(fecha_ela)
-          fecha_inicio = nota["fechaInicio"]
-          fecha2 = self.formato_fecha(fecha_inicio)
-          fecha_fin = nota["fechaFin"]
-          fecha_fin = Date.parse fecha_fin.to_s
-          fecha3 = self.formato_fecha(fecha_fin)
-          fecha_ven = nota["fechaVencimiento"]
-          fecha4 = self.formato_fecha(fecha_ven)
-          query = <<-SQL 
-          SELECT * FROM facturacion WHERE fechatrn >= #{fecha1} and fechaven <= #{fecha3} ORDER BY id;
-          SQL
-          Facturacion.connection.clear_query_cache
-          factura = Facturacion.connection.select_all(query)
-          fact_ini = factura.first
-          nrofact_ini = fact_ini["nrofact"]
-          fact_fin = factura.last
-          nrofact_fin = fact_fin["nrofact"]
-          fact_generadas[i] = { 'zona' => zona, 'nrofact_ini' => nrofact_ini, 'nrofact_fin' => nrofact_fin, 'f_elaboracion' => fecha1,
-          'f_inicio' => fecha2, 'f_fin' => fecha3, 'f_ven' => fecha4}
-          i += 1
-        end
+        fecha_ela = Date.parse fecha_ela.to_s
+        fecha1 = self.formato_fecha(fecha_ela)
+        fecha_inicio = nota["fechaInicio"]
+        fecha2 = self.formato_fecha(fecha_inicio)
+        fecha_fin = nota["fechaFin"]
+        fecha_fin = Date.parse fecha_fin.to_s
+        fecha3 = self.formato_fecha(fecha_fin)
+        fecha_ven = nota["fechaVencimiento"]
+        fecha4 = self.formato_fecha(fecha_ven)
+        query = <<-SQL 
+        SELECT nrofact FROM facturacion WHERE fechatrn >= '#{fecha_ela}' and fechaven <= '#{fecha_fin}' ORDER BY id;
+        SQL
+        Facturacion.connection.clear_query_cache
+        factura = Facturacion.connection.select_all(query)
+        fact_ini = factura.first
+        nrofact_ini = fact_ini["nrofact"]
+        fact_fin = factura.last
+        nrofact_fin = fact_fin["nrofact"]
+        fact_generadas[i] = { 'nrofact_ini' => nrofact_ini, 'nrofact_fin' => nrofact_fin, 'f_elaboracion' => fecha1,
+        'f_inicio' => fecha2, 'f_fin' => fecha3, 'f_ven' => fecha4}
+        i += 1
+      end
     end
     fact_generadas
   end
@@ -180,9 +181,7 @@ class Facturacion < ApplicationRecord
                     valor_mens = tarifa
                     dias = 30
                   end
-                  entidad = Entidad.find(senal.entidad_id).persona_id
-                  condfisica = senal.entidad.persona.condicionfisica
-                  if condfisica == 'D'
+                  if senal.entidad.persona.condicionfisica == 'D'
                     byebug
                     porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
                     descuento = valor_mens * (porcentaje.to_f / 100)
@@ -529,9 +528,7 @@ class Facturacion < ApplicationRecord
                   if concepto_id == concepto_tv.id
                     byebug
                     observacion_d = 'TELEVISION'
-                    entidad = Entidad.find(senal.entidad_id).persona_id
-                    condfisica = Persona.find(entidad).condicionfisica
-                    if condfisica == 'D'
+                    if senal.entidad.persona.condicionfisica == 'D'
                       porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
                       descuento = valor_mens * (porcentaje.to_f / 100)
                       valor_mens = valor_mens - descuento
@@ -621,6 +618,11 @@ class Facturacion < ApplicationRecord
 
   def self.factura_manual(tipo_facturacion, servicio_id, f_elaboracion, f_inicio, f_fin, entidad_id, valor_fact, observa, usuario_id)
     byebug
+    t = Time.now
+    nombre_mes = Facturacion.mes(t.strftime("%B"))
+    fecha_actual = t.strftime "%d/%m/%Y"
+    #if ()
+    entidad = Entidad.find(entidad_id)
     fecha1 = Date.parse f_fin
     mes = fecha1.month
     ano = fecha1.year
@@ -629,13 +631,14 @@ class Facturacion < ApplicationRecord
     concepto_int = Concepto.find(4)
     iva_int = concepto_int.porcentajeIva
     fact = 0
+    doc_tv = Documento.find_by(nombre: 'FACTURA DE VENTA TELEVISION').id
+    doc_int = Documento.find_by(nombre: 'FACTURA DE VENTA INTERNET').id
     serv_tv = Servicio.find_by(nombre: 'TELEVISION').id
     serv_int = Servicio.find_by(nombre: 'INTERNET').id
     pref = Resolucion.last.prefijo
     consecutivos = Parametro.find_by(descripcion: 'Maneja consecutivos separados').valor
     estadoD = Estado.find_by(abreviatura: 'PE')
-    t = Time.now
-    nombre_mes = Facturacion.mes(t.strftime("%B"))
+    
     query = <<-SQL 
     SELECT * FROM facturacion WHERE entidad_id = #{entidad_id} and fechatrn >= '01/#{mes}/#{ano}';
     SQL
@@ -657,7 +660,7 @@ class Facturacion < ApplicationRecord
       if fact != 1
         if consecutivos == 'S'
           query = <<-SQL 
-          SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=1;
+          SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=#{doc_tv};
           SQL
         else
           query = <<-SQL 
@@ -681,12 +684,17 @@ class Facturacion < ApplicationRecord
         else
           dias = 30
         end
+        if entidad.persona.condicionfisica == 'D'
+          porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
+          descuento = valor_fact * (porcentaje.to_f / 100)
+          valor_fact = valor_fact - descuento
+        end
         if iva_tv > 0
           valor_sin_iva = valor_fact / (iva_tv / 100 + 1)
           iva = valor_fact - valor_sin_iva
           valor_fact = valor_sin_iva
         end
-        facturacion = Facturacion.new(entidad_id: entidad_id, documento_id: 1, fechatrn: f_elaboracion,
+        facturacion = Facturacion.new(entidad_id: entidad_id, documento_id: doc_tv, fechatrn: f_elaboracion,
           fechaven: f_fin, valor: valor_fact, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
           estado_id: estadoD.id, observacion: observa, reporta: '1', usuario_id: usuario_id)
         if facturacion.save
@@ -725,7 +733,7 @@ class Facturacion < ApplicationRecord
       if fact != 1
         if consecutivos == 'S'
           query = <<-SQL 
-          SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=1;
+          SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=#{doc_int};
           SQL
         else
           query = <<-SQL 
@@ -754,7 +762,7 @@ class Facturacion < ApplicationRecord
           iva = valor_fact - valor_sin_iva
           valor_fact = valor_sin_iva
         end
-        facturacion = Facturacion.new(entidad_id: entidad_id, documento_id: 1, fechatrn: f_elaboracion,
+        facturacion = Facturacion.new(entidad_id: entidad_id, documento_id: doc_int, fechatrn: f_elaboracion,
           fechaven: f_fin, valor: valor_fact, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
           estado_id: estadoD.id, observacion: observa, reporta: '1', usuario_id: usuario_id)
         if facturacion.save
@@ -766,7 +774,7 @@ class Facturacion < ApplicationRecord
           facturacion_id = (facturacion_id[0]["id"]).to_i
           detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
           prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_int.id, cantidad: 1, 
-          valor: facturacion.valor, porcentajeIva: 0, iva: facturacion.iva, observacion: 'INTERNET' + ' ' + nombre_mes,
+          valor: facturacion.valor, porcentajeIva: iva_int, iva: facturacion.iva, observacion: 'INTERNET' + ' ' + nombre_mes,
           operacion: '+', usuario_id: usuario_id)
           if detallef.save
             return true
@@ -780,7 +788,9 @@ class Facturacion < ApplicationRecord
     end
   end
 
-  def self.generar_impresion()
-    
+  def self.generar_impresion
+    pdf = Prawn::Document.new
+    pdf.text "Hello World"
+    pdf
   end
 end

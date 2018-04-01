@@ -33,14 +33,6 @@ module Api
                 end
             end
 
-            def index_entidad
-                funcion = params[:funcion_id]
-                query = <<-SQL
-                SELECT * FROM VwSenales WHERE funcion_id = #{funcion};
-                SQL
-                @entidades = Senal.connection.select_all(query)
-            end
-
             # GET /senales/id
             # GET /senales/documento
             # GET /senales/nombre1
@@ -54,9 +46,6 @@ module Api
             # GET /senales/funcion
             # GET /senales/estado
             def show
-            end
-
-            def show_entidad
             end
 
             # POST /senales
