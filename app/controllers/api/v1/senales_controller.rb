@@ -7,27 +7,30 @@ module Api
 
             # GET /senales
             def index
+                @funcion = params[:funcion_id]
                 query = <<-SQL 
-                SELECT * FROM VwSenales WHERE funcion_id = 1;
+                SELECT * FROM VwSenales WHERE funcion_id = #{@funcion};
                 SQL
-                @senales = Senal.connection.select_all(query)
-                @servicios = Servicio.all
+                @entidades = Senal.connection.select_all(query)
+                @tipo_documentos = TipoDocumento.all
                 @barrios = Barrio.all
                 @zonas = Zona.all
                 @ciudades = Ciudad.all
-                @planes_tv = Plan.where(servicio_id: 1)
-                @planes_int = Plan.where(servicio_id: 2)
-                @tarifas = Tarifa.where(estado_id: 1)
-                @valor_afi_tv = Tarifa.find_by(concepto_id: 1).valor
-                @valor_afi_int = Tarifa.find_by(concepto_id: 2).valor
-                @param_valor_afi = Parametro.find_by(descripcion: 'Permite modificar valor de afiliación').valor
-                @tipo_instalaciones = TipoInstalacion.all
-                @tecnologias = Tecnologia.all
-                @tipo_documentos = TipoDocumento.all
                 @funciones = Funcion.all
-                @vendedores = Entidad.where(funcion_id: 5)
-                @tecnicos = Entidad.where(funcion_id: 7)
-                @tipo_facturacion = TipoFacturacion.all
+                if @funcion == "1"
+                    @servicios = Servicio.all
+                    @planes_tv = Plan.where(servicio_id: 1)
+                    @planes_int = Plan.where(servicio_id: 2)
+                    @tarifas = Tarifa.where(estado_id: 1)
+                    @valor_afi_tv = Tarifa.find_by(concepto_id: 1).valor
+                    @valor_afi_int = Tarifa.find_by(concepto_id: 2).valor
+                    @param_valor_afi = Parametro.find_by(descripcion: 'Permite modificar valor de afiliación').valor
+                    @tipo_instalaciones = TipoInstalacion.all
+                    @tecnologias = Tecnologia.all
+                    @vendedores = Entidad.where(funcion_id: 5)
+                    @tecnicos = Entidad.where(funcion_id: 7)
+                    @tipo_facturacion = TipoFacturacion.all
+                end
             end
 
             def index_entidad
@@ -266,13 +269,14 @@ module Api
             
             # Me busca la senal por cualquier campo
             def set_senal_buscar
+                funcion_id = params[:funcion_id]
                 campo = params[:campo]
                 valor = params[:valor]
                 query = <<-SQL 
-                SELECT TOP(10) * FROM VwSenales WHERE #{campo} LIKE '%#{valor}%' and funcion_id = 1;
+                SELECT TOP(10) * FROM VwSenales WHERE #{campo} LIKE '%#{valor}%' and funcion_id = #{funcion_id};
                 SQL
-                @senal = Senal.connection.select_all(query)
-                @senal = [*@senal]
+                @entidad = Senal.connection.select_all(query)
+                @entidad = [*@entidad]
                 @info_internet = InfoInternet.all
                 @senales = Senal.all
                 @plantillas_tv = PlantillaFact.where(concepto_id: 3)
@@ -283,19 +287,6 @@ module Api
                 Senal.connection.clear_query_cache
                 @saldos = Senal.connection.select_all(query)
             end
-
-            # Me busca la persona por cualquier campo
-            def set_entidad_buscar
-                funcion_id = params[:funcion_id]
-                campo = params[:campo]
-                valor = params[:valor]
-                query = <<-SQL 
-                SELECT TOP(10) * FROM VwSenales WHERE #{campo} LIKE '%#{valor}%' and funcion_id = #{funcion_id};
-                SQL
-                @entidad = Senal.connection.select_all(query)
-                @entidad = [*@entidad]
-            end
-
 
             #Le coloco los parametros que necesito de la persona y la señal para actualizarlos
 
