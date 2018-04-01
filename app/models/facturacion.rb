@@ -1,6 +1,5 @@
 class Facturacion < ApplicationRecord
   require 'date'
-  require 'prawn'
   extend NombreMeses
 
   belongs_to :entidad

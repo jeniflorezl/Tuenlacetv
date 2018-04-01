@@ -8,6 +8,11 @@ module Api
             def index
                 @facturaciones = Facturacion.facturaciones_generadas
             end
+
+            def info_fact_manual
+                @tipo_facturacion = TipoFacturacion.all
+                @zonas = Zona.all
+            end
         
             # GET /facturaciones/id
             def show
@@ -32,6 +37,11 @@ module Api
                 else
                     render json: { error: "error en el proceso" }
                 end
+            end
+
+            def generar_facturacion
+                @filename = 'my_report.pdf'
+                @documentos = Documento.all
             end
         end
     end
