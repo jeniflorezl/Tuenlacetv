@@ -50,10 +50,10 @@ ActiveRecord::Schema.define(version: 20180314162109) do
 
   create_table "anticipos", force: :cascade do |t|
     t.bigint "entidad_id", null: false
-    t.integer "factura_id", null: false
-    t.bigint "doc_factura_id", null: false
-    t.char "prefijo", limit: 6, null: false
-    t.integer "nrofact", null: false
+    t.integer "factura_id"
+    t.bigint "doc_factura_id"
+    t.char "prefijo", limit: 6
+    t.integer "nrofact"
     t.integer "pago_id", null: false
     t.bigint "doc_pagos_id", null: false
     t.integer "nropago", null: false
@@ -247,6 +247,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   create_table "documentos", force: :cascade do |t|
     t.varchar "nombre", limit: 50, null: false
     t.char "abreviatura", limit: 3, null: false
+    t.char "clase", limit: 1
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false

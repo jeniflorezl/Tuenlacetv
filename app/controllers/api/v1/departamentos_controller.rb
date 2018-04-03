@@ -59,7 +59,7 @@ module Api
                 if @campo == 'id'
                   @departamento = Departamento.find(valor)
                 else
-                  @departamento = Departamento.limit(10).where("#{campo} LIKE '%#{valor}%'")
+                  @departamento = Departamento.where("#{campo} LIKE '%#{valor}%'")
                 end
                 @departamento = [*@departamento]
             end

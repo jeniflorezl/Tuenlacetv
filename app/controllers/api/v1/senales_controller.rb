@@ -262,7 +262,7 @@ module Api
                 campo = params[:campo]
                 valor = params[:valor]
                 query = <<-SQL 
-                SELECT TOP(10) * FROM VwSenales WHERE #{campo} LIKE '%#{valor}%' and funcion_id = #{funcion_id};
+                SELECT * FROM VwSenales WHERE #{campo} LIKE '%#{valor}%' and funcion_id = #{funcion_id};
                 SQL
                 @entidad = Senal.connection.select_all(query)
                 @entidad = [*@entidad]

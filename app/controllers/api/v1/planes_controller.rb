@@ -60,9 +60,9 @@ module Api
                 if campo == 'id'
                     @plan = Plan.find(valor)
                 elsif campo == 'servicio'
-                    @plan = Plan.limit(10).where(servicio_id: valor)
+                    @plan = Plan.where(servicio_id: valor)
                 else
-                    @plan = Plan.limit(10).where("nombre LIKE '%#{valor}%'")
+                    @plan = Plan.where("nombre LIKE '%#{valor}%'")
                 end
                 @plan = [*@plan]
             end

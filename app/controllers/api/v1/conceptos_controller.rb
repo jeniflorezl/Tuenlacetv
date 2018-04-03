@@ -61,9 +61,9 @@ module Api
                 if campo == 'id'
                     @concepto = Concepto.find(valor)
                 elsif campo == 'servicio'
-                    @concepto = Concepto.limit(10).where(servicio_id: valor)
+                    @concepto = Concepto.where(servicio_id: valor)
                 else
-                    @concepto = Concepto.limit(10).where("nombre LIKE '%#{valor}%'")
+                    @concepto = Concepto.where("nombre LIKE '%#{valor}%'")
                 end
                 @concepto = [*@concepto]
             end

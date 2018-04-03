@@ -1,8 +1,6 @@
 module Api
     module V1
         class FacturacionController < ApplicationController
-            before_action :set_ciudad_buscar, only: [:show]
-            before_action :set_ciudad, only: [:update, :destroy]
   
             # GET /facturaciones
             def index
@@ -48,10 +46,8 @@ module Api
                     render json: { error: "no se pudo crear" }
                 when 3
                     render json: { error: "mes diferente al corriente" }
-                when 4
+                else 4
                     render json: { error: "ya tiene factura en el mes corriente" }
-                else
-                    render json: { error: "tipo facturacion diferente" }
                 end
             end
 

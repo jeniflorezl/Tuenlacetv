@@ -63,7 +63,7 @@ module Api
                 if @campo == 'id'
                     @empresa = Empresa.find(valor)
                 else
-                    @empresa = Empresa.limit(10).where("#{campo} LIKE '%#{valor}%'")
+                    @empresa = Empresa.where("#{campo} LIKE '%#{valor}%'")
                 end
                 @empresa = [*@empresa]
             end

@@ -60,7 +60,7 @@ module Api
                 if campo == 'id'
                   @ciudad = Ciudad.find(valor)
                 else
-                  @ciudad = Ciudad.limit(10).where("nombre LIKE '%#{valor}%'")
+                  @ciudad = Ciudad.where("nombre LIKE '%#{valor}%'")
                 end
                 @ciudad = [*@ciudad]
             end

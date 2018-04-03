@@ -1,4 +1,6 @@
 class Pago < ApplicationRecord
+  extend FormatoFecha
+
   belongs_to :entidad
   belongs_to :documento
   belongs_to :estado
@@ -13,6 +15,7 @@ class Pago < ApplicationRecord
 
   def self.generar_pago(entidad_id, documento_id, fechatrn, valor, observacion, forma_pago_id,
     banco_id, cobrador_id, detalle, usuario_id)
+    observacion = observacion.upcase!
     query = <<-SQL 
     SELECT MAX(nropago) as ultimo FROM pagos;
     SQL
@@ -65,7 +68,20 @@ class Pago < ApplicationRecord
   def self.generar_pago_anticipado(entidad_id, documento_id, servicio_id, fechatrn, fechapxa, cuotas, valor, observacion, forma_pago_id,
     banco_id, cobrador_id, usuario_id)
     byebug
-    i = 0
+    observacion = observacion.upcase!
+    serv_tv = Servicio.find_by(nombre: 'TELEVISION').id
+    serv_int = Servicio.find_by(nombre: 'INTERNET').id
+    query = <<-SQL 
+    SELECT saldo_tv, saldo_int FROM VwEstadoDeCuentaTotal WHERE entidad_id = #{entidad_id};
+    SQL
+    saldos = Pago.connection.select_all(query)
+    saldo_tv = saldos[0]["saldo_tv"]
+    saldo_int = saldos[0]["saldo_int"]
+=begin if servicio_id == serv_tv
+  if saldo_tv == 0
+  end
+end 
+=end
     query = <<-SQL 
     SELECT MAX(nropago) as ultimo FROM pagos;
     SQL
@@ -87,37 +103,12 @@ class Pago < ApplicationRecord
         pago_id = Pago.connection.select_all(query)
         pago_id = (pago_id[0]["id"]).to_i
         byebug
-        detalle.each do |d|
-          byebug
-          query = <<-SQL 
-          SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{d["factura_id"]};
-          SQL
-          Pago.connection.clear_query_cache
-          factura = Pago.connection.select_all(query)
-          abono = Abono.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
-            factura_id: d["factura_id"], doc_factura_id: factura[0]["documento_id"],
-            prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
-            fechabono: fechatrn, saldo: d["saldo"], abono: d["abono"], usuario_id: pago.usuario_id)
-          if d["total"] == 0
-            query = <<-SQL 
-            UPDATE facturacion set estado_id = 9 WHERE id = #{d["factura_id"]};
-            SQL
-            Pago.connection.select_all(query)
-          end
-        end
         valor_anticipo = valor / cuotas
         fecha1 = Date.parse fechapxa
         fecha2 = fecha1 + 29
         cuotas.each do |c|
-          query = <<-SQL 
-          SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{d[i]["factura_id"]};
-          SQL
-          Pago.connection.clear_query_cache
-          factura = Pago.connection.select_all(query)
-          anticipo = Anticipo.new(entidad_id: entidad_id, factura_id: d[i]["factura_id"], doc_factura_id: factura[0]["documento_id"],
-            prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], pago_id: pago_id, doc_pagos_id: pago.documento_id,
+          anticipo = Anticipo.new(entidad_id: entidad_id, pago_id: pago_id, doc_pagos_id: pago.documento_id,
             nropago: pago.nropago, fechatrn: fecha1, fechaven: fecha2, valor: valor_anticipo, usuario_id: pago.usuario_id)
-          i += 1
           fecha1 = fecha1 + 31
           fecha2 = fecha1 + 29
         end
@@ -152,8 +143,10 @@ class Pago < ApplicationRecord
           byebug
           concepto_id = df["concepto_id"]
           concepto = Concepto.find(concepto_id)
+          fecha1 = Pago.formato_fecha(f["fechatrn"])
+          fecha2 = Pago.formato_fecha(f["fechaven"])
           detalle_facts[i] = { 'concepto' => concepto.codigo, 'desc' => concepto.nombre, 
-            'nrodcto' => f["nrofact"], 'fechatrn' => f["fechatrn"], 'fechaven' => f["fechaven"],
+            'nrodcto' => f["nrofact"], 'fechatrn' => fecha1, 'fechaven' => fecha2,
             'valor' => df["valor"], 'iva' => df["iva"], 'saldo' => df["valor"] + df["iva"], 'abono' => 0,
             'total' => 0 }
           i += 1
@@ -190,13 +183,15 @@ class Pago < ApplicationRecord
           end
           if valor_df != 0
             byebug
+            fecha1 = Pago.formato_fecha(f["fechatrn"])
+            fecha2 = Pago.formato_fecha(f["fechaven"])
             detalle_facts[i] = { 'concepto' => concepto.codigo, 'desc' => concepto.nombre, 
-              'nrodcto' => f["nrofact"], 'fechatrn' => f["fechatrn"], 'fechaven' => f["fechaven"],
+              'nrodcto' => f["nrofact"], 'fechatrn' => fecha1, 'fechaven' => fecha2,
               'valor' => df["valor"], 'iva' => df["iva"], 'saldo' => valor_fact, 'abono' => 0,
               'total' => 0 }
+          i += 1
           end
         end
-        i += 1
         if saldo_tv == 0 && saldo_int == 0
           break
         end
@@ -208,6 +203,7 @@ class Pago < ApplicationRecord
   def self.anular_pago(pago_id)
     query = <<-SQL 
     UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{pago_id}
+    UPDATE abonos set saldo = 0, abono = 0 WHERE pago_id = #{pago_id}
     SQL
     Pago.connection.select_all(query)
   end
@@ -232,6 +228,7 @@ class Pago < ApplicationRecord
     else
       query = <<-SQL 
       UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{pago_anticipado_id}
+      UPDATE abonos set saldo = 0, abono = 0 WHERE pago_id = #{pago_anticipado_id}
       DELETE anticipados WHERE entidad_id = #{pago[0]["entidad_id"]} and pago_id = #{pago[0]["id"]}
       SQL
       Pago.connection.select_all(query)

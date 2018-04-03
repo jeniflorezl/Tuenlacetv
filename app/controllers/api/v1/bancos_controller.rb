@@ -60,7 +60,7 @@ module Api
                 if campo == 'id'
                     @banco = Banco.find(params[:valor])
                 else
-                    @banco = Banco.limit(10).where("#{campo} LIKE '%#{valor}%'")
+                    @banco = Banco.where("#{campo} LIKE '%#{valor}%'")
                 end
                 @banco = [*@banco]
             end

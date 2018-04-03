@@ -2,8 +2,6 @@ json.pagos_anticipados do
     json.array! @pagos_anticipados do |pago|
         json.id pago["id"]
         json.entidad_id pago["entidad_id"]
-        json.tipo_documento pago["tipo_documento"]
-        json.documento_persona pago["documento_persona"]
         json.nombres pago["nombres"]
         json.telefonos pago["telefonos"]
         json.direccion pago["direccion"]
@@ -13,6 +11,8 @@ json.pagos_anticipados do
         json.estado_int pago["estado_int"]
         json.fechacontrato pago["fechacontrato"]
         json.fecha_ult_pago pago["fecha_ult_pago"]
+        json.saldo_tv pago["saldo_tv"]
+        json.saldo_int pago["saldo_int"]
         json.documento pago["documento"]
         json.nropago pago["nropago"]
         json.fechatrn pago["fechatrn"]

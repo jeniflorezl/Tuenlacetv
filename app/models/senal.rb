@@ -240,11 +240,13 @@ class Senal < ApplicationRecord
       SQL
       orden_id = Senal.connection.select_all(query)
       unless orden_id.blank?
-        query = <<-SQL
-        DELETE detalle_orden WHERE orden_id = #{orden_id[0]["id"]}; 
-        DELETE ordenes WHERE entidad_id = #{entidad.id};
-        SQL
-        Senal.connection.select_all(query)
+        orden_id.each do |o|
+          query = <<-SQL
+          DELETE detalle_orden WHERE orden_id = #{o["id"]}; 
+          DELETE ordenes WHERE entidad_id = #{entidad.id} and id = #{o["id"]};
+          SQL
+          Senal.connection.select_all(query)
+        end
       end
       if info_internet
           info_internet.destroy()

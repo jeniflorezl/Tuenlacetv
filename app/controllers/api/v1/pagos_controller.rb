@@ -10,13 +10,13 @@ module Api
                 SELECT * FROM VwPagos;
                 SQL
                 @pagos = Pago.connection.select_all(query)
-                @conceptos = Concepto.where(clase: 'P')
-                @formas_pago = FormaPago.all
-                @bancos = Banco.all
             end
 
             def index_pago
                 @detalle_facts = Pago.detalle_facturas(params[:entidad_id])
+                @documentos = Documento.where(clase: 'P')
+                @formas_pago = FormaPago.all
+                @bancos = Banco.all
             end
             
             # POST /pagos

@@ -57,7 +57,7 @@ module Api
           if campo == 'id'
             @pais = Pais.find(valor)
           else
-            @pais = Pais.limit(10).where("nombre LIKE '%#{valor}%'")
+            @pais = Pais.where("nombre LIKE '%#{valor}%'")
           end
           @pais = [*@pais]
         end

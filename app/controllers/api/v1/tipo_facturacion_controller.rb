@@ -58,7 +58,7 @@ module Api
                 if campo == 'id'
                   @tipo_facturacion = TipoFacturacion.find(valor)
                 else
-                  @tipo_facturacion = TipoFacturacion.limit(10).where("nombre LIKE '%#{valor}%'")
+                  @tipo_facturacion = TipoFacturacion.where("nombre LIKE '%#{valor}%'")
                 end
                 @tipo_facturacion = [*@tipo_facturacion]
             end

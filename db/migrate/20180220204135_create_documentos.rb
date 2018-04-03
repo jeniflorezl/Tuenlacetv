@@ -3,6 +3,7 @@ class CreateDocumentos < ActiveRecord::Migration[5.1]
     create_table :documentos do |t|
       t.varchar :nombre, limit: 50, null:false
       t.char :abreviatura, limit: 3, null:false
+      t.char :clase, limit: 1
       t.datetime :fechacre, null:false
       t.datetime :fechacam, null:false
       t.references :usuario, foreign_key: true, null:false

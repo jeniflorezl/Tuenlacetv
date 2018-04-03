@@ -59,7 +59,7 @@ module Api
                 if @campo == 'id'
                     @zona = Zona.find(valor)
                 else
-                    @zona = Zona.limit(10).where("nombre LIKE '%#{valor}%'")
+                    @zona = Zona.where("nombre LIKE '%#{valor}%'")
                 end
                 @zona = [*@zona]
             end

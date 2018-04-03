@@ -2,10 +2,10 @@ class CreateAnticipos < ActiveRecord::Migration[5.1]
   def up
     create_table :anticipos do |t|
       t.references :entidad, foreign_key: true, null:false
-      t.integer :factura_id, null:false
-      t.references :doc_factura, foreign_key: { to_table: :documentos }, null:false
-      t.char :prefijo, limit: 6, null:false
-      t.integer :nrofact, null:false
+      t.integer :factura_id
+      t.references :doc_factura, foreign_key: { to_table: :documentos }
+      t.char :prefijo, limit: 6
+      t.integer :nrofact
       t.integer :pago_id, null:false
       t.references :doc_pagos, foreign_key: { to_table: :documentos }, null:false
       t.integer :nropago, null:false

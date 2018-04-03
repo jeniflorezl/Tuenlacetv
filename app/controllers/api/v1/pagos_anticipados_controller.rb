@@ -1,17 +1,17 @@
 module Api
     module V1
-        class pago_anticipadosAnticipadosController < ApplicationController
+        class PagosAnticipadosController < ApplicationController
             before_action :set_pago_anticipado_buscar, only: [:show]
-            before_action :set_pago_anticipado, only: [:update, :anular, :anular_pago_anticipado_ant]
+            before_action :set_pago_anticipado, only: [:update, :anular, :anular_pago_anticipado]
 
             # GET /pagos_anticipados
             def index
                 query = <<-SQL 
-                SELECT * FROM Vwpago_anticipadosAnticipados;
+                SELECT * FROM VwPagosAnticipados;
                 SQL
                 @pagos_anticipados = Pago.connection.select_all(query)
                 @documentos = Documento.all
-                @formas_pago_anticipado = Formapago_anticipado.all
+                @formas_pago_anticipado = FormaPago.all
                 @bancos = Banco.all
             end
             
@@ -43,7 +43,7 @@ module Api
 
             def set_pago_anticipado
                 query = <<-SQL 
-                SELECT * FROM pago_anticipados WHERE id=#{params[:id]};
+                SELECT * FROM VwPagosAnticipados WHERE id=#{params[:id]};
                 SQL
                 Pago.connection.clear_query_cache
                 @pago_anticipado = Pago.connection.select_all(query)

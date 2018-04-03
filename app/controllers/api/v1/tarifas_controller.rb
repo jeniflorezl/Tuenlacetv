@@ -91,7 +91,7 @@ module Api
                     campo = params[:campo]
                     valor = params[:valor]
                     query = <<-SQL 
-                    SELECT TOP(10) * FROM VwTarifas WHERE #{campo} LIKE '%#{valor}%';
+                    SELECT * FROM VwTarifas WHERE #{campo} LIKE '%#{valor}%';
                     SQL
                     @tarifa = ActiveRecord::Base.connection.select_all(query)
                     @tarifa = [*@tarifa]

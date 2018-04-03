@@ -94,7 +94,7 @@ module Api
                     if @campo == 'id'
                         @usuario = Usuario.find(valor)
                     else
-                        @usuario = Usuario.limit(10).where("#{campo} LIKE '%#{valor}%'")
+                        @usuario = Usuario.where("#{campo} LIKE '%#{valor}%'")
                     end
                     @usuario = [*@usuario]
                 end

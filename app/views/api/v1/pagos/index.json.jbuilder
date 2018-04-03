@@ -2,8 +2,6 @@ json.pagos do
     json.array! @pagos do |pago|
         json.id pago["id"]
         json.entidad_id pago["entidad_id"]
-        json.tipo_documento pago["tipo_documento"]
-        json.documento_persona pago["documento_persona"]
         json.nombres pago["nombres"]
         json.telefonos pago["telefonos"]
         json.direccion pago["direccion"]
@@ -13,6 +11,8 @@ json.pagos do
         json.estado_int pago["estado_int"]
         json.fechacontrato pago["fechacontrato"]
         json.fecha_ult_pago pago["fecha_ult_pago"]
+        json.saldo_tv pago["saldo_tv"]
+        json.saldo_int pago["saldo_int"]
         json.documento pago["documento"]
         json.nropago pago["nropago"]
         json.fechatrn pago["fechatrn"]
@@ -23,26 +23,5 @@ json.pagos do
         json.forma_pago pago["forma_pago"]
         json.banco pago["banco"]
         json.cobrador pago["cobrador"]
-    end
-end
-
-json.conceptos do
-    json.array! @conceptos do |concepto|
-        json.id concepto.id
-        json.nombre concepto.nombre
-    end
-end
-
-json.formas_pago do
-    json.array! @formas_pago do |forma_pago|
-        json.id forma_pago.id
-        json.nombre forma_pago.nombre
-    end
-end
-
-json.bancos do
-    json.array! @bancos do |banco|
-        json.id banco.id
-        json.nombre banco.nombre
     end
 end

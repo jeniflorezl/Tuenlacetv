@@ -60,9 +60,9 @@ module Api
                 if campo == 'id'
                     @barrio = Barrio.find(valor)
                 elsif campo == 'zona'
-                    @barrio = Barrio.limit(10).where(zona_id: valor)
+                    @barrio = Barrio.where(zona_id: valor)
                 else
-                    @barrio = Barrio.limit(10).where("nombre LIKE '%#{valor}%'")
+                    @barrio = Barrio.where("nombre LIKE '%#{valor}%'")
                 end
                 @barrio = [*@barrio]
             end
