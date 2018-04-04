@@ -17,6 +17,7 @@ Rails.application.routes.draw do
       resources :facturacion
       resources :pagos
       resources :pagos_anticipados
+      resources :ordenes
       get 'paises/bd/:db', to: 'paises#index'
       get 'paises/:campo/:valor/:db', to: 'paises#show'
       get 'departamentos/bd/:db', to: 'departamentos#index'
@@ -59,6 +60,7 @@ Rails.application.routes.draw do
       get 'pagos_anticipados/detalle_facturas/:entidad_id/:db', to: 'pagos_anticipados#index_pago'
       get 'pagos_anticipados/:campo/:valor/:db', to: 'pagos_anticipados#show'
       post 'pagos_anticipados/anular_pago/:id', to: 'pagos#anular'
+      get 'ordenes/bd/:db', to: 'ordenes#index'
       post 'signin', to: 'sesion#create'
       delete 'signout', to: 'sesion#destroy'
     end
