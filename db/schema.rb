@@ -50,6 +50,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
 
   create_table "anticipos", force: :cascade do |t|
     t.bigint "entidad_id", null: false
+    t.bigint "servicio_id", null: false
     t.integer "factura_id"
     t.bigint "doc_factura_id"
     t.char "prefijo", limit: 6
@@ -66,6 +67,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.index ["doc_factura_id"], name: "index_anticipos_on_doc_factura_id"
     t.index ["doc_pagos_id"], name: "index_anticipos_on_doc_pagos_id"
     t.index ["entidad_id"], name: "index_anticipos_on_entidad_id"
+    t.index ["servicio_id"], name: "index_anticipos_on_servicio_id"
     t.index ["usuario_id"], name: "index_anticipos_on_usuario_id"
   end
 
@@ -789,6 +791,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   add_foreign_key "anticipos", "facturacion", column: "prefijo", primary_key: "prefijo", name: "FK_anticipos_facturas"
   add_foreign_key "anticipos", "pagos", column: "doc_pagos_id", primary_key: "documento_id", name: "FK_anticipos_pagos"
   add_foreign_key "anticipos", "pagos", column: "nropago", primary_key: "nropago", name: "FK_anticipos_pagos"
+  add_foreign_key "anticipos", "servicios"
   add_foreign_key "anticipos", "usuarios"
   add_foreign_key "articulos", "grupos"
   add_foreign_key "articulos", "unidades"

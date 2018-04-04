@@ -15,6 +15,7 @@ Estado.create(nombre: 'PENDIENTE', abreviatura: 'PE', tipo: 2, usuario: 'admin')
 Estado.create(nombre: 'ANULADO', abreviatura: 'AN', tipo: 2, usuario: 'admin')
 Estado.create(nombre: 'APLICADO', abreviatura: 'AP', tipo: 2, usuario: 'admin')
 Estado.create(nombre: 'PAGADO', abreviatura: 'PA', tipo: 2, usuario: 'admin')
+
 Pais.create(nombre: 'COLOMBIA', usuario_id: 1)
 Pais.create(nombre: 'PANAMA', usuario_id: 1)
 Pais.create(nombre: 'VENEZUELA',usuario_id: 1)
@@ -255,7 +256,6 @@ FormaPago.create(nombre: 'Consignación', usuario_id: 1)
 FormaPago.create(nombre: 'Traslados', usuario_id: 1)
 TipoFacturacion.create(nombre: 'ANTICIPADA', usuario_id: 1)
 TipoFacturacion.create(nombre: 'VENCIDA', usuario_id: 1)
-=begin
 Persona.create(tipo_documento_id: 1, documento: '1020470055', nombre1: 'JENIFFER', nombre2: '',
 apellido1: 'FLÓREZ', apellido2: 'LONDOÑO', direccion: 'Cra 47 #53-41', barrio_id: 1, zona_id: 1,
 telefono1: '4540312', telefono2: '', correo: 'jeniferfl@gmail.com', fechanac: '13/07/1995', 
@@ -292,12 +292,14 @@ Entidad.create(funcion_id: 7, persona_id: 5, usuario_id: 1)
 Entidad.create(funcion_id: 5, persona_id: 6, usuario_id: 1)
 Entidad.create(funcion_id: 5, persona_id: 7, usuario_id: 1)
 =end
+
 Empresa.create(tipo: '01', nit: '900353347', razonsocial: 'enlace informatico s.a.s', direccion: 'cra 47 #53-41', 
 telefono1: '4540312', telefono2: '', ciudad_id: 2, entidad_id: 50003, logo: '', correo: 'gerencia@enlaceinformatico.com',
 regimen: 's', contribuyente: 's', centrocosto: '0001', usuario_id: 1)
 Resolucion.create(empresa_id: 1, nroResolucion: '18762002425502', tipo: 'AUTORIZADO', prefijo: 'AR',
 rangoRI: '0', rangoRF: '0', rangoI: '0', rangoF: '0', fechainicio: '28/02/2018', 
 fechavence: '28/02/2018', usuario_id: 1)
+
 =begin
 Senal.create(entidad_id: 1, contrato: '4789963', direccion: 'Calle 11 #24-23', urbanizacion: '', 
 torre: '', apto: '', barrio_id: 1, zona_id: 1, telefono1: '4540312', telefono2: '', contacto: '', estrato: '4',
