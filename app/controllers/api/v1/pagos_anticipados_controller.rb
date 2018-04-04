@@ -17,12 +17,17 @@ module Api
             
             # POST /pagos_anticipados
             def create
-                if Pago.generar_pago_anticipado(params[:entidad_id], params[:documento_id], params[:fechatrn],
-                    params[:fechapxa], params[:cuotas], params[:valor], params[:observacion], params[:forma_pago_anticipado_id],
-                    params[:banco_id], params[:cobrador_id], params[:detalle], params[:usuario_id])
+                respuesta = 0
+                respuesta = Pago.generar_pago_anticipado(params[:entidad_id], params[:documento_id], params[:servicio_id],
+                    params[:fechatrn], params[:fechapxa], params[:cuotas], params[:valor], params[:observacion], 
+                    params[:forma_pago_id], params[:banco_id], params[:cobrador_id], params[:usuario_id])
+                case respuesta
+                when 1
                     render json: { status: :created }
+                when 2
+                    render json: { error: "no se pudo crear" }
                 else
-                    render json: { error: "Error en proceso" }
+                    render json: { error: "el cliente debe tener saldo 0" }
                 end
             end
 

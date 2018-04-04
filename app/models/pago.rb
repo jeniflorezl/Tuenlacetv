@@ -68,6 +68,8 @@ class Pago < ApplicationRecord
   def self.generar_pago_anticipado(entidad_id, documento_id, servicio_id, fechatrn, fechapxa, cuotas, valor, observacion, forma_pago_id,
     banco_id, cobrador_id, usuario_id)
     byebug
+    ban = 0
+    resp = 0
     observacion = observacion.upcase!
     serv_tv = Servicio.find_by(nombre: 'TELEVISION').id
     serv_int = Servicio.find_by(nombre: 'INTERNET').id
@@ -77,24 +79,29 @@ class Pago < ApplicationRecord
     saldos = Pago.connection.select_all(query)
     saldo_tv = saldos[0]["saldo_tv"]
     saldo_int = saldos[0]["saldo_int"]
-=begin if servicio_id == serv_tv
-  if saldo_tv == 0
-  end
-end 
-=end
-    query = <<-SQL 
-    SELECT MAX(nropago) as ultimo FROM pagos;
-    SQL
-    Pago.connection.clear_query_cache
-    ultimo = Pago.connection.select_all(query)
-    if ultimo[0]["ultimo"] == nil
-      ultimo=1
+    if servicio_id == serv_tv
+      if saldo_tv == 0
+        ban = 1
+      end
     else
-      ultimo = (ultimo[0]["ultimo"]).to_i + 1
+      if saldo_int == 0
+        ban = 1
+      end
     end
-    pago = Pago.new(entidad_id: entidad_id, documento_id: documento_id, nropago: ultimo, fechatrn: fechatrn,
-      valor: valor, estado_id: 9, observacion: observacion, forma_pago_id: forma_pago_id,
-      banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
+    if ban == 1
+      query = <<-SQL 
+      SELECT MAX(nropago) as ultimo FROM pagos;
+      SQL
+      Pago.connection.clear_query_cache
+      ultimo = Pago.connection.select_all(query)
+      if ultimo[0]["ultimo"] == nil
+        ultimo=1
+      else
+        ultimo = (ultimo[0]["ultimo"]).to_i + 1
+      end
+      pago = Pago.new(entidad_id: entidad_id, documento_id: documento_id, nropago: ultimo, fechatrn: fechatrn,
+        valor: valor, estado_id: 9, observacion: observacion, forma_pago_id: forma_pago_id,
+        banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
       if pago.save
         query = <<-SQL 
         SELECT id FROM pagos WHERE nropago=#{pago.nropago};
@@ -106,14 +113,24 @@ end
         valor_anticipo = valor / cuotas
         fecha1 = Date.parse fechapxa
         fecha2 = fecha1 + 29
-        cuotas.each do |c|
-          anticipo = Anticipo.new(entidad_id: entidad_id, pago_id: pago_id, doc_pagos_id: pago.documento_id,
+        for i in(1..cuotas)
+          byebug
+          anticipo = Anticipo.new(entidad_id: entidad_id, servicio_id: servicio_id, pago_id: pago_id, doc_pagos_id: pago.documento_id,
             nropago: pago.nropago, fechatrn: fecha1, fechaven: fecha2, valor: valor_anticipo, usuario_id: pago.usuario_id)
-          fecha1 = fecha1 + 31
+          anticipo.save
+          fecha1 = fecha1 + 30
+          if fecha1.day == 31
+            fecha1 = fecha1 + 1
+          end
           fecha2 = fecha1 + 29
         end
-        return true
+        return resp = 1
+      else
+        return resp = 2
       end
+    else
+      return resp = 3
+    end
   end
 
   def self.detalle_facturas(entidad_id)
