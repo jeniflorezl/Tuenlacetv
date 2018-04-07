@@ -36,9 +36,7 @@ class Pago < ApplicationRecord
         Pago.connection.clear_query_cache
         pago_id = Pago.connection.select_all(query)
         pago_id = (pago_id[0]["id"]).to_i
-        byebug
         detalle.each do |d|
-          byebug
           query = <<-SQL 
           SELECT factura_id FROM detalle_factura WHERE nrofact=#{d["nrodcto"]};
           SQL
@@ -67,7 +65,6 @@ class Pago < ApplicationRecord
 
   def self.generar_pago_anticipado(entidad_id, documento_id, servicio_id, fechatrn, fechapxa, valor, observacion, forma_pago_id,
     banco_id, cobrador_id, usuario_id)
-    byebug
     ban = 0
     resp = 0
     concepto = 0
@@ -113,13 +110,11 @@ class Pago < ApplicationRecord
         Pago.connection.clear_query_cache
         pago_id = Pago.connection.select_all(query)
         pago_id = (pago_id[0]["id"]).to_i
-        byebug
         plantilla = PlantillaFact.where("concepto_id = #{concepto} and entidad_id = #{entidad_id}")
         tarifa = Tarifa.find(plantilla[0]["tarifa_id"]).valor
         fecha1 = Date.parse fechapxa
         fecha2 = fecha1 + 29
         while valor > 0
-          byebug
           if valor >= tarifa
             valor_abono = tarifa
           else
@@ -144,7 +139,6 @@ class Pago < ApplicationRecord
   end
 
   def self.detalle_facturas(entidad_id)
-    byebug
     detalle_facts = Array.new
     i = 0
     ban = 0
@@ -164,10 +158,8 @@ class Pago < ApplicationRecord
     pagos = Pago.connection.select_all(query)
     if pagos.blank?
       facturas.reverse_each do |f|
-      byebug
         dfactura = DetalleFactura.where(factura_id: f["id"])
         dfactura.reverse_each do |df|
-          byebug
           concepto_id = df["concepto_id"]
           concepto = Concepto.find(concepto_id)
           fecha1 = Pago.formato_fecha(f["fechatrn"])
@@ -180,18 +172,14 @@ class Pago < ApplicationRecord
         end
       end
     else
-      byebug
       facturas.reverse_each do |f|
-        byebug
         valor_fact = (f["valor"] + f["iva"]).to_i
         dfactura = DetalleFactura.where(factura_id: f["id"])
         dfactura.reverse_each do |df|
-          byebug
           valor_df = (df["valor"] + df["iva"]).to_i
           pagos.reverse_each do |p|
             abonos = Abono.where(pago_id: p["id"])
             abonos.reverse_each do |a|
-              byebug
               if f["id"] == a["factura_id"] && df["concepto_id"] == a["concepto_id"]
                 valor_fact = valor_fact - a["abono"].to_i
                 valor_df = valor_df - a["abono"].to_i
@@ -209,7 +197,6 @@ class Pago < ApplicationRecord
             end
           end
           if valor_df != 0
-            byebug
             fecha1 = Pago.formato_fecha(f["fechatrn"])
             fecha2 = Pago.formato_fecha(f["fechaven"])
             detalle_facts[i] = { 'concepto' => concepto.codigo, 'desc' => concepto.nombre, 

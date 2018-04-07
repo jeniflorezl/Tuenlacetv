@@ -34,7 +34,6 @@ class Senal < ApplicationRecord
   private
 
   def self.afiliacion_tv(senal, entidad, valorAfiTv, valorDcto, tarifaTv, tecnico)
-    byebug
     ultimo = 0
     conceptord = Concepto.find(11)
     conceptoplant = Concepto.find(3)
@@ -128,7 +127,6 @@ class Senal < ApplicationRecord
 
 
   def self.afiliacion_int(senal, entidad, valorAfiInt, valorDcto, tarifaInt, tecnico)
-    byebug
     ultimo = 0
     conceptord = Concepto.find(12)
     conceptoplant = Concepto.find(4)

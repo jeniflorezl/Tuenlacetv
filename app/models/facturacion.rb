@@ -18,7 +18,6 @@ class Facturacion < ApplicationRecord
     i = 0
     ban = 0
     notas_fact = NotaFact.all
-    byebug
     notas_fact.each do |nota|
       fecha_ela = nota["fechaElaboracion"]
       if  i == 1 && fecha_ela != fact_generadas[i-1]['f_elaboracion']
@@ -52,13 +51,11 @@ class Facturacion < ApplicationRecord
   end
 
   def self.generar_facturacion(tipo_fact, f_elaboracion, f_inicio, f_fin, f_vence, f_corte, f_vencidos, observa, zona, usuario_id)
-    byebug
     observa = observa.upcase! unless observa == observa.upcase
     fech_e = f_elaboracion.split('/')
     resp = 0
     resp1 = 0
     respuesta = 0
-    byebug
     notasfact = NotaFact.where("(SELECT DATEPART(year, fechaElaboracion)) = #{fech_e[2]} and (SELECT DATEPART(month, fechaElaboracion)) = #{fech_e[1]}")
     unless notasfact.blank?
       if notasfact[0]["zona_id"] == nil && zona == 'Todos'
@@ -121,7 +118,6 @@ class Facturacion < ApplicationRecord
         senales.each do |senal|
           plantillas = PlantillaFact.where("concepto_id = #{concepto_tv.id} and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
-            byebug
             ban = 0
             fecha_elaboracion = f_elaboracion
             if plantilla.estado_id == estado
@@ -178,7 +174,6 @@ class Facturacion < ApplicationRecord
                     dias = 30
                   end
                   if senal.entidad.persona.condicionfisica == 'D'
-                    byebug
                     porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
                     descuento = valor_mens * (porcentaje.to_f / 100)
                     valor_mens = valor_mens - descuento
@@ -263,10 +258,8 @@ class Facturacion < ApplicationRecord
           end
         end
         senales.each do |senal|
-          byebug
           plantillas = PlantillaFact.where("concepto_id = #{concepto_int.id} and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
-            byebug
             ban = 0
             fecha_elaboracion = f_elaboracion
             if plantilla.estado_id == estado
@@ -283,7 +276,6 @@ class Facturacion < ApplicationRecord
                 detallefact = ''
                 unless factura.blank?
                   factura.each do |row|
-                    byebug
                     detallefact = DetalleFactura.where(nrofact: row["nrofact"])
                     if detallefact[0]["concepto_id"] == concepto_int.id
                       fact_int = 1
@@ -403,7 +395,6 @@ class Facturacion < ApplicationRecord
           end
         end
         senales.each do |senal|
-          byebug
           plantillas = PlantillaFact.where("concepto_id <> '#{concepto_tv.id}' and concepto_id <> '#{concepto_int.id}' and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
             ban = 0
@@ -546,7 +537,6 @@ class Facturacion < ApplicationRecord
         senales.each do |senal|
           plantillas = PlantillaFact.where("entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
-            byebug
             ban = 0
             fecha_elaboracion = f_elaboracion
             concepto_id = plantilla.concepto_id
@@ -608,7 +598,6 @@ class Facturacion < ApplicationRecord
                     dias = 30
                   end
                   if concepto_id == concepto_tv.id
-                    byebug
                     observacion_d = 'TELEVISION'
                     if senal.entidad.persona.condicionfisica == 'D'
                       porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
@@ -708,7 +697,6 @@ class Facturacion < ApplicationRecord
   end
 
   def self.factura_manual(tipo_facturacion, servicio_id, f_elaboracion, f_inicio, f_fin, entidad_id, valor_fact, observa, usuario_id)
-    byebug
     respuesta = 0
     observa = observa.upcase! unless observa == observa.upcase
     t = Time.now
@@ -717,7 +705,6 @@ class Facturacion < ApplicationRecord
     fecha_actual_m = t.strftime "%m"
     fecha_actual_a = t.strftime "%Y"
     if fecha_inicio[2] == fecha_actual_a && fecha_inicio[1] == fecha_actual_m
-      byebug
       entidad = Entidad.find(entidad_id)
       fecha1 = Date.parse f_fin
       mes = fecha1.month
@@ -753,7 +740,6 @@ class Facturacion < ApplicationRecord
           end
         end
         if fact != 1
-          byebug
           if consecutivos == 'S'
             query = <<-SQL 
             SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=#{doc_tv};

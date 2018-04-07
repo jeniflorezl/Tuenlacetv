@@ -8,7 +8,5 @@ json.detalle_facturas do
         json.valor d["valor"]
         json.iva d["iva"]
         json.saldo d["saldo"]
-        json.abono d["abono"]
-        json.total d["total"]
     end
 end
