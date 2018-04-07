@@ -11,8 +11,6 @@ class Pago < ApplicationRecord
   validates :entidad, :documento, :nropago, :fechatrn, :valor, :estado, 
   :forma_pago, :banco, :usuario, presence: true #obligatorio
 
-  @valor_total = 0
-
   private
 
   def self.generar_pago(entidad_id, documento_id, fechatrn, valor, observacion, forma_pago_id,
@@ -208,7 +206,6 @@ class Pago < ApplicationRecord
               'nrodcto' => f["nrofact"], 'fechatrn' => fecha1, 'fechaven' => fecha2,
               'valor' => df["valor"], 'iva' => df["iva"], 'saldo' => valor_fact, 'abono' => 0,
               'total' => 0 }
-            @valor_total = @valor_total + valor_fact
           i += 1
           end
         end
@@ -221,8 +218,12 @@ class Pago < ApplicationRecord
     detalle_facts
   end
 
-  def self.valor_total
-    @valor_total
+  def self.valor_total(detalle_facts)
+    valor_total = 0
+    detalle_facts.each do |d|
+      valor_total = valor_total + d["saldo"]
+    end
+    valor_total
   end
 
   def self.anular_pago(pago_id)
