@@ -11,6 +11,7 @@ module Api
                 SQL
                 @ordenes = Orden.connection.select_all(query)
                 @conceptos = Concepto.where(clase: 'O')
+                @tarifas = Tarifa.all
                 @tecnicos = Entidad.where(funcion_id: 7)
                 @empleados = Entidad.where(funcion_id: 2)
             end
@@ -41,39 +42,26 @@ module Api
                 end
             end
 
-            # DELETE /ordens/id
-            def destroy
-                if @orden
-                    @orden.destroy()
-                    render json: { status: :deleted }
-                else
-                    render json: { post: "not found" }
-                end
-            end
-
             private
 
             def set_orden
-                @orden = orden.find(params[:id])
+                query = <<-SQL 
+                SELECT * FROM ordenes WHERE id=#{params[:id]};
+                SQL
+                Orden.connection.clear_query_cache
+                @orden = Orden.connection.select_all(query)
             end
 
             # Me busca la orden por el id o el nombre
             def set_orden_buscar
                 campo = params[:campo]
                 valor = params[:valor]
-                if @campo == 'id'
-                    @orden = orden.find(valor)
-                else
-                    @orden = orden.where("nombre LIKE '%#{valor}%'")
-                end
+                query = <<-SQL 
+                SELECT * FROM VwOrdenes WHERE #{campo} LIKE '%#{valor}%';
+                SQL
+                @orden = Senal.connection.select_all(query)
                 @orden = [*@orden]
             end
-                
-            #Le coloco los parametros que necesito de la orden para crearla y actualizarla
-
-            def orden_params
-                params.require(:orden).permit(:ciudad_id, :nombre, :usuario_id)
-            end 
         end
     end
 end
