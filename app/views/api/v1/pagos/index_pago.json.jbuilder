@@ -13,10 +13,21 @@ json.detalle_facturas do
     end
 end
 
-json.documentos do
-    json.array! @documentos do |documento|
-        json.id documento.id
-        json.abreviatura documento.abreviatura
+json.conceptos do
+    json.array! @conceptos do |concepto|
+        json.id concepto.id
+        json.abreviatura concepto.abreviatura
+    end
+end
+
+json.cobradores do
+    json.array! @cobradores do |cobrador|
+        json.id cobrador.id
+        if cobrador.persona.nombre2.blank?
+            json.nombres cobrador.persona.nombre1 + ' ' + cobrador.persona.apellido1 + ' ' + cobrador.persona.apellido2
+        else
+            json.nombres cobrador.persona.nombre1 + ' ' + cobrador.persona.nombre2 + ' ' + cobrador.persona.apellido1 + ' ' + cobrador.persona.apellido2
+        end
     end
 end
 

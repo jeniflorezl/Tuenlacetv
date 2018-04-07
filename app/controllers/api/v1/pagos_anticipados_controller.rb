@@ -13,8 +13,9 @@ module Api
             end
 
             def index_info
-                @documentos = Documento.where(abreviatura: 'REC')
-                @formas_pago_anticipado = FormaPago.all
+                @conceptos = Concepto.where(abreviatura: 'REC')
+                @cobradores = Entidad.where(funcion_id: 8)
+                @formas_pago = FormaPago.all
                 @bancos = Banco.all
             end
             

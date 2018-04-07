@@ -14,7 +14,8 @@ module Api
 
             def index_pago
                 @detalle_facts = Pago.detalle_facturas(params[:entidad_id])
-                @documentos = Documento.where(clase: 'P')
+                @conceptos = Concepto.where(clase: 'P')
+                @cobradores = Entidad.where(funcion_id: 8)
                 @formas_pago = FormaPago.all
                 @bancos = Banco.all
             end
