@@ -10,7 +10,10 @@ module Api
                 SELECT * FROM VwPagosAnticipados;
                 SQL
                 @pagos_anticipados = Pago.connection.select_all(query)
-                @documentos = Documento.all
+            end
+
+            def index_info
+                @documentos = Documento.where(abreviatura: 'REC')
                 @formas_pago_anticipado = FormaPago.all
                 @bancos = Banco.all
             end
@@ -19,7 +22,7 @@ module Api
             def create
                 respuesta = 0
                 respuesta = Pago.generar_pago_anticipado(params[:entidad_id], params[:documento_id], params[:servicio_id],
-                    params[:fechatrn], params[:fechapxa], params[:cuotas], params[:valor], params[:observacion], 
+                    params[:fechatrn], params[:fechapxa], params[:valor], params[:observacion], 
                     params[:forma_pago_id], params[:banco_id], params[:cobrador_id], params[:usuario_id])
                 case respuesta
                 when 1

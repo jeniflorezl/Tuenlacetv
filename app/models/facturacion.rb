@@ -53,7 +53,7 @@ class Facturacion < ApplicationRecord
 
   def self.generar_facturacion(tipo_fact, f_elaboracion, f_inicio, f_fin, f_vence, f_corte, f_vencidos, observa, zona, usuario_id)
     byebug
-    observa = observa.upcase!
+    observa = observa.upcase! unless observa == observa.upcase
     fech_e = f_elaboracion.split('/')
     resp = 0
     resp1 = 0
@@ -96,12 +96,15 @@ class Facturacion < ApplicationRecord
       pref = Resolucion.last.prefijo
       consecutivos = Parametro.find_by(descripcion: 'Maneja consecutivos separados').valor
       estadoD = Estado.find_by(abreviatura: 'PE')
+      estadoD_1 = Estado.find_by(abreviatura: 'PA')
+      estado_fact = estadoD.id
       doc_tv = Documento.find_by(nombre: 'FACTURA DE VENTA TELEVISION').id
       doc_int = Documento.find_by(nombre: 'FACTURA DE VENTA INTERNET').id
       f_fact = Time.new(fech_e[2], fech_e[1], fech_e[0])
       nombre_mes = Facturacion.mes(f_fact.strftime("%B"))
       result = 0
       result1 = 0
+      ban = 0
       if zona == 'Todos'
         senales = Senal.where(tipo_facturacion_id: tipo_fact)
         NotaFact.create(fechaElaboracion: f_elaboracion, fechaInicio: f_inicio, fechaFin: f_fin,
@@ -119,12 +122,13 @@ class Facturacion < ApplicationRecord
           plantillas = PlantillaFact.where("concepto_id = #{concepto_tv.id} and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
             byebug
+            ban = 0
             fecha_elaboracion = f_elaboracion
             if plantilla.estado_id == estado
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
                 tarifa = plantilla.tarifa.valor
                 query = <<-SQL 
-                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and fechatrn >= '01/#{mes}/#{ano}';
+                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes};
                 SQL
                 Facturacion.connection.clear_query_cache
                 factura = Facturacion.connection.select_all(query)
@@ -144,7 +148,7 @@ class Facturacion < ApplicationRecord
                 end
                 if detallefact.blank? || fact_tv != 1
                   query = <<-SQL 
-                  SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and fechatrn = '#{f_inicio}';
+                  SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and servicio_id=1;
                   SQL
                   Facturacion.connection.clear_query_cache
                   anticipo = Facturacion.connection.select_all(query)
@@ -164,7 +168,13 @@ class Facturacion < ApplicationRecord
                       dias = 30
                     end
                   else
-                    valor_mens = tarifa
+                    ban = 1
+                    if anticipo[0]["valor"] == tarifa
+                      valor_mens = tarifa
+                      estado_fact = estadoD_1.id
+                    else
+                      valor_mens = anticipo[0]["valor"]
+                    end
                     dias = 30
                   end
                   if senal.entidad.persona.condicionfisica == 'D'
@@ -196,24 +206,32 @@ class Facturacion < ApplicationRecord
                   end
                   facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: doc_tv, fechatrn: fecha_elaboracion,
                     fechaven: f_fin, valor: valor_mens, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
-                    estado_id: estadoD.id, observacion: observa, reporta: '1', usuario_id: usuario_id)
-                    if facturacion.save
-                      query = <<-SQL 
-                      SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact} and documento_id = #{doc_tv};
-                      SQL
-                      Facturacion.connection.clear_query_cache
-                      facturacion_id = Facturacion.connection.select_all(query)
-                      facturacion_id = (facturacion_id[0]["id"]).to_i
-                      detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
-                        prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_tv.id, cantidad: 1, 
-                        valor: facturacion.valor, porcentajeIva: iva_tv, iva: facturacion.iva, observacion: 'TELEVISION' + ' ' + nombre_mes,
-                        operacion: '+', usuario_id: usuario_id)
-                      if detallef.save
-                        result = 1
-                      else
-                        result1 = 2
-                      end
+                    estado_id: estado_fact, observacion: observa, reporta: '1', usuario_id: usuario_id)
+                  if facturacion.save
+                    query = <<-SQL 
+                    SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact} and documento_id = #{doc_tv};
+                    SQL
+                    Facturacion.connection.clear_query_cache
+                    facturacion_id = Facturacion.connection.select_all(query)
+                    facturacion_id = (facturacion_id[0]["id"]).to_i
+                    detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
+                      prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_tv.id, cantidad: 1, 
+                      valor: facturacion.valor, porcentajeIva: iva_tv, iva: facturacion.iva, observacion: 'TELEVISION' + ' ' + nombre_mes,
+                      operacion: '+', usuario_id: usuario_id)
+                    if detallef.save
+                      result = 1
+                    else
+                      result1 = 2
                     end
+                  end
+                  if ban == 1
+                    valor_total = valor_mens + iva
+                    query = <<-SQL 
+                    UPDATE pagos set valor = valor - #{valor_total} WHERE id = #{anticipo[0]["pago_id"]};
+                    UPDATE anticipos set valor = #{valor_total} WHERE id = #{anticipo[0]["id"]};
+                    SQL
+                    Facturacion.connection.select_all(query)
+                  end
                 else
                   fecha3 = Date.parse factura[j]["fechaven"].to_s
                   dias_fact = (fecha1 - fecha3).to_i + 1 
@@ -231,9 +249,10 @@ class Facturacion < ApplicationRecord
                       iva = valor_fact - valor_sin_iva
                       valor_fact = valor_sin_iva
                     end
+                    f_fin_d = Date.parse f_fin.to_s
                     query = <<-SQL 
-                    UPDATE facturacion set fechaven = #{f_fin}, valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = #{observa} WHERE nrofact = #{factura[j]["nrofact"]};
-                    UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_tv}, iva = #{iva}, observacion = 'TELEVISION' + ' ' + #{nombre_mes} WHERE nrofact = #{factura[j]["nrofact"]};
+                    UPDATE facturacion set fechaven = '#{f_fin_d}', valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = '#{observa}' WHERE nrofact = #{factura[j]["nrofact"]};
+                    UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_tv}, iva = #{iva}, observacion = 'TELEVISION' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]};
                     SQL
                     Facturacion.connection.select_all(query)
                     result = 1
@@ -247,12 +266,14 @@ class Facturacion < ApplicationRecord
           byebug
           plantillas = PlantillaFact.where("concepto_id = #{concepto_int.id} and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
+            byebug
+            ban = 0
             fecha_elaboracion = f_elaboracion
             if plantilla.estado_id == estado
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
                 tarifa = plantilla.tarifa.valor
                 query = <<-SQL 
-                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and fechatrn >= '01/#{mes}/#{ano}';
+                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes};
                 SQL
                 Facturacion.connection.clear_query_cache
                 factura = Facturacion.connection.select_all(query)
@@ -262,6 +283,7 @@ class Facturacion < ApplicationRecord
                 detallefact = ''
                 unless factura.blank?
                   factura.each do |row|
+                    byebug
                     detallefact = DetalleFactura.where(nrofact: row["nrofact"])
                     if detallefact[0]["concepto_id"] == concepto_int.id
                       fact_int = 1
@@ -271,18 +293,34 @@ class Facturacion < ApplicationRecord
                   end
                 end
                 if detallefact.blank? || fact_int != 1
-                  fecha2 = Date.parse plantilla.fechaini.to_s
-                  dias = (fecha1 - fecha2).to_i + 1
-                  if dias < 30
-                    if fecha1.month == 2
-                      valor_mens = tarifa
+                  query = <<-SQL 
+                  SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and servicio_id=2;
+                  SQL
+                  Facturacion.connection.clear_query_cache
+                  anticipo = Facturacion.connection.select_all(query)
+                  if anticipo.blank?
+                    fecha2 = Date.parse plantilla.fechaini.to_s
+                    dias = (fecha1 - fecha2).to_i + 1
+                    if dias < 30
+                      if fecha1.month == 2
+                        valor_mens = tarifa
+                      else
+                        valor_dia = tarifa / 30
+                        valor_mens = valor_dia * dias
+                      end
+                      fecha_elaboracion = fecha2
                     else
-                      valor_dia = tarifa / 30
-                      valor_mens = valor_dia * dias
+                      valor_mens = tarifa
+                      dias = 30
                     end
-                    fecha_elaboracion = fecha2
                   else
-                    valor_mens = tarifa
+                    ban = 1
+                    if anticipo[0]["valor"] == tarifa
+                      valor_mens = tarifa
+                      estado_fact = estadoD_1.id
+                    else
+                      valor_mens = anticipo[0]["valor"]
+                    end
                     dias = 30
                   end
                   if iva_int > 0
@@ -308,7 +346,7 @@ class Facturacion < ApplicationRecord
                   end
                   facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: doc_int, fechatrn: fecha_elaboracion,
                     fechaven: f_fin, valor: valor_mens, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
-                    estado_id: estadoD.id, observacion: observa, reporta: '1', usuario_id: usuario_id)
+                    estado_id: estado_fact, observacion: observa, reporta: '1', usuario_id: usuario_id)
                   if facturacion.save
                     query = <<-SQL 
                     SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact} and documento_id = #{doc_int};
@@ -325,6 +363,14 @@ class Facturacion < ApplicationRecord
                     else
                       result1 = 2
                     end
+                  end
+                  if ban == 1
+                    valor_total = valor_mens + iva
+                    query = <<-SQL 
+                    UPDATE pagos set valor = valor - #{valor_total} WHERE id = #{anticipo[0]["pago_id"]};
+                    UPDATE anticipos set valor = #{valor_total} WHERE id = #{anticipo[0]["id"]};
+                    SQL
+                    Facturacion.connection.select_all(query)
                   end
                 else
                   fecha3 = Date.parse factura[j]["fechaven"].to_s
@@ -343,9 +389,10 @@ class Facturacion < ApplicationRecord
                       iva = valor_fact - valor_sin_iva
                       valor_fact = valor_sin_iva
                     end
+                    f_fin_d = Date.parse f_fin.to_s
                     query = <<-SQL 
-                    UPDATE facturacion set fechaven = #{f_fin}, valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = #{observa} WHERE nrofact = #{factura[j]["nrofact"]};
-                    UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_int}, iva = #{iva}, observacion = 'INTERNET' + ' ' + #{nombre_mes} WHERE nrofact = #{factura[j]["nrofact"]};
+                    UPDATE facturacion set fechaven = '#{f_fin_d}', valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = '#{observa}' WHERE nrofact = #{factura[j]["nrofact"]};
+                    UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_int}, iva = #{iva}, observacion = 'INTERNET' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]};
                     SQL
                     Facturacion.connection.select_all(query)
                     result = 1
@@ -359,6 +406,7 @@ class Facturacion < ApplicationRecord
           byebug
           plantillas = PlantillaFact.where("concepto_id <> '#{concepto_tv.id}' and concepto_id <> '#{concepto_int.id}' and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
+            ban = 0
             fecha_elaboracion = f_elaboracion
             concepto = plantilla.concepto_id
             iva_cpto = Concepto.find(concepto).porcentajeIva
@@ -366,7 +414,7 @@ class Facturacion < ApplicationRecord
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
                 tarifa = plantilla.tarifa.valor
                 query = <<-SQL 
-                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and fechatrn >= '01/#{mes}/#{ano}';
+                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes};
                 SQL
                 Facturacion.connection.clear_query_cache
                 factura = Facturacion.connection.select_all(query)
@@ -385,18 +433,34 @@ class Facturacion < ApplicationRecord
                   end
                 end
                 if detallefact.blank? || fact_concepto != 1
-                  fecha2 = Date.parse plantilla.fechaini.to_s
-                  dias = (fecha1 - fecha2).to_i + 1
-                  if dias < 30
-                    if fecha1.month == 2
-                      valor_mens = tarifa
+                  query = <<-SQL 
+                  SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and servicio_id=2;
+                  SQL
+                  Facturacion.connection.clear_query_cache
+                  anticipo = Facturacion.connection.select_all(query)
+                  if anticipo.blank?
+                    fecha2 = Date.parse plantilla.fechaini.to_s
+                    dias = (fecha1 - fecha2).to_i + 1
+                    if dias < 30
+                      if fecha1.month == 2
+                        valor_mens = tarifa
+                      else
+                        valor_dia = tarifa / 30
+                        valor_mens = valor_dia * dias
+                      end
+                      fecha_elaboracion = fecha2
                     else
-                      valor_dia = tarifa / 30
-                      valor_mens = valor_dia * dias
+                      valor_mens = tarifa
+                      dias = 30
                     end
-                    fecha_elaboracion = fecha2
                   else
-                    valor_mens = tarifa
+                    ban = 1
+                    if anticipo[0]["valor"] == tarifa
+                      valor_mens = tarifa
+                      estado_fact = estadoD_1.id
+                    else
+                      valor_mens = anticipo[0]["valor"]
+                    end
                     dias = 30
                   end
                   if iva_cpto > 0
@@ -422,7 +486,7 @@ class Facturacion < ApplicationRecord
                   end
                   facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: doc_tv, fechatrn: fecha_elaboracion,
                     fechaven: f_fin, valor: valor_mens, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
-                    estado_id: estadoD.id, observacion: observa, reporta: '1', usuario_id: usuario_id)
+                    estado_id: estado_fact, observacion: observa, reporta: '1', usuario_id: usuario_id)
                   if facturacion.save
                     query = <<-SQL 
                     SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact} and documento_id = #{doc_tv};
@@ -439,6 +503,14 @@ class Facturacion < ApplicationRecord
                     else
                       result1 = 2
                     end
+                  end
+                  if ban == 1
+                    valor_total = valor_mens + iva
+                    query = <<-SQL 
+                    UPDATE pagos set valor = valor - #{valor_total} WHERE id = #{anticipo[0]["pago_id"]};
+                    UPDATE anticipos set valor = #{valor_total} WHERE id = #{anticipo[0]["id"]};
+                    SQL
+                    Facturacion.connection.select_all(query)
                   end
                 else
                   fecha3 = Date.parse factura[j]["fechaven"].to_s
@@ -457,9 +529,10 @@ class Facturacion < ApplicationRecord
                       iva = valor_fact - valor_sin_iva
                       valor_fact = valor_sin_iva
                     end
+                    f_fin_d = Date.parse f_fin.to_s
                     query = <<-SQL 
-                    UPDATE facturacion set fechaven = #{f_fin}, valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = #{observa} WHERE nrofact = #{factura[j]["nrofact"]};
-                    UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_cpto}, iva = #{iva}, observacion: #{observa} + ' ' + #{nombre_mes} WHERE nrofact = #{factura[j]["nrofact"]};
+                    UPDATE facturacion set fechaven = '#{f_fin_d}', valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = '#{observa}' WHERE nrofact = #{factura[j]["nrofact"]};
+                    UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_cpto}, iva = #{iva}, observacion: '#{observa}' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]};
                     SQL
                     Facturacion.connection.select_all(query)
                     result = 1
@@ -474,6 +547,7 @@ class Facturacion < ApplicationRecord
           plantillas = PlantillaFact.where("entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
             byebug
+            ban = 0
             fecha_elaboracion = f_elaboracion
             concepto_id = plantilla.concepto_id
             concepto = Concepto.find(concepto_id)
@@ -484,7 +558,7 @@ class Facturacion < ApplicationRecord
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
                 tarifa = plantilla.tarifa.valor
                 query = <<-SQL 
-                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and fechatrn >= '01/#{mes}/#{ano}';
+                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes};
                 SQL
                 Facturacion.connection.clear_query_cache
                 factura = Facturacion.connection.select_all(query)
@@ -503,18 +577,34 @@ class Facturacion < ApplicationRecord
                   end
                 end
                 if detallefact.blank? || fact_concepto != 1
-                  fecha2 = Date.parse plantilla.fechaini.to_s
-                  dias = (fecha1 - fecha2).to_i + 1
-                  if dias < 30
-                    if fecha1.month == 2
-                      valor_mens = tarifa
+                  query = <<-SQL 
+                  SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and servicio_id=2;
+                  SQL
+                  Facturacion.connection.clear_query_cache
+                  anticipo = Facturacion.connection.select_all(query)
+                  if anticipo.blank?
+                    fecha2 = Date.parse plantilla.fechaini.to_s
+                    dias = (fecha1 - fecha2).to_i + 1
+                    if dias < 30
+                      if fecha1.month == 2
+                        valor_mens = tarifa
+                      else
+                        valor_dia = tarifa / 30
+                        valor_mens = valor_dia * dias
+                      end
+                      fecha_elaboracion = fecha2
                     else
-                      valor_dia = tarifa / 30
-                      valor_mens = valor_dia * dias
+                      valor_mens = tarifa
+                      dias = 30
                     end
-                    fecha_elaboracion = fecha2
                   else
-                    valor_mens = tarifa
+                    ban = 1
+                    if anticipo[0]["valor"] == tarifa
+                      valor_mens = tarifa
+                      estado_fact = estadoD_1.id
+                    else
+                      valor_mens = anticipo[0]["valor"]
+                    end
                     dias = 30
                   end
                   if concepto_id == concepto_tv.id
@@ -552,7 +642,7 @@ class Facturacion < ApplicationRecord
                   end
                   facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: doc_fact, fechatrn: fecha_elaboracion,
                     fechaven: f_fin, valor: valor_mens, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
-                    estado_id: estadoD.id, observacion: observa, reporta: '1', usuario_id: usuario_id)
+                    estado_id: estado_fact, observacion: observa, reporta: '1', usuario_id: usuario_id)
                   if facturacion.save
                     query = <<-SQL 
                     SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact} and documento_id = #{doc_fact};
@@ -569,6 +659,14 @@ class Facturacion < ApplicationRecord
                     else
                       result1 = 2
                     end
+                  end
+                  if ban == 1
+                    valor_total = valor_mens + iva
+                    query = <<-SQL 
+                    UPDATE pagos set valor = valor - #{valor_total} WHERE id = #{anticipo[0]["pago_id"]};
+                    UPDATE anticipos set valor = #{valor_total} WHERE id = #{anticipo[0]["id"]};
+                    SQL
+                    Facturacion.connection.select_all(query)
                   end
                 else
                   fecha3 = Date.parse factura[j]["fechaven"].to_s
@@ -587,9 +685,10 @@ class Facturacion < ApplicationRecord
                       iva = valor_fact - valor_sin_iva
                       valor_fact = valor_sin_iva
                     end
+                    f_fin_d = Date.parse f_fin.to_s
                     query = <<-SQL 
-                    UPDATE facturacion set fechaven = #{f_fin}, valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = #{observa} WHERE nrofact = #{factura[j]["nrofact"]};
-                    UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_cpto}, iva = #{iva}, observacion = #{observacion_d} + ' ' + #{nombre_mes} WHERE nrofact = #{factura[j]["nrofact"]};
+                    UPDATE facturacion set fechaven = '#{f_fin_d}', valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = '#{observa}' WHERE nrofact = #{factura[j]["nrofact"]};
+                    UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_cpto}, iva = #{iva}, observacion = '#{observacion_d}' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]};
                     SQL
                     Facturacion.connection.select_all(query)
                     result = 1 
@@ -611,7 +710,7 @@ class Facturacion < ApplicationRecord
   def self.factura_manual(tipo_facturacion, servicio_id, f_elaboracion, f_inicio, f_fin, entidad_id, valor_fact, observa, usuario_id)
     byebug
     respuesta = 0
-    observa = observa.upcase!
+    observa = observa.upcase! unless observa == observa.upcase
     t = Time.now
     nombre_mes = Facturacion.mes(t.strftime("%B"))
     fecha_inicio = f_inicio.split('/')

@@ -15,7 +15,7 @@ class Pago < ApplicationRecord
 
   def self.generar_pago(entidad_id, documento_id, fechatrn, valor, observacion, forma_pago_id,
     banco_id, cobrador_id, detalle, usuario_id)
-    observacion = observacion.upcase!
+    observacion = observacion.upcase! unless observacion == observacion.upcase
     query = <<-SQL 
     SELECT MAX(nropago) as ultimo FROM pagos;
     SQL
@@ -65,12 +65,14 @@ class Pago < ApplicationRecord
       end
   end
 
-  def self.generar_pago_anticipado(entidad_id, documento_id, servicio_id, fechatrn, fechapxa, cuotas, valor, observacion, forma_pago_id,
+  def self.generar_pago_anticipado(entidad_id, documento_id, servicio_id, fechatrn, fechapxa, valor, observacion, forma_pago_id,
     banco_id, cobrador_id, usuario_id)
     byebug
     ban = 0
     resp = 0
-    observacion = observacion.upcase!
+    concepto = 0
+    valor_abono = 0
+    observacion = observacion.upcase! unless observacion == observacion.upcase
     serv_tv = Servicio.find_by(nombre: 'TELEVISION').id
     serv_int = Servicio.find_by(nombre: 'INTERNET').id
     query = <<-SQL 
@@ -82,10 +84,12 @@ class Pago < ApplicationRecord
     if servicio_id == serv_tv
       if saldo_tv == 0
         ban = 1
+        concepto = 3
       end
     else
       if saldo_int == 0
         ban = 1
+        concepto = 4
       end
     end
     if ban == 1
@@ -100,7 +104,7 @@ class Pago < ApplicationRecord
         ultimo = (ultimo[0]["ultimo"]).to_i + 1
       end
       pago = Pago.new(entidad_id: entidad_id, documento_id: documento_id, nropago: ultimo, fechatrn: fechatrn,
-        valor: valor, estado_id: 9, observacion: observacion, forma_pago_id: forma_pago_id,
+        valor: valor, estado_id: 6, observacion: observacion, forma_pago_id: forma_pago_id,
         banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
       if pago.save
         query = <<-SQL 
@@ -110,14 +114,20 @@ class Pago < ApplicationRecord
         pago_id = Pago.connection.select_all(query)
         pago_id = (pago_id[0]["id"]).to_i
         byebug
-        valor_anticipo = valor / cuotas
+        plantilla = PlantillaFact.where("concepto_id = #{concepto} and entidad_id = #{entidad_id}")
+        tarifa = Tarifa.find(plantilla[0]["tarifa_id"]).valor
         fecha1 = Date.parse fechapxa
         fecha2 = fecha1 + 29
-        for i in(1..cuotas)
+        while valor > 0
           byebug
-          anticipo = Anticipo.new(entidad_id: entidad_id, servicio_id: servicio_id, pago_id: pago_id, doc_pagos_id: pago.documento_id,
-            nropago: pago.nropago, fechatrn: fecha1, fechaven: fecha2, valor: valor_anticipo, usuario_id: pago.usuario_id)
-          anticipo.save
+          if valor >= tarifa
+            valor_abono = tarifa
+          else
+            valor_abono = valor
+          end
+          anticipo = Anticipo.create(entidad_id: entidad_id, servicio_id: servicio_id, pago_id: pago_id, doc_pagos_id: pago.documento_id,
+            nropago: pago.nropago, fechatrn: fecha1, fechaven: fecha2, valor: valor_abono, usuario_id: pago.usuario_id)
+          valor = valor - valor_abono
           fecha1 = fecha1 + 30
           if fecha1.day == 31
             fecha1 = fecha1 + 1
