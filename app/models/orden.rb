@@ -8,8 +8,8 @@ class Orden < ApplicationRecord
 
   private
 
-  def self.generar_orden(entidad_id, concepto_id, fechatrn, fechaven, valor, observacion, tecnico_id, 
+  def self.generar_orden(entidad_id, concepto_id, fechatrn, fechaven, valor, detalle, observacion, tecnico_id, 
     solicita, usuario_id)
-
+    observacion = observacion.upcase! unless observacion == observacion.upcase
   end
 end
