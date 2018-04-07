@@ -17,6 +17,7 @@ Rails.application.routes.draw do
       resources :facturacion
       resources :pagos
       resources :pagos_anticipados
+      resources :ordenes
       get 'paises/bd/:db', to: 'paises#index'
       get 'paises/:campo/:valor/:db', to: 'paises#show'
       get 'departamentos/bd/:db', to: 'departamentos#index'
