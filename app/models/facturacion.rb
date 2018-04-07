@@ -227,7 +227,7 @@ class Facturacion < ApplicationRecord
                   if ban == 1
                     valor_total = valor_mens + iva
                     query = <<-SQL 
-                    UPDATE pagos set valor = valor - #{valor_total} WHERE id = #{anticipo[0]["pago_id"]};
+                    --UPDATE pagos set valor = valor - #{valor_total} WHERE id = #{anticipo[0]["pago_id"]};
                     UPDATE anticipos set valor = #{valor_total} WHERE id = #{anticipo[0]["id"]};
                     SQL
                     Facturacion.connection.select_all(query)
@@ -367,7 +367,7 @@ class Facturacion < ApplicationRecord
                   if ban == 1
                     valor_total = valor_mens + iva
                     query = <<-SQL 
-                    UPDATE pagos set valor = valor - #{valor_total} WHERE id = #{anticipo[0]["pago_id"]};
+                    --UPDATE pagos set valor = valor - #{valor_total} WHERE id = #{anticipo[0]["pago_id"]};
                     UPDATE anticipos set valor = #{valor_total} WHERE id = #{anticipo[0]["id"]};
                     SQL
                     Facturacion.connection.select_all(query)
@@ -507,7 +507,7 @@ class Facturacion < ApplicationRecord
                   if ban == 1
                     valor_total = valor_mens + iva
                     query = <<-SQL 
-                    UPDATE pagos set valor = valor - #{valor_total} WHERE id = #{anticipo[0]["pago_id"]};
+                    --UPDATE pagos set valor = valor - #{valor_total} WHERE id = #{anticipo[0]["pago_id"]};
                     UPDATE anticipos set valor = #{valor_total} WHERE id = #{anticipo[0]["id"]};
                     SQL
                     Facturacion.connection.select_all(query)
@@ -663,7 +663,7 @@ class Facturacion < ApplicationRecord
                   if ban == 1
                     valor_total = valor_mens + iva
                     query = <<-SQL 
-                    UPDATE pagos set valor = valor - #{valor_total} WHERE id = #{anticipo[0]["pago_id"]};
+                    --UPDATE pagos set valor = valor - #{valor_total} WHERE id = #{anticipo[0]["pago_id"]};
                     UPDATE anticipos set valor = #{valor_total} WHERE id = #{anticipo[0]["id"]};
                     SQL
                     Facturacion.connection.select_all(query)
