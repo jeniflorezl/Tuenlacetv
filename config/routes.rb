@@ -61,6 +61,7 @@ Rails.application.routes.draw do
       get 'pagos_anticipados/:campo/:valor/:db', to: 'pagos_anticipados#show'
       post 'pagos_anticipados/anular_pago/:id', to: 'pagos#anular'
       get 'ordenes/bd/:db', to: 'ordenes#index'
+      get 'ordenes/info/bd/:db', to: 'ordenes#index_info'
       post 'signin', to: 'sesion#create'
       delete 'signout', to: 'sesion#destroy'
     end

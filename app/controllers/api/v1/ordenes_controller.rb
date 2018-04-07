@@ -10,10 +10,16 @@ module Api
                 SELECT * FROM VwOrdenes;
                 SQL
                 @ordenes = Orden.connection.select_all(query)
+            end
+
+            # GET /info ordenes
+            def index_info
                 @conceptos = Concepto.where(clase: 'O')
-                @tarifas = Tarifa.all
+                @tarifas = Tarifa.where(estado_id: 1)
                 @tecnicos = Entidad.where(funcion_id: 7)
                 @empleados = Entidad.where(funcion_id: 2)
+                @grupos = Grupo.all
+                @articulos = Articulo.all
             end
 
             # GET /ordens/id

@@ -28,25 +28,3 @@ json.ordenes do
         json.cobrador orden["cobrador"]
     end
 end
-
-json.tecnicos do
-    json.array! @tecnicos do |tecnico|
-        json.id tecnico.id
-        if tecnico.persona.nombre2.blank?
-            json.nombres tecnico.persona.nombre1 + ' ' + tecnico.persona.apellido1 + ' ' + tecnico.persona.apellido2
-        else
-            json.nombres tecnico.persona.nombre1 + ' ' + tecnico.persona.nombre2 + ' ' + tecnico.persona.apellido1 + ' ' + tecnico.persona.apellido2
-        end
-    end
-end
-
-json.empleados do
-    json.array! @empleados do |empleado|
-        json.id empleado.id
-        if empleado.persona.nombre2.blank?
-            json.nombres empleado.persona.nombre1 + ' ' + empleado.persona.apellido1 + ' ' + empleado.persona.apellido2
-        else
-            json.nombres empleado.persona.nombre1 + ' ' + empleado.persona.nombre2 + ' ' + empleado.persona.apellido1 + ' ' + empleado.persona.apellido2
-        end
-    end
-end
