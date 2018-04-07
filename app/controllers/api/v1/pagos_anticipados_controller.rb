@@ -13,6 +13,7 @@ module Api
             end
 
             def index_info
+                @servicios = Servicio.all
                 @conceptos = Concepto.where(abreviatura: 'REC')
                 @cobradores = Entidad.where(funcion_id: 8)
                 @formas_pago = FormaPago.all

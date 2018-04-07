@@ -1,3 +1,10 @@
+json.servicios do
+    json.array! @servicios do |servicio|
+        json.id servicio.id
+        json.abreviatura servicio.nombre
+    end
+end
+
 json.conceptos do
     json.array! @conceptos do |concepto|
         json.id concepto.id
