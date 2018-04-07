@@ -211,6 +211,7 @@ class Pago < ApplicationRecord
         end
       end 
     end
+    detalle_facts = detalle_facts.reverse
     detalle_facts
   end
 
