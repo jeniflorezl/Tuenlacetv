@@ -139,7 +139,6 @@ class Pago < ApplicationRecord
   end
 
   def self.detalle_facturas(entidad_id)
-    byebug
     detalle_facts = Array.new
     i = 0
     ban = 0
@@ -174,13 +173,11 @@ class Pago < ApplicationRecord
       end
     else
       facturas.reverse_each do |f|
-        byebug
         valor_fact = (f["valor"] + f["iva"]).to_i
         dfactura = DetalleFactura.where(factura_id: f["id"])
         dfactura.reverse_each do |df|
           valor_df = (df["valor"] + df["iva"]).to_i
           pagos.reverse_each do |p|
-            byebug
             abonos = Abono.where(pago_id: p["id"])
             abonos.reverse_each do |a|
               if f["id"] == a["factura_id"] && df["concepto_id"] == a["concepto_id"]
