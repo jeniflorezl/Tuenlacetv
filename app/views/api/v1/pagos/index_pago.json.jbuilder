@@ -13,6 +13,8 @@ json.detalle_facturas do
     end
 end
 
+json.valor_total @valor_total
+
 json.conceptos do
     json.array! @conceptos do |concepto|
         json.id concepto.id

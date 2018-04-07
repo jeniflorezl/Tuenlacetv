@@ -11,6 +11,8 @@ class Pago < ApplicationRecord
   validates :entidad, :documento, :nropago, :fechatrn, :valor, :estado, 
   :forma_pago, :banco, :usuario, presence: true #obligatorio
 
+  @valor_total = 0
+
   private
 
   def self.generar_pago(entidad_id, documento_id, fechatrn, valor, observacion, forma_pago_id,
@@ -139,6 +141,7 @@ class Pago < ApplicationRecord
   end
 
   def self.detalle_facturas(entidad_id)
+    byebug
     detalle_facts = Array.new
     i = 0
     ban = 0
@@ -173,11 +176,13 @@ class Pago < ApplicationRecord
       end
     else
       facturas.reverse_each do |f|
+        byebug
         valor_fact = (f["valor"] + f["iva"]).to_i
         dfactura = DetalleFactura.where(factura_id: f["id"])
         dfactura.reverse_each do |df|
           valor_df = (df["valor"] + df["iva"]).to_i
           pagos.reverse_each do |p|
+            byebug
             abonos = Abono.where(pago_id: p["id"])
             abonos.reverse_each do |a|
               if f["id"] == a["factura_id"] && df["concepto_id"] == a["concepto_id"]
@@ -203,6 +208,7 @@ class Pago < ApplicationRecord
               'nrodcto' => f["nrofact"], 'fechatrn' => fecha1, 'fechaven' => fecha2,
               'valor' => df["valor"], 'iva' => df["iva"], 'saldo' => valor_fact, 'abono' => 0,
               'total' => 0 }
+            @valor_total = @valor_total + valor_fact
           i += 1
           end
         end
@@ -213,6 +219,10 @@ class Pago < ApplicationRecord
     end
     detalle_facts = detalle_facts.reverse
     detalle_facts
+  end
+
+  def self.valor_total
+    @valor_total
   end
 
   def self.anular_pago(pago_id)

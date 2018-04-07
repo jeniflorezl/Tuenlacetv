@@ -14,6 +14,7 @@ module Api
 
             def index_pago
                 @detalle_facts = Pago.detalle_facturas(params[:entidad_id])
+                @valor_total = Pago.valor_total
                 @conceptos = Concepto.where(clase: 'P')
                 @cobradores = Entidad.where(funcion_id: 8)
                 @formas_pago = FormaPago.all
