@@ -11,6 +11,10 @@ module Api
                 @tipo_facturacion = TipoFacturacion.all
                 @zonas = Zona.all
             end
+
+            def index_facturas
+                @detalle_facts = Pago.detalle_facturas(params[:entidad_id])
+            end
         
             # GET /facturaciones/id
             def show

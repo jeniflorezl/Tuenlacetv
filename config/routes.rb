@@ -48,6 +48,7 @@ Rails.application.routes.draw do
       get 'tipo_facturacion/:campo/:valor/:db', to: 'tipo_facturacion#show'
       get 'facturacion/bd/:db', to: 'facturacion#index'
       get 'facturacion/info/bd/:db', to: 'facturacion#info_fact_manual'
+      get 'facturacion/facturas/:entidad_id/:db', to: 'facturacion#index_facturas'
       post 'facturacion/factura_manual', to: 'facturacion#create_factura'
       get 'facturacion/generar_impresion/:db', to: 'facturacion#generar_facturacion'
       post 'facturacion/anular_factura', to: 'facturacion#anular_factura'
