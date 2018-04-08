@@ -17,7 +17,7 @@ class CreatePersonas < ActiveRecord::Migration[5.1]
       t.datetime :fechanac
       t.char :tipopersona, limit: 1, null:false
       t.integer :estrato
-      t.char :condicionfisica, limit: 1, null:false
+      t.char :condicionfisica, limit: 1
       t.datetime :fechacre, null:false
       t.datetime :fechacam, null:false
       t.references :usuario, foreign_key: true, null:false

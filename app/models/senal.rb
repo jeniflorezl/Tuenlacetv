@@ -10,7 +10,7 @@ class Senal < ApplicationRecord
   belongs_to :usuario
   belongs_to :tipo_facturacion
 
-  before_save :uppercase
+  before_save :setting
 
   validates :entidad, :contrato, :direccion, :telefono1, :barrio, :zona, :fechacontrato,
   :tipo_instalacion, :tecnologia, :tiposervicio, :usuario, :tipo_facturacion, presence: true #obligatorio
@@ -21,7 +21,7 @@ class Senal < ApplicationRecord
   @estadoD = Estado.find_by(abreviatura: 'PE')
   @estadoU = Estado.find_by(abreviatura: 'P')
 
-  def uppercase
+  def setting
     self.direccion.upcase!
     self.urbanizacion.upcase! unless self.urbanizacion.blank?
     self.torre.upcase! unless self.torre.blank?
@@ -29,6 +29,8 @@ class Senal < ApplicationRecord
     self.vivienda.upcase!
     self.tiposervicio.upcase!
     self.areainstalacion.upcase!
+    self.televisiores = 0 if self.televisiores = nil
+    self.decos = 0 if self.decos = nil
   end
 
   private
