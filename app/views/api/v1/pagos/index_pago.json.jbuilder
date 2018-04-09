@@ -1,5 +1,6 @@
 json.detalle_facturas do
     json.array! @detalle_facts do |d|
+        json.concepto_id d["concepto_id"]
         json.concepto d["concepto"]
         json.descripcion d["desc"]
         json.nrodcto d["nrodcto"]

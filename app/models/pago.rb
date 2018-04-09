@@ -199,10 +199,10 @@ class Pago < ApplicationRecord
           if valor_df != 0
             fecha1 = Pago.formato_fecha(f["fechatrn"])
             fecha2 = Pago.formato_fecha(f["fechaven"])
-            detalle_facts[i] = { 'concepto' => concepto.codigo, 'desc' => concepto.nombre, 
-              'nrodcto' => f["nrofact"], 'fechatrn' => fecha1, 'fechaven' => fecha2,
-              'valor' => df["valor"], 'iva' => df["iva"], 'saldo' => valor_fact, 'abono' => 0,
-              'total' => 0 }
+            detalle_facts[i] = { 'concepto_id' => concepto.id, 'concepto' => concepto.codigo, 
+              'desc' => concepto.nombre, 'nrodcto' => f["nrofact"], 'fechatrn' => fecha1, 
+              'fechaven' => fecha2, 'valor' => df["valor"], 'iva' => df["iva"], 
+              'saldo' => valor_fact, 'abono' => 0, 'total' => 0 }
           i += 1
           end
         end

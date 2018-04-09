@@ -195,7 +195,7 @@ class Facturacion < ApplicationRecord
                   Facturacion.connection.clear_query_cache
                   ultimo = Facturacion.connection.select_all(query)
                   if ultimo[0]["ultimo"] == nil
-                    ultimo=1
+                    ultimo = 1
                   else
                     ultimo = (ultimo[0]["ultimo"]).to_i + 1
                   end
@@ -331,7 +331,7 @@ class Facturacion < ApplicationRecord
                   Facturacion.connection.clear_query_cache
                   ultimo = Facturacion.connection.select_all(query)
                   if ultimo[0]["ultimo"] == nil
-                    ultimo=1
+                    ultimo = 1
                   else
                     ultimo = (ultimo[0]["ultimo"]).to_i + 1
                   end
@@ -469,7 +469,7 @@ class Facturacion < ApplicationRecord
                   Facturacion.connection.clear_query_cache
                   ultimo = Facturacion.connection.select_all(query)
                   if ultimo[0]["ultimo"] == nil
-                    ultimo=1
+                    ultimo = 1
                   else
                     ultimo = (ultimo[0]["ultimo"]).to_i + 1
                   end
@@ -622,7 +622,7 @@ class Facturacion < ApplicationRecord
                   Facturacion.connection.clear_query_cache
                   ultimo = Facturacion.connection.select_all(query)
                   if ultimo[0]["ultimo"] == nil
-                    ultimo=1
+                    ultimo = 1
                   else
                     ultimo = (ultimo[0]["ultimo"]).to_i + 1
                   end
@@ -748,7 +748,7 @@ class Facturacion < ApplicationRecord
           Facturacion.connection.clear_query_cache
           ultimo = Facturacion.connection.select_all(query)
           if ultimo[0]["ultimo"] == nil
-            ultimo=1
+            ultimo = 1
           else
             ultimo = (ultimo[0]["ultimo"]).to_i + 1
           end
