@@ -52,3 +52,7 @@ json.articulos do
         json.id articulo.costo
     end
 end
+
+json.param_valor @param_valor
+json.meses_anteriores @meses_anteriores
+json.meses_posteriores @meses_posteriores

@@ -12,3 +12,6 @@ json.tipo_facturacion do
         json.nombre tipo.nombre
     end
 end
+
+json.fecha_suspension @fecha_suspension
+json.fecha_pagos_ven @fecha_pagos_ven

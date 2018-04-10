@@ -217,8 +217,18 @@ Parametro.create(descripcion: 'Maneja direccion de correspondencia', valor: 'S')
 Parametro.create(descripcion: 'Maneja nomenclatura DIAN', valor: 'S')
 Parametro.create(descripcion: 'Permite modificar valor de afiliación', valor: 'N')
 Parametro.create(descripcion: 'Maneja consecutivos separados', valor: 'N')
+Parametro.create(descripcion: 'Permite ordenes en meses anteriores', valor: 'N')
+Parametro.create(descripcion: 'Permire ordenes en meses posteriores', valor: 'N')
+Parametro.create(descripcion: 'Maneja fecha suspension servicio', valor: 'S')
+Parametro.create(descripcion: 'Maneja fecha pagos vencidos', valor: 'S')
 Plan.create(servicio_id: 1, nombre: 'Television', usuario_id: 1)
 Plan.create(servicio_id: 2, nombre: 'Internet 2 megas', usuario_id: 1)
+=end
+Unidad.create(unidad: 'MTS', usuario_id: 1)
+Unidad.create(unidad: 'PAQ', usuario_id: 1)
+Unidad.create(unidad: 'UND', usuario_id: 1)
+Unidad.create(unidad: 'UNI', usuario_id: 1)
+=begin
 Tarifa.create(zona_id: 1, concepto_id: 1, plan_id: 1, valor: '35000', estado_id: 1, usuario_id: 1)
 Tarifa.create(zona_id: 1, concepto_id: 3, plan_id: 1, valor: '20000', estado_id: 1, usuario_id: 1)
 Tarifa.create(zona_id: 1, concepto_id: 5, plan_id: 1, valor: '18000', estado_id: 1, usuario_id: 1)
@@ -369,7 +379,7 @@ PlantillaFact.create(senal_id: 6, concepto_id: 4, estado_id: 1, tarifa_id: 3, fe
 fechafin: '01/01/2118', usuario_id: 1)
 PlantillaFact.create(senal_id: 7, concepto_id: 4, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
 fechafin: '01/01/2118', usuario_id: 1)
-=end
+
 
 RegistroOrden.create(nombre: 'fecha creacion', usuario_id: 1)
 RegistroOrden.create(nombre: 'usuario creacion', usuario_id: 1)
@@ -381,6 +391,8 @@ RegistroOrden.create(nombre: 'solucion orden', usuario_id: 1)
 RegistroOrden.create(nombre: 'fecha anulacion', usuario_id: 1)
 RegistroOrden.create(nombre: 'usuario anula orden', usuario_id: 1)
 RegistroOrden.create(nombre: 'motivo anulacion', usuario_id: 1)
+RegistroOrden.create(nombre: 'solicitado por', usuario_id: 1)
+=end
 
 
     

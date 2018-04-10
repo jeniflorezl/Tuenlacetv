@@ -48,7 +48,7 @@ Rails.application.routes.draw do
       get 'tipo_facturacion/bd/:db', to: 'tipo_facturacion#index'
       get 'tipo_facturacion/:campo/:valor/:db', to: 'tipo_facturacion#show'
       get 'facturacion/bd/:db', to: 'facturacion#index'
-      get 'facturacion/info/bd/:db', to: 'facturacion#info_fact_manual'
+      get 'facturacion/info/bd/:db', to: 'facturacion#info_facturacion'
       post 'facturacion/factura_manual', to: 'facturacion#create_factura'
       get 'facturacion/generar_impresion/:db', to: 'facturacion#generar_facturacion'
       post 'facturacion/anular_factura', to: 'facturacion#anular_factura'
@@ -62,6 +62,7 @@ Rails.application.routes.draw do
       post 'pagos_anticipados/anular_pago/:id', to: 'pagos#anular'
       get 'ordenes/bd/:db', to: 'ordenes#index'
       get 'ordenes/info/bd/:db', to: 'ordenes#index_info'
+      post 'ordenes/anular_orden/:id', to: 'ordenes#anular'
       post 'signin', to: 'sesion#create'
       delete 'signout', to: 'sesion#destroy'
     end

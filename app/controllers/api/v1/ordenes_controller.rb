@@ -20,6 +20,9 @@ module Api
                 @empleados = Entidad.where(funcion_id: 2)
                 @grupos = Grupo.all
                 @articulos = Articulo.all
+                @param_valor = Parametro.find_by(descripcion: 'Permite cambiar valor de ordenes').valor
+                @meses_anteriores = Parametro.find_by(descripcion: 'Permite ordenes en meses anteriores').valor
+                @meses_posteriores = Parametro.find_by(descripcion: 'Permire ordenes en meses posteriores').valor
             end
 
             # GET /ordens/id
@@ -29,22 +32,40 @@ module Api
 
             # POST /ordens
             def create
-                @orden = orden.new(orden_params)
-                if @orden.save 
+                if Orden.generar_orden(params[:entidad_id], params[:concepto_id], params[:fechatrn], 
+                    params[:fechaven], params[:valor], params[:detalle], params[:observacion], 
+                    params[:tecnico_id], params[:solicita], params[:zonaNue], params[:barrioNue], 
+                    params[:direccionNue], params[:usuario_id])
                     render json: { status: :created }
                 else
-                    render json: @orden.errors, status: :unprocessable_entity
+                    render json: { error: "no se pudo crear orden" }
                 end
             end
 
-            # PATCH/PUT /ordens/id
+            # PATCH/PUT /ordenes/id
             def update
-                t = Time.now
-                @orden.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
-                if @orden.update(orden_params)
-                    render json: { status: :updated }
+                if @orden
+                    if Orden.editar_orden(@orden, params[:fechaven], params[:solicita], params[:tecnico_id], 
+                        params[:observacion], params[:detalle], params[:solucion], params[:usuario_id])
+                        render json: { status: :updated }
+                    else
+                        render json: { error: "no se pudo actualizar orden" }
+                    end
                 else
-                    render json: @orden.errors, status: :unprocessable_entity
+                    render json: { error: "not found" }
+                end
+            end
+
+            # POST /ordenes/id
+            def anular
+                if @orden
+                    if Orden.anular_orden(@orden)
+                        render json: { status: :updated }
+                    else
+                        render json: { error: "no se pudo actualizar orden" }
+                    end
+                else
+                    render json: { error: "not found" }
                 end
             end
 
