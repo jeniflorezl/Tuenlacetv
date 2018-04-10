@@ -75,14 +75,14 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.bigint "grupo_id", null: false
     t.char "codigo", limit: 3, null: false
     t.varchar "nombre", limit: 50, null: false
-    t.bigint "unidad_id", null: false
+    t.bigint "unidad_id"
     t.money "preciomay", precision: 19, scale: 4
     t.money "preciodetal", precision: 19, scale: 4
-    t.decimal "existenciamin", precision: 18, scale: 0, null: false
-    t.decimal "existenciamax", precision: 18, scale: 0, null: false
-    t.money "costo", precision: 19, scale: 4, null: false
+    t.decimal "existenciamin", precision: 18, scale: 0
+    t.decimal "existenciamax", precision: 18, scale: 0
+    t.money "costo", precision: 19, scale: 4
     t.datetime "fechaultcompra"
-    t.float "porcentajeIva", null: false
+    t.float "porcentajeIva"
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
@@ -159,14 +159,17 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   end
 
   create_table "descuentos", force: :cascade do |t|
-    t.integer "pago_id", null: false
-    t.bigint "documento_id", null: false
-    t.integer "nropago", null: false
-    t.money "valor", precision: 19, scale: 4, null: false
+    t.integer "pago_id"
+    t.bigint "doc_pagos_id"
+    t.integer "nropago"
+    t.integer "dcto_id"
+    t.bigint "doc_dctos_id"
+    t.integer "nrodcto"
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
-    t.index ["documento_id"], name: "index_descuentos_on_documento_id"
+    t.index ["doc_dctos_id"], name: "index_descuentos_on_doc_dctos_id"
+    t.index ["doc_pagos_id"], name: "index_descuentos_on_doc_pagos_id"
     t.index ["usuario_id"], name: "index_descuentos_on_usuario_id"
   end
 
@@ -176,7 +179,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.char "prefijo", limit: 6, null: false
     t.integer "nrofact", null: false
     t.bigint "concepto_id", null: false
-    t.integer "cantidad", null: false
+    t.integer "cantidad"
     t.money "valor", precision: 19, scale: 4, null: false
     t.float "porcentajeIva", null: false
     t.money "iva", precision: 19, scale: 4, null: false
@@ -195,7 +198,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.bigint "concepto_id", null: false
     t.integer "nrorden", null: false
     t.bigint "articulo_id"
-    t.integer "cantidad", null: false
+    t.integer "cantidad"
     t.money "valor", precision: 19, scale: 4, null: false
     t.float "porcentajeIva", null: false
     t.money "iva", precision: 19, scale: 4, null: false
@@ -292,7 +295,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   create_table "estados", force: :cascade do |t|
     t.varchar "nombre", limit: 20, null: false
     t.char "abreviatura", limit: 3, null: false
-    t.char "tipo", limit: 1, null: false
+    t.char "tipo", limit: 1
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.varchar "usuario", limit: 15, null: false
@@ -483,9 +486,9 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.money "valor", precision: 19, scale: 4, null: false
     t.bigint "estado_id", null: false
     t.string "observacion", limit: 300
-    t.bigint "forma_pago_id", null: false
-    t.bigint "banco_id", null: false
-    t.bigint "cobrador_id", null: false
+    t.bigint "forma_pago_id"
+    t.bigint "banco_id"
+    t.bigint "cobrador_id"
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
@@ -538,7 +541,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.datetime "fechanac"
     t.char "tipopersona", limit: 1, null: false
     t.integer "estrato"
-    t.char "condicionfisica", limit: 1, null: false
+    t.char "condicionfisica", limit: 1
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
@@ -561,9 +564,9 @@ ActiveRecord::Schema.define(version: 20180314162109) do
 
   create_table "plantilla_fact", force: :cascade do |t|
     t.bigint "entidad_id", null: false
-    t.bigint "concepto_id"
+    t.bigint "concepto_id", null: false
     t.bigint "estado_id", null: false
-    t.bigint "tarifa_id"
+    t.bigint "tarifa_id", null: false
     t.datetime "fechaini", null: false
     t.datetime "fechafin", null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
@@ -616,7 +619,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
 
   create_table "senales", force: :cascade do |t|
     t.bigint "entidad_id", null: false
-    t.string "contrato", limit: 20, null: false
+    t.string "contrato", limit: 20
     t.string "direccion", limit: 200, null: false
     t.string "urbanizacion", limit: 200
     t.string "torre", limit: 20
@@ -634,7 +637,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.integer "televisores"
     t.integer "decos"
     t.string "precinto", limit: 10
-    t.bigint "vendedor_id", null: false
+    t.bigint "vendedor_id"
     t.bigint "tipo_instalacion_id", null: false
     t.bigint "tecnologia_id", null: false
     t.char "tiposervicio", limit: 1
@@ -807,8 +810,11 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   add_foreign_key "conceptos", "usuarios"
   add_foreign_key "departamentos", "paises"
   add_foreign_key "departamentos", "usuarios"
-  add_foreign_key "descuentos", "documentos"
-  add_foreign_key "descuentos", "pagos", column: "documento_id", primary_key: "documento_id", name: "FK_descuentos_pagos"
+  add_foreign_key "descuentos", "documentos", column: "doc_dctos_id"
+  add_foreign_key "descuentos", "documentos", column: "doc_pagos_id"
+  add_foreign_key "descuentos", "pagos", column: "doc_dctos_id", primary_key: "documento_id", name: "FK_descuentos_dcto"
+  add_foreign_key "descuentos", "pagos", column: "doc_pagos_id", primary_key: "documento_id", name: "FK_descuentos_pagos"
+  add_foreign_key "descuentos", "pagos", column: "nrodcto", primary_key: "nropago", name: "FK_descuentos_dcto"
   add_foreign_key "descuentos", "pagos", column: "nropago", primary_key: "nropago", name: "FK_descuentos_pagos"
   add_foreign_key "descuentos", "usuarios"
   add_foreign_key "detalle_factura", "conceptos"

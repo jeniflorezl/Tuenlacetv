@@ -2,7 +2,7 @@ class CreateSenales < ActiveRecord::Migration[5.1]
   def up
     create_table :senales do |t|
       t.references :entidad, foreign_key: true, null:false
-      t.string :contrato, limit: 20, null:false
+      t.string :contrato, limit: 20
       t.string :direccion, limit: 200, null:false
       t.string :urbanizacion, limit: 200
       t.string :torre, limit: 20
@@ -20,7 +20,7 @@ class CreateSenales < ActiveRecord::Migration[5.1]
       t.integer :televisores 
       t.integer :decos
       t.string :precinto, limit: 10
-      t.references :vendedor, foreign_key: { to_table: :entidades }, null:false
+      t.references :vendedor, foreign_key: { to_table: :entidades }
       t.references :tipo_instalacion, foreign_key: true, null:false
       t.references :tecnologia, foreign_key: true, null:false
       t.char :tiposervicio, limit: 1

@@ -24,7 +24,7 @@ module Api
             def create
                 respuesta = 0
                 respuesta = Pago.generar_pago_anticipado(params[:entidad_id], params[:documento_id], params[:servicio_id],
-                    params[:fechatrn], params[:fechapxa], params[:valor], params[:observacion], 
+                    params[:fechatrn], params[:fechapxa], params[:valor], params[:descuento], params[:observacion], 
                     params[:forma_pago_id], params[:banco_id], params[:cobrador_id], params[:usuario_id])
                 case respuesta
                 when 1

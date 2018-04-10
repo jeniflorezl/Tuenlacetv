@@ -24,7 +24,7 @@ module Api
             # POST /pagos
             def create
                 if Pago.generar_pago(params[:entidad_id], params[:documento_id], params[:fechatrn],
-                    params[:valor], params[:observacion], params[:forma_pago_id],
+                    params[:valor], params[:descuento], params[:observacion], params[:forma_pago_id],
                     params[:banco_id], params[:cobrador_id], params[:detalle], params[:usuario_id])
                     render json: { status: :created }
                 else

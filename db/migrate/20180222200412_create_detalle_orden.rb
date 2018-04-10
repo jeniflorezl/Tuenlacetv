@@ -5,7 +5,7 @@ class CreateDetalleOrden < ActiveRecord::Migration[5.1]
       t.references :concepto, foreign_key: true, null:false
       t.integer :nrorden, null:false
       t.references :articulo, foreign_key: true
-      t.integer :cantidad, null:false      
+      t.integer :cantidad   
       t.money :valor, null:false
       t.float :porcentajeIva, null:false
       t.money :iva, null:false

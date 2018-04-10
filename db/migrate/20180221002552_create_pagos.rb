@@ -9,8 +9,8 @@ class CreatePagos < ActiveRecord::Migration[5.1]
       t.money :valor, null:false
       t.references :estado, foreign_key: true, null:false
       t.string :observacion, limit: 300
-      t.references :forma_pago, foreign_key: true, null:false
-      t.references :banco, foreign_key: true, null:false
+      t.references :forma_pago, foreign_key: true
+      t.references :banco, foreign_key: true
       t.references :cobrador, foreign_key: { to_table: :entidades }
       t.datetime :fechacre, null:false
       t.datetime :fechacam, null:false

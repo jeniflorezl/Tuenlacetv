@@ -1,10 +1,12 @@
 class CreateDescuentos < ActiveRecord::Migration[5.1]
   def up
     create_table :descuentos do |t|
-      t.integer :pago_id, null:false
-      t.references :documento, foreign_key: true, null:false
-      t.integer :nropago, null:false
-      t.money :valor, null:false
+      t.integer :pago_id
+      t.references :doc_pagos, foreign_key: { to_table: :documentos }
+      t.integer :nropago
+      t.integer :dcto_id
+      t.references :doc_dctos, foreign_key: { to_table: :documentos }
+      t.integer :nrodcto
       t.datetime :fechacre, null:false
       t.datetime :fechacam, null:false
       t.references :usuario, foreign_key: true, null:false
@@ -16,7 +18,10 @@ class CreateDescuentos < ActiveRecord::Migration[5.1]
       ADD  DEFAULT (getdate()) FOR fechacam
     ALTER TABLE descuentos
       ADD CONSTRAINT FK_descuentos_pagos
-      FOREIGN KEY (documento_id,nropago) REFERENCES pagos(documento_id,nropago);
+      FOREIGN KEY (doc_pagos_id, nropago) REFERENCES pagos(documento_id,nropago);
+    ALTER TABLE descuentos
+      ADD CONSTRAINT FK_descuentos_dcto
+      FOREIGN KEY (doc_dctos_id, nrodcto) REFERENCES pagos(documento_id,nropago);
     SQL
   end
 

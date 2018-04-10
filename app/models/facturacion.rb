@@ -116,9 +116,11 @@ class Facturacion < ApplicationRecord
       ano = fecha1.year
       if documentos.valor == 'S'
         senales.each do |senal|
+          byebug
           plantillas = PlantillaFact.where("concepto_id = #{concepto_tv.id} and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
             ban = 0
+            byebug
             fecha_elaboracion = f_elaboracion
             if plantilla.estado_id == estado
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
@@ -173,11 +175,6 @@ class Facturacion < ApplicationRecord
                     end
                     dias = 30
                   end
-                  if senal.entidad.persona.condicionfisica == 'D'
-                    porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
-                    descuento = valor_mens * (porcentaje.to_f / 100)
-                    valor_mens = valor_mens - descuento
-                  end
                   if iva_tv > 0
                     valor_sin_iva = valor_mens / (iva_tv / 100 + 1)
                     iva = valor_mens - valor_sin_iva
@@ -217,6 +214,39 @@ class Facturacion < ApplicationRecord
                       result = 1
                     else
                       result1 = 2
+                    end
+                  end
+                  if senal.entidad.persona.condicionfisica == 'D'
+                    valor_total_fact = valor_mens + iva
+                    porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
+                    descuento = valor_total_fact * (porcentaje.to_f / 100)
+                    query = <<-SQL 
+                    SELECT MAX(nropago) as ultimo FROM pagos;
+                    SQL
+                    Facturacion.connection.clear_query_cache
+                    ultimo = Facturacion.connection.select_all(query)
+                    if ultimo[0]["ultimo"] == nil
+                      ultimo = 1
+                    else
+                      ultimo = (ultimo[0]["ultimo"]).to_i + 1
+                    end
+                    doc_pago = Documento.find_by(nombre: 'DESCUENTOS TELEVISION').id
+                    estado_pago = Estado.find_by(abreviatura: 'PA').id
+                    pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: fecha_elaboracion,
+                      valor: descuento, estado_id: estado_pago, observacion: 'DESCUENTO DISCAPACITADOS', forma_pago_id: 1,
+                      usuario_id: usuario_id)
+                    if pago.save
+                      query = <<-SQL 
+                      SELECT id FROM pagos WHERE nropago=#{pago.nropago};
+                      SQL
+                      Facturacion.connection.clear_query_cache
+                      pago_id = Facturacion.connection.select_all(query)
+                      pago_id = (pago_id[0]["id"]).to_i
+                      saldo_ab = valor_mens + iva
+                      abono = Abono.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
+                        factura_id: facturacion_id, doc_factura_id: facturacion.documento_id,
+                        prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id,
+                        fechabono: fecha_elaboracion, saldo: saldo_ab, abono: pago.valor, usuario_id: pago.usuario_id)
                     end
                   end
                   if ban == 1
@@ -535,6 +565,7 @@ class Facturacion < ApplicationRecord
           plantillas = PlantillaFact.where("entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
             ban = 0
+            byebug
             fecha_elaboracion = f_elaboracion
             concepto_id = plantilla.concepto_id
             concepto = Concepto.find(concepto_id)
@@ -596,11 +627,6 @@ class Facturacion < ApplicationRecord
                   end
                   if concepto_id == concepto_tv.id
                     observacion_d = 'TELEVISION'
-                    if senal.entidad.persona.condicionfisica == 'D'
-                      porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
-                      descuento = valor_mens * (porcentaje.to_f / 100)
-                      valor_mens = valor_mens - descuento
-                    end
                   elsif concepto_id == concepto_int.id
                     observacion_d = 'INTERNET'
                     doc_fact = doc_int
@@ -644,6 +670,41 @@ class Facturacion < ApplicationRecord
                       result = 1
                     else
                       result1 = 2
+                    end
+                  end
+                  if concepto_id == concepto_tv.id
+                    valor_total_fact = valor_mens + iva
+                    if senal.entidad.persona.condicionfisica == 'D'
+                      porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
+                      descuento = valor_total_fact * (porcentaje.to_f / 100)
+                      query = <<-SQL 
+                      SELECT MAX(nropago) as ultimo FROM pagos;
+                      SQL
+                      Facturacion.connection.clear_query_cache
+                      ultimo = Facturacion.connection.select_all(query)
+                      if ultimo[0]["ultimo"] == nil
+                        ultimo = 1
+                      else
+                        ultimo = (ultimo[0]["ultimo"]).to_i + 1
+                      end
+                      doc_pago = Documento.find_by(nombre: 'DESCUENTOS TELEVISION').id
+                      estado_pago = Estado.find_by(abreviatura: 'PA').id
+                      pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: fecha_elaboracion,
+                        valor: descuento, estado_id: estado_pago, observacion: 'DESCUENTO DISCAPACITADOS', forma_pago_id: 1,
+                        usuario_id: usuario_id)
+                      if pago.save
+                        query = <<-SQL 
+                        SELECT id FROM pagos WHERE nropago=#{pago.nropago};
+                        SQL
+                        Facturacion.connection.clear_query_cache
+                        pago_id = Facturacion.connection.select_all(query)
+                        pago_id = (pago_id[0]["id"]).to_i
+                        saldo_ab = valor_mens + iva
+                        abono = Abono.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
+                          factura_id: facturacion_id, doc_factura_id: facturacion.documento_id,
+                          prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id,
+                          fechabono: fecha_elaboracion, saldo: saldo_ab, abono: pago.valor, usuario_id: pago.usuario_id)
+                      end
                     end
                   end
                   if ban == 1

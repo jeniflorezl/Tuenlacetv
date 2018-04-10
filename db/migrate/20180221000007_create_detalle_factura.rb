@@ -6,7 +6,7 @@ class CreateDetalleFactura < ActiveRecord::Migration[5.1]
       t.char :prefijo, limit: 6, null:false
       t.integer :nrofact, null:false
       t.references :concepto, foreign_key: true, null:false
-      t.integer :cantidad, limit: 3, null:false      
+      t.integer :cantidad, limit: 3
       t.money :valor, null:false
       t.float :porcentajeIva, null:false
       t.money :iva, null:false
