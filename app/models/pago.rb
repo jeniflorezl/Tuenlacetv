@@ -15,6 +15,13 @@ class Pago < ApplicationRecord
 
   def self.generar_pago(entidad_id, documento_id, fechatrn, valor, descuento, observacion, forma_pago_id,
     banco_id, cobrador_id, detalle, usuario_id)
+    byebug
+    ban = 0
+    ban1 = 0
+    abono_fact = 0
+    abono_dcto = 0
+    faltante = 0
+    dcto = ''
     observacion = observacion.upcase! unless observacion == observacion.upcase
     estado = Estado.find_by(abreviatura: 'PA').id
     query = <<-SQL 
@@ -38,29 +45,130 @@ class Pago < ApplicationRecord
       Pago.connection.clear_query_cache
       pago_id = Pago.connection.select_all(query)
       pago_id = (pago_id[0]["id"]).to_i
-      detalle.each do |d|
-        query = <<-SQL 
-        SELECT factura_id FROM detalle_factura WHERE nrofact=#{d["nrodcto"]};
-        SQL
-        Pago.connection.clear_query_cache
-        factura_id = Pago.connection.select_all(query)
-        query = <<-SQL 
-        SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{factura_id[0]["factura_id"]};
-        SQL
-        Pago.connection.clear_query_cache
-        factura = Pago.connection.select_all(query)
-        abono = Abono.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
-          factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
-          prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
-          fechabono: fechatrn, saldo: d["saldo"], abono: d["abono"], usuario_id: pago.usuario_id)
-        if d["total"] == 0
+      if descuento > 0
+        detalle.each do |d|
+          byebug
+          ban = 0
+          ban1 = 0
           query = <<-SQL 
-          UPDATE facturacion set estado_id = 9 WHERE id = #{factura_id[0]["factura_id"]};
+          SELECT factura_id FROM detalle_factura WHERE nrofact=#{d["nrodcto"]};
           SQL
-          Pago.connection.select_all(query)
+          Pago.connection.clear_query_cache
+          factura_id = Pago.connection.select_all(query)
+          query = <<-SQL 
+          SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{factura_id[0]["factura_id"]};
+          SQL
+          Pago.connection.clear_query_cache
+          factura = Pago.connection.select_all(query)
+          if valor >= d["saldo"]
+            abono_fact = d["saldo"]
+            ban = 1
+          else
+            ban = 2
+            abono_fact = valor
+            faltante = d["saldo"] - abono_fact
+            if faltante >= descuento
+              abono_dcto = descuento
+            else
+              abono_dcto = faltante
+            end
+          end
+          valor = valor - abono_fact
+          descuento = descuento - abono_dcto
+          if ban == 1
+            abono = Abono.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
+              factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
+              prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
+              fechabono: fechatrn, saldo: d["saldo"], abono: abono_fact, usuario_id: pago.usuario_id)
+          elsif ban == 2
+            if d["concepto_id"] == 3
+              doc_dcto = Documento.find_by(nombre: 'DESCUENTOS TELEVISION').id
+            else
+              doc_dcto = Documento.find_by(nombre: 'DESCUENTOS INTERNET').id
+            end
+            if dcto.blank?
+              ban1 = 1
+            elsif dcto.documento_id == doc_dcto
+              ban1 = 2
+            else
+              ban1 = 3
+            end
+            if ban1 == 1 || ban1 == 3
+              query = <<-SQL 
+              SELECT MAX(nropago) as ultimo FROM pagos;
+              SQL
+              Pago.connection.clear_query_cache
+              ultimo = Pago.connection.select_all(query)
+              if ultimo[0]["ultimo"] == nil
+                ultimo = 1
+              else
+                ultimo = (ultimo[0]["ultimo"]).to_i + 1
+              end
+              if abono_fact > 0
+                abono = Abono.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
+                  factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
+                  prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
+                  fechabono: fechatrn, saldo: d["saldo"], abono: abono_fact, usuario_id: pago.usuario_id)
+              end
+              if abono_dcto > 0
+                dcto = Pago.new(entidad_id: entidad_id, documento_id: doc_dcto, nropago: ultimo, fechatrn: fechatrn,
+                  valor: abono_dcto, estado_id: estado, observacion: 'DESCUENTO', forma_pago_id: forma_pago_id,
+                  banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
+                if dcto.save
+                  query = <<-SQL 
+                  SELECT id FROM pagos WHERE nropago=#{dcto.nropago};
+                  SQL
+                  Pago.connection.clear_query_cache
+                  dcto_id = Pago.connection.select_all(query)
+                  dcto_id = (dcto_id[0]["id"]).to_i
+                end
+              end
+            else
+              valor_dcto = dcto.valor + abono_dcto
+              query = <<-SQL 
+              UPDATE pagos set valor = #{valor_dcto} WHERE id = #{dcto_id};
+              SQL
+              Pago.connection.select_all(query)
+            end
+            abono = Abono.create(pago_id: dcto_id, doc_pagos_id: dcto.documento_id, nropago: dcto.nropago, 
+              factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
+              prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
+              fechabono: fechatrn, saldo: faltante, abono: abono_dcto, usuario_id: dcto.usuario_id)
+            Descuento.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago,
+              dcto_id: dcto_id, doc_dctos_id: dcto.documento_id, nrodcto: dcto.nropago, usuario_id: usuario_id)
+          end
+          if d["total"] == 0
+            query = <<-SQL 
+            UPDATE facturacion set estado_id = 9 WHERE id = #{factura_id[0]["factura_id"]};
+            SQL
+            Pago.connection.select_all(query)
+          end
+        end
+      else
+        detalle.each do |d|
+          query = <<-SQL 
+          SELECT factura_id FROM detalle_factura WHERE nrofact=#{d["nrodcto"]};
+          SQL
+          Pago.connection.clear_query_cache
+          factura_id = Pago.connection.select_all(query)
+          query = <<-SQL 
+          SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{factura_id[0]["factura_id"]};
+          SQL
+          Pago.connection.clear_query_cache
+          factura = Pago.connection.select_all(query)
+          abono = Abono.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
+            factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
+            prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
+            fechabono: fechatrn, saldo: d["saldo"], abono: d["abono"], usuario_id: pago.usuario_id)
+          if d["total"] == 0
+            query = <<-SQL 
+            UPDATE facturacion set estado_id = 9 WHERE id = #{factura_id[0]["factura_id"]};
+            SQL
+            Pago.connection.select_all(query)
+          end
         end
       end
-      if descuento > 0
+=begin if descuento > 0
         doc_dcto = Documento.find_by(nombre: 'DESCUENTOS TELEVISION').id
         dcto = Pago.new(entidad_id: entidad_id, documento_id: doc_dcto, nropago: ultimo, fechatrn: fechatrn,
           valor: descuento, estado_id: estado, observacion: 'DESCUENTO', forma_pago_id: forma_pago_id,
@@ -145,7 +253,8 @@ class Pago < ApplicationRecord
             end
           end
         end
-      end
+      end 
+=end
       return true
     end
   end

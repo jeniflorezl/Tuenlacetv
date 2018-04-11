@@ -121,7 +121,6 @@ class Facturacion < ApplicationRecord
           plantillas.each do |plantilla|
             ban = 0
             byebug
-            fecha_elaboracion = f_elaboracion
             if plantilla.estado_id == estado
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
                 tarifa = plantilla.tarifa.valor
@@ -160,7 +159,6 @@ class Facturacion < ApplicationRecord
                         valor_dia = tarifa / 30
                         valor_mens = valor_dia * dias
                       end
-                      fecha_elaboracion = fecha2
                     else
                       valor_mens = tarifa
                       dias = 30
@@ -196,7 +194,7 @@ class Facturacion < ApplicationRecord
                   else
                     ultimo = (ultimo[0]["ultimo"]).to_i + 1
                   end
-                  facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: doc_tv, fechatrn: fecha_elaboracion,
+                  facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: doc_tv, fechatrn: f_elaboracion,
                     fechaven: f_fin, valor: valor_mens, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
                     estado_id: estado_fact, observacion: observa, reporta: '1', usuario_id: usuario_id)
                   if facturacion.save
@@ -232,7 +230,7 @@ class Facturacion < ApplicationRecord
                     end
                     doc_pago = Documento.find_by(nombre: 'DESCUENTOS TELEVISION').id
                     estado_pago = Estado.find_by(abreviatura: 'PA').id
-                    pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: fecha_elaboracion,
+                    pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: f_elaboracion,
                       valor: descuento, estado_id: estado_pago, observacion: 'DESCUENTO DISCAPACITADOS', forma_pago_id: 1,
                       usuario_id: usuario_id)
                     if pago.save
@@ -246,7 +244,7 @@ class Facturacion < ApplicationRecord
                       abono = Abono.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
                         factura_id: facturacion_id, doc_factura_id: facturacion.documento_id,
                         prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id,
-                        fechabono: fecha_elaboracion, saldo: saldo_ab, abono: pago.valor, usuario_id: pago.usuario_id)
+                        fechabono: f_elaboracion, saldo: saldo_ab, abono: pago.valor, usuario_id: pago.usuario_id)
                     end
                   end
                   if ban == 1
@@ -290,7 +288,6 @@ class Facturacion < ApplicationRecord
           plantillas = PlantillaFact.where("concepto_id = #{concepto_int.id} and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
             ban = 0
-            fecha_elaboracion = f_elaboracion
             if plantilla.estado_id == estado
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
                 tarifa = plantilla.tarifa.valor
@@ -329,7 +326,6 @@ class Facturacion < ApplicationRecord
                         valor_dia = tarifa / 30
                         valor_mens = valor_dia * dias
                       end
-                      fecha_elaboracion = fecha2
                     else
                       valor_mens = tarifa
                       dias = 30
@@ -365,7 +361,7 @@ class Facturacion < ApplicationRecord
                   else
                     ultimo = (ultimo[0]["ultimo"]).to_i + 1
                   end
-                  facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: doc_int, fechatrn: fecha_elaboracion,
+                  facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: doc_int, fechatrn: f_elaboracion,
                     fechaven: f_fin, valor: valor_mens, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
                     estado_id: estado_fact, observacion: observa, reporta: '1', usuario_id: usuario_id)
                   if facturacion.save
@@ -426,7 +422,6 @@ class Facturacion < ApplicationRecord
           plantillas = PlantillaFact.where("concepto_id <> '#{concepto_tv.id}' and concepto_id <> '#{concepto_int.id}' and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
             ban = 0
-            fecha_elaboracion = f_elaboracion
             concepto = plantilla.concepto_id
             iva_cpto = Concepto.find(concepto).porcentajeIva
             if plantilla.estado_id == estado
@@ -467,7 +462,6 @@ class Facturacion < ApplicationRecord
                         valor_dia = tarifa / 30
                         valor_mens = valor_dia * dias
                       end
-                      fecha_elaboracion = fecha2
                     else
                       valor_mens = tarifa
                       dias = 30
@@ -503,7 +497,7 @@ class Facturacion < ApplicationRecord
                   else
                     ultimo = (ultimo[0]["ultimo"]).to_i + 1
                   end
-                  facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: doc_tv, fechatrn: fecha_elaboracion,
+                  facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: doc_tv, fechatrn: f_elaboracion,
                     fechaven: f_fin, valor: valor_mens, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
                     estado_id: estado_fact, observacion: observa, reporta: '1', usuario_id: usuario_id)
                   if facturacion.save
@@ -566,7 +560,6 @@ class Facturacion < ApplicationRecord
           plantillas.each do |plantilla|
             ban = 0
             byebug
-            fecha_elaboracion = f_elaboracion
             concepto_id = plantilla.concepto_id
             concepto = Concepto.find(concepto_id)
             observacion_d = concepto.nombre
@@ -610,7 +603,6 @@ class Facturacion < ApplicationRecord
                         valor_dia = tarifa / 30
                         valor_mens = valor_dia * dias
                       end
-                      fecha_elaboracion = fecha2
                     else
                       valor_mens = tarifa
                       dias = 30
@@ -652,7 +644,7 @@ class Facturacion < ApplicationRecord
                   else
                     ultimo = (ultimo[0]["ultimo"]).to_i + 1
                   end
-                  facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: doc_fact, fechatrn: fecha_elaboracion,
+                  facturacion = Facturacion.new(entidad_id: senal.entidad_id, documento_id: doc_fact, fechatrn: f_elaboracion,
                     fechaven: f_fin, valor: valor_mens, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
                     estado_id: estado_fact, observacion: observa, reporta: '1', usuario_id: usuario_id)
                   if facturacion.save
@@ -689,7 +681,7 @@ class Facturacion < ApplicationRecord
                       end
                       doc_pago = Documento.find_by(nombre: 'DESCUENTOS TELEVISION').id
                       estado_pago = Estado.find_by(abreviatura: 'PA').id
-                      pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: fecha_elaboracion,
+                      pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: f_elaboracion,
                         valor: descuento, estado_id: estado_pago, observacion: 'DESCUENTO DISCAPACITADOS', forma_pago_id: 1,
                         usuario_id: usuario_id)
                       if pago.save
@@ -703,7 +695,7 @@ class Facturacion < ApplicationRecord
                         abono = Abono.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
                           factura_id: facturacion_id, doc_factura_id: facturacion.documento_id,
                           prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id,
-                          fechabono: fecha_elaboracion, saldo: saldo_ab, abono: pago.valor, usuario_id: pago.usuario_id)
+                          fechabono: f_elaboracion, saldo: saldo_ab, abono: pago.valor, usuario_id: pago.usuario_id)
                       end
                     end
                   end
