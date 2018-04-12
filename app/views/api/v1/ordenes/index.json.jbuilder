@@ -20,11 +20,8 @@ json.ordenes do
         json.nrorden orden["nrorden"]
         json.fechatrn orden["fechatrn"]
         json.fechaven orden["fechaven"]
-        json.valor orden["valor"]
+        json.tecnico orden["tecnico"]
         json.estado orden["estado"]
         json.observacion orden["observacion"]
-        json.forma_pago orden["forma_pago"]
-        json.banco orden["banco"]
-        json.cobrador orden["cobrador"]
     end
 end

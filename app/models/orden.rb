@@ -112,7 +112,7 @@ class Orden < ApplicationRecord
           if detallef.save
             return true
             FacturaOrden.create(factura_id: facturacion_id, documento_id: facturacion.documento_id,
-              facturacion.prefijo, nrofact: facturacion.nrofact, orden_id: orden_id, concepto_id: orden.concepto_id,
+              prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, orden_id: orden_id, concepto_id: orden.concepto_id,
               nrorden: orden.nrorden, usuario_id: usuario_id)
           else
             return false
@@ -172,7 +172,7 @@ class Orden < ApplicationRecord
           if detallef.save
             return true
             FacturaOrden.create(factura_id: facturacion_id, documento_id: facturacion.documento_id,
-              facturacion.prefijo, nrofact: facturacion.nrofact, orden_id: orden_id, concepto_id: orden.concepto_id,
+              prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, orden_id: orden_id, concepto_id: orden.concepto_id,
               nrorden: orden.nrorden, usuario_id: usuario_id)
           else
             return false
@@ -236,14 +236,14 @@ class Orden < ApplicationRecord
           if detallef.save
             return true
             FacturaOrden.create(factura_id: facturacion_id, documento_id: facturacion.documento_id,
-              facturacion.prefijo, nrofact: facturacion.nrofact, orden_id: orden_id, concepto_id: orden.concepto_id,
+              prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, orden_id: orden_id, concepto_id: orden.concepto_id,
               nrorden: orden.nrorden, usuario_id: usuario_id)
           else
             return false
           end
         end
       end
-    else "17", "18"
+    when "17", "18"
       if senal.tipo_facturacion_id == tipo_fact_ven
         dias = (fecha - fechaini).to_i + 1
         if concepto_id == "17"
@@ -296,7 +296,7 @@ class Orden < ApplicationRecord
           if detallef.save
             return true
             FacturaOrden.create(factura_id: facturacion_id, documento_id: facturacion.documento_id,
-              facturacion.prefijo, nrofact: facturacion.nrofact, orden_id: orden_id, concepto_id: orden.concepto_id,
+              prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, orden_id: orden_id, concepto_id: orden.concepto_id,
               nrorden: orden.nrorden, usuario_id: usuario_id)
           else
             return false
@@ -346,7 +346,7 @@ class Orden < ApplicationRecord
             porcentajeIva: d["porcentajeIva"], iva: d["iva"], costo: d["total"], 
             observacion: observacion, usuario_id: usuario_id)
         end
-        i++
+        i += 1
       end
     end
     case orden.concepto_id
@@ -383,7 +383,7 @@ class Orden < ApplicationRecord
       else
         return false
       end
-    else "17", "18"
+    when "17", "18"
       estado = Estado.find_by(abreviatura: 'R')
       if concepto_id == "17"
         id = 3
@@ -438,9 +438,9 @@ class Orden < ApplicationRecord
       else
         return false
       end
-    when "15", "16"
+    #when "15", "16"
       
-    else "17", "18"
+    when "17", "18"
       estado = Estado.find_by(abreviatura: 'A')
       query = <<-SQL 
       UPDATE ordenes set estado_id = 7, observacion = 'ANULADA' WHERE id = #{orden.id};
