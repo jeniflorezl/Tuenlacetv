@@ -93,7 +93,19 @@ class Pago < ApplicationRecord
             else
               ban1 = 3
             end
-            if ban1 == 1 || ban1 == 3
+            if ban1 == 3
+              dcto_pago = Descuento.where(pago_id: pago_id)
+              dcto_pago.each do |dcto_p|
+                if dcto_p.doc_dctos_id == doc_dcto
+                  dcto_id = dcto_p.dcto_id
+                  dcto = dcto_p
+                  ban1 = 4
+                else
+                  ban1 = 5
+                end
+              end
+            end
+            if ban1 == 1 || ban1 == 5
               query = <<-SQL 
               SELECT MAX(nropago) as ultimo FROM pagos;
               SQL
@@ -123,17 +135,23 @@ class Pago < ApplicationRecord
                   dcto_id = (dcto_id[0]["id"]).to_i
                 end
               end
-            else
-              valor_dcto = dcto.valor + abono_dcto
+            elsif ban1 == 2 || ban1 == 4
               query = <<-SQL 
-              UPDATE pagos set valor = #{valor_dcto} WHERE id = #{dcto_id};
+              UPDATE pagos set valor = valor + #{abono_dcto} WHERE id = #{dcto_id};
               SQL
               Pago.connection.select_all(query)
             end
-            abono = Abono.create(pago_id: dcto_id, doc_pagos_id: dcto.documento_id, nropago: dcto.nropago, 
-              factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
-              prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
-              fechabono: fechatrn, saldo: faltante, abono: abono_dcto, usuario_id: dcto.usuario_id)
+            if ban1 == 4
+              abono = Abono.create(pago_id: dcto_id, doc_pagos_id: dcto.doc_dctos_id, nropago: dcto.nropago, 
+                factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
+                prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
+                fechabono: fechatrn, saldo: faltante, abono: abono_dcto, usuario_id: pago.usuario_id)
+            else
+              abono = Abono.create(pago_id: dcto_id, doc_pagos_id: dcto.documento_id, nropago: dcto.nropago, 
+                factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
+                prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
+                fechabono: fechatrn, saldo: faltante, abono: abono_dcto, usuario_id: pago.usuario_id)
+            end
             Descuento.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago,
               dcto_id: dcto_id, doc_dctos_id: dcto.documento_id, nrodcto: dcto.nropago, usuario_id: usuario_id)
           end
@@ -168,93 +186,6 @@ class Pago < ApplicationRecord
           end
         end
       end
-=begin if descuento > 0
-        doc_dcto = Documento.find_by(nombre: 'DESCUENTOS TELEVISION').id
-        dcto = Pago.new(entidad_id: entidad_id, documento_id: doc_dcto, nropago: ultimo, fechatrn: fechatrn,
-          valor: descuento, estado_id: estado, observacion: 'DESCUENTO', forma_pago_id: forma_pago_id,
-          banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
-        if dcto.save
-          query = <<-SQL 
-          SELECT id FROM pagos WHERE nropago=#{dcto.nropago};
-          SQL
-          Pago.connection.clear_query_cache
-          dcto_id = Pago.connection.select_all(query)
-          dcto_id = (dcto_id[0]["id"]).to_i
-          Descuento.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago,
-            dcto_id: dcto_id, nrodcto: dcto.nropago, usuario_id: usuario_id)
-          detalle.each do |d|
-            if d["total"] > 0 && descuento > 0
-              if d["concepto_id"] == 3
-                query = <<-SQL 
-                SELECT factura_id FROM detalle_factura WHERE nrofact=#{d["nrodcto"]};
-                SQL
-                Pago.connection.clear_query_cache
-                factura_id = Pago.connection.select_all(query)
-                query = <<-SQL 
-                SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{factura_id[0]["factura_id"]};
-                SQL
-                Pago.connection.clear_query_cache
-                factura = Pago.connection.select_all(query)
-                saldo_ab = (d["saldo"] - d["abono"])
-                if d["total"] >= descuento
-                  abono_dcto = total - descuento
-                else
-                  abono_dcto = total
-                end
-                descuento = descuento - abono_dcto
-                abono = Abono.create(pago_id: dcto_id, doc_pagos_id: dcto.documento_id, nropago: dcto.nropago, 
-                  factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
-                  prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
-                  fechabono: fechatrn, saldo: saldo_ab, abono: abono_dcto, usuario_id: dcto.usuario_id)
-              end
-            end
-          end
-        end
-      end
-      if descuento > 0
-        doc_dcto = Documento.find_by(nombre: 'DESCUENTOS INTERNET').id
-        dcto = Pago.new(entidad_id: entidad_id, documento_id: doc_dcto, nropago: ultimo, fechatrn: fechatrn,
-          valor: descuento, estado_id: estado, observacion: 'DESCUENTO', forma_pago_id: forma_pago_id,
-          banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
-        if dcto.save
-          query = <<-SQL 
-          SELECT id FROM pagos WHERE nropago=#{dcto.nropago};
-          SQL
-          Pago.connection.clear_query_cache
-          dcto_id = Pago.connection.select_all(query)
-          dcto_id = (dcto_id[0]["id"]).to_i
-          Descuento.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago,
-            dcto_id: dcto_id, nrodcto: dcto.nropago, usuario_id: usuario_id)
-          detalle.each do |d|
-            if d["total"] > 0 && descuento > 0
-              if d["concepto_id"] == 4
-                query = <<-SQL 
-                SELECT factura_id FROM detalle_factura WHERE nrofact=#{d["nrodcto"]};
-                SQL
-                Pago.connection.clear_query_cache
-                factura_id = Pago.connection.select_all(query)
-                query = <<-SQL 
-                SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{factura_id[0]["factura_id"]};
-                SQL
-                Pago.connection.clear_query_cache
-                factura = Pago.connection.select_all(query)
-                saldo_ab = (d["saldo"] - d["abono"])
-                if d["total"] >= descuento
-                  abono_dcto = total - descuento
-                else
-                  abono_dcto = total
-                end
-                descuento = descuento - abono_dcto
-                abono = Abono.create(pago_id: dcto_id, doc_pagos_id: dcto.documento_id, nropago: dcto.nropago, 
-                  factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
-                  prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
-                  fechabono: fechatrn, saldo: saldo_ab, abono: abono_dcto, usuario_id: dcto.usuario_id)
-              end
-            end
-          end
-        end
-      end 
-=end
       return true
     end
   end
@@ -398,14 +329,14 @@ class Pago < ApplicationRecord
           fecha2 = Pago.formato_fecha(f["fechaven"])
           detalle_facts[i] = { 'concepto_id' => concepto.id, 'concepto' => concepto.codigo, 
             'desc' => concepto.nombre, 'nrodcto' => f["nrofact"], 'fechatrn' => fecha1, 
-            'fechaven' => fecha2, 'valor' => df["valor"], 'iva' => df["iva"], 
-            'saldo' => df["valor"] + df["iva"], 'abono' => 0, 'total' => 0 }
+            'fechaven' => fecha2, 'valor' => (df["valor"].to_f).round, 'iva' => (df["iva"].to_f).round, 
+            'saldo' => (df["valor"].to_f).round + (df["iva"].to_f).round, 'abono' => 0, 'total' => 0 }
           i += 1
         end
       end
     else
       facturas.reverse_each do |f|
-        valor_fact = (f["valor"] + f["iva"]).to_i
+        valor_fact = ((f["valor"].to_f).round + (f["iva"].to_f).round)
         dfactura = DetalleFactura.where(factura_id: f["id"])
         dfactura.reverse_each do |df|
           valor_df = (df["valor"] + df["iva"]).to_i
@@ -433,7 +364,7 @@ class Pago < ApplicationRecord
             fecha2 = Pago.formato_fecha(f["fechaven"])
             detalle_facts[i] = { 'concepto_id' => concepto.id, 'concepto' => concepto.codigo, 
               'desc' => concepto.nombre, 'nrodcto' => f["nrofact"], 'fechatrn' => fecha1, 
-              'fechaven' => fecha2, 'valor' => df["valor"], 'iva' => df["iva"], 
+              'fechaven' => fecha2, 'valor' => (df["valor"].to_f).round, 'iva' => (df["iva"].to_f).round, 
               'saldo' => valor_fact, 'abono' => 0, 'total' => 0 }
           i += 1
           end
