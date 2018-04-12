@@ -10,9 +10,19 @@ module Api
                 SELECT * FROM VwOrdenes;
                 SQL
                 @ordenes = Orden.connection.select_all(query)
+            end
+
+            # GET /info ordenes
+            def index_info
                 @conceptos = Concepto.where(clase: 'O')
+                @tarifas = Tarifa.where(estado_id: 1)
                 @tecnicos = Entidad.where(funcion_id: 7)
                 @empleados = Entidad.where(funcion_id: 2)
+                @grupos = Grupo.all
+                @articulos = Articulo.all
+                @param_valor = Parametro.find_by(descripcion: 'Permite cambiar valor de ordenes').valor
+                @meses_anteriores = Parametro.find_by(descripcion: 'Permite ordenes en meses anteriores').valor
+                @meses_posteriores = Parametro.find_by(descripcion: 'Permire ordenes en meses posteriores').valor
             end
 
             # GET /ordens/id
@@ -22,58 +32,63 @@ module Api
 
             # POST /ordens
             def create
-                @orden = orden.new(orden_params)
-                if @orden.save 
+                if Orden.generar_orden(params[:entidad_id], params[:concepto_id], params[:fechatrn], 
+                    params[:fechaven], params[:valor], params[:detalle], params[:observacion], 
+                    params[:tecnico_id], params[:solicita], params[:zonaNue], params[:barrioNue], 
+                    params[:direccionNue], params[:usuario_id])
                     render json: { status: :created }
                 else
-                    render json: @orden.errors, status: :unprocessable_entity
+                    render json: { error: "no se pudo crear orden" }
                 end
             end
 
-            # PATCH/PUT /ordens/id
+            # PATCH/PUT /ordenes/id
             def update
-                t = Time.now
-                @orden.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
-                if @orden.update(orden_params)
-                    render json: { status: :updated }
+                if @orden
+                    if Orden.editar_orden(@orden, params[:fechaven], params[:solicita], params[:tecnico_id], 
+                        params[:observacion], params[:detalle], params[:solucion], params[:usuario_id])
+                        render json: { status: :updated }
+                    else
+                        render json: { error: "no se pudo actualizar orden" }
+                    end
                 else
-                    render json: @orden.errors, status: :unprocessable_entity
+                    render json: { error: "not found" }
                 end
             end
 
-            # DELETE /ordens/id
-            def destroy
+            # POST /ordenes/id
+            def anular
                 if @orden
-                    @orden.destroy()
-                    render json: { status: :deleted }
+                    if Orden.anular_orden(@orden)
+                        render json: { status: :updated }
+                    else
+                        render json: { error: "no se pudo actualizar orden" }
+                    end
                 else
-                    render json: { post: "not found" }
+                    render json: { error: "not found" }
                 end
             end
 
             private
 
             def set_orden
-                @orden = orden.find(params[:id])
+                query = <<-SQL 
+                SELECT * FROM ordenes WHERE id=#{params[:id]};
+                SQL
+                Orden.connection.clear_query_cache
+                @orden = Orden.connection.select_all(query)
             end
 
             # Me busca la orden por el id o el nombre
             def set_orden_buscar
                 campo = params[:campo]
                 valor = params[:valor]
-                if @campo == 'id'
-                    @orden = orden.find(valor)
-                else
-                    @orden = orden.where("nombre LIKE '%#{valor}%'")
-                end
+                query = <<-SQL 
+                SELECT * FROM VwOrdenes WHERE #{campo} LIKE '%#{valor}%';
+                SQL
+                @orden = Senal.connection.select_all(query)
                 @orden = [*@orden]
             end
-                
-            #Le coloco los parametros que necesito de la orden para crearla y actualizarla
-
-            def orden_params
-                params.require(:orden).permit(:ciudad_id, :nombre, :usuario_id)
-            end 
         end
     end
 end
