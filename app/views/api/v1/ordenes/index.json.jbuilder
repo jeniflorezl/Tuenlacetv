@@ -8,7 +8,7 @@ json.ordenes do
         json.barrio orden["barrio"]
         json.zona orden["zona"]
         json.fechacontrato orden["fechacontrato"]
-        json.fechacontrato orden["precinto"]
+        json.precinto orden["precinto"]
         json.observa_senal orden["observa_senal"]
         json.estado_tv orden["estado_tv"]
         json.estado_int orden["estado_int"]
