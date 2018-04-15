@@ -7,7 +7,7 @@ module Api
             # GET /ordenes
             def index
                 query = <<-SQL 
-                SELECT * FROM VwOrdenes;
+                SELECT * FROM VwOrdenes ORDER BY id;
                 SQL
                 @ordenes = Orden.connection.select_all(query)
             end

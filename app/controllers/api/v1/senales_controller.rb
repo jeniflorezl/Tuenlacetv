@@ -9,7 +9,7 @@ module Api
             def index
                 @funcion = params[:funcion_id]
                 query = <<-SQL 
-                SELECT * FROM VwSenales WHERE funcion_id = #{@funcion};
+                SELECT * FROM VwSenales WHERE funcion_id = #{@funcion} ORDER BY id;
                 SQL
                 @entidades = Senal.connection.select_all(query)
                 @tipo_documentos = TipoDocumento.all

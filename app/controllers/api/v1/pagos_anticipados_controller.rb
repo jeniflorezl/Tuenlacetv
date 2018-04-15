@@ -7,7 +7,7 @@ module Api
             # GET /pagos_anticipados
             def index
                 query = <<-SQL 
-                SELECT * FROM VwPagosAnticipados;
+                SELECT * FROM VwPagosAnticipados ORDER BY id;
                 SQL
                 @pagos_anticipados = Pago.connection.select_all(query)
                 @param_cobradores = Parametro.find_by(descripcion: 'Maneja cobradores').valor
