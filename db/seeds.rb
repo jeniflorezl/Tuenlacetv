@@ -227,7 +227,9 @@ Parametro.create(descripcion: 'Cobra dias al editar corte', valor: 'S')
 Parametro.create(descripcion: 'Cobra dias al editar reconexion', valor: 'S')
 Parametro.create(descripcion: 'Cobra dias al editar retiro', valor: 'S')
 Parametro.create(descripcion: 'Genera factura en reconexion', valor: 'S')
-
+=end
+Parametro.create(descripcion: 'Maneja cobradores', valor: 'S')
+=begin
 Plan.create(servicio_id: 1, nombre: 'Television', usuario_id: 1)
 Plan.create(servicio_id: 2, nombre: 'Internet 2 megas', usuario_id: 1)
 
@@ -399,9 +401,9 @@ RegistroOrden.create(nombre: 'fecha anulacion', usuario_id: 1)
 RegistroOrden.create(nombre: 'usuario anula orden', usuario_id: 1)
 RegistroOrden.create(nombre: 'motivo anulacion', usuario_id: 1)
 RegistroOrden.create(nombre: 'solicitado por', usuario_id: 1)
-=end
-Grupo.create(descripcion: 'INVENTARIOS', usuario_id: 1)
 
+Grupo.create(descripcion: 'INVENTARIOS', usuario_id: 1)
+=end
 
     
     

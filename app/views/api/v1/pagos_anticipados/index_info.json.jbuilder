@@ -12,6 +12,8 @@ json.conceptos do
     end
 end
 
+json.param_cobradores @param_cobradores
+
 json.cobradores do
     json.array! @cobradores do |cobrador|
         json.id cobrador.id

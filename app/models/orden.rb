@@ -190,6 +190,8 @@ class Orden < ApplicationRecord
     fechaini = Date.parse fechaini
     fechafin = '30/#{mes}/{ano}'
     fechafin = Date.parse fechafin
+    pref = Resolucion.last.prefijo
+    nombre_mes = Facturacion.mes(f_fact.strftime("%B"))
     consecutivos = Parametro.find_by(descripcion: 'Maneja consecutivos separados').valor
     tipo_fact_ant = TipoFacturacion.find_by(nombre: 'ANTICIPADA').id
     tipo_fact_ven = TipoFacturacion.find_by(nombre: 'VENCIDA').id

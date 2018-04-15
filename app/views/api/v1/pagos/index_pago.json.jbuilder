@@ -15,6 +15,7 @@ json.detalle_facturas do
 end
 
 json.valor_total @valor_total
+json.param_cobradores @param_cobradores
 
 json.conceptos do
     json.array! @conceptos do |concepto|
