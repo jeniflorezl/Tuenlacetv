@@ -26,3 +26,5 @@ json.pagos_anticipados do
         json.cobrador pago["cobrador"]
     end
 end
+
+json.param_cobradores @param_cobradores

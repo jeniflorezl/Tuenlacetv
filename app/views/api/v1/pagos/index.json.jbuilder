@@ -24,3 +24,5 @@ json.pagos do
         json.cobrador pago["cobrador"]
     end
 end
+
+json.param_cobradores @param_cobradores

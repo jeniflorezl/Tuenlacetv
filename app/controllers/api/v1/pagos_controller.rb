@@ -10,6 +10,7 @@ module Api
                 SELECT * FROM VwPagos;
                 SQL
                 @pagos = Pago.connection.select_all(query)
+                @param_cobradores = Parametro.find_by(descripcion: 'Maneja cobradores').valor
             end
 
             def index_pago

@@ -10,6 +10,7 @@ module Api
                 SELECT * FROM VwPagosAnticipados;
                 SQL
                 @pagos_anticipados = Pago.connection.select_all(query)
+                @param_cobradores = Parametro.find_by(descripcion: 'Maneja cobradores').valor
             end
 
             def index_info
