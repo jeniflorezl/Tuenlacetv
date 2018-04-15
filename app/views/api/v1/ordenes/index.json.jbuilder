@@ -22,6 +22,7 @@ json.ordenes do
         json.fechaven orden["fechaven"]
         json.tecnico orden["tecnico"]
         json.estado orden["estado"]
+        json.valor orden["valor"]
         json.observacion orden["observacion"]
     end
 end

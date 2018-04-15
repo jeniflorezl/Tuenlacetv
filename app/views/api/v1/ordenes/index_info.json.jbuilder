@@ -39,17 +39,18 @@ end
 
 json.grupos do
     json.array! @grupos do |grupo|
-        json.id grupos.id
-        json.id grupos.descripcion
+        json.id grupo.id
+        json.id grupo.descripcion
     end
 end
 
 json.articulos do
     json.array! @articulos do |articulo|
         json.id articulo.id
-        json.id articulo.grupo_id
-        json.id articulo.nombre
-        json.id articulo.costo
+        json.grupo_id articulo.grupo_id
+        json.nombre articulo.nombre
+        json.costo articulo.costo
+        json.porcentajeIva articulo.porcentajeIva
     end
 end
 

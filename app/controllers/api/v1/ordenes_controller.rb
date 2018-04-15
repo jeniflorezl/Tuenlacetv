@@ -33,9 +33,8 @@ module Api
             # POST /ordens
             def create
                 if Orden.generar_orden(params[:entidad_id], params[:concepto_id], params[:fechatrn], 
-                    params[:fechaven], params[:valor], params[:detalle], params[:observacion], 
-                    params[:tecnico_id], params[:solicita], params[:zonaNue], params[:barrioNue], 
-                    params[:direccionNue], params[:usuario_id])
+                    params[:fechaven], params[:valor], params[:observacion], params[:tecnico_id],
+                    params[:zonaNue], params[:barrioNue], params[:direccionNue], params[:usuario_id])
                     render json: { status: :created }
                 else
                     render json: { error: "no se pudo crear orden" }
@@ -46,7 +45,7 @@ module Api
             def update
                 if @orden
                     if Orden.editar_orden(@orden, params[:fechaven], params[:solicita], params[:tecnico_id], 
-                        params[:observacion], params[:detalle], params[:solucion], params[:usuario_id])
+                        params[:observacion], params[:detalle], params[:solucion], params[:respuesta], params[:usuario_id])
                         render json: { status: :updated }
                     else
                         render json: { error: "no se pudo actualizar orden" }
@@ -58,11 +57,18 @@ module Api
 
             # POST /ordenes/id
             def anular
+                respuesta = 0
                 if @orden
-                    if Orden.anular_orden(@orden)
-                        render json: { status: :updated }
-                    else
-                        render json: { error: "no se pudo actualizar orden" }
+                    respuesta = Orden.anular_orden(@orden)
+                    case respuesta
+                    when 1
+                        render json: { status: :anulada }
+                    when 2
+                        render json: { error: "no se pudo anular orden" }
+                    when 3
+                        render json: { error: "orden aplicada" }
+                    else 
+                        render json: { error: "orden con pago" }
                     end
                 else
                     render json: { error: "not found" }

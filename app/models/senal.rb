@@ -63,65 +63,55 @@ class Senal < ApplicationRecord
         fechaven: senal.fechacontrato, nrorden: ultimo, estado_id: @estadoD.id, observacion: 'Registro creado en proceso de afiliación',
         tecnico_id: tecnico, usuario_id: senal.usuario_id)
       if orden.save
-        query = <<-SQL 
-        SELECT id FROM ordenes WHERE nrorden=#{orden.nrorden};
-        SQL
-        Senal.connection.clear_query_cache
-        orden_id = Senal.connection.select_all(query)
-        orden_id = (orden_id[0]["id"]).to_i
-        detalleo = DetalleOrden.new(orden_id: orden_id, concepto_id: orden.concepto_id, nrorden: orden.nrorden,
-          cantidad: 0, valor: 0, porcentajeIva: 0, iva: 0, costo: 0, observacion: orden.observacion, usuario_id: orden.usuario_id)
-        if detalleo.save
-          if valorAfiTv > 0
-            pref = Resolucion.last.prefijo
-            if @consecutivos == 'S'
-              query = <<-SQL 
-              SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=1;
-              SQL
-            else
-              query = <<-SQL 
-              SELECT MAX(nrofact) as ultimo FROM facturacion;
-              SQL
-            end
-            Senal.connection.clear_query_cache
-            ultimo = Senal.connection.select_all(query)
-            if ultimo[0]["ultimo"] == nil
-              ultimo=1
-            else
-              ultimo = (ultimo[0]["ultimo"]).to_i + 1
-            end
-            if valorDcto > 0
-              valor = valorAfiTv - valorDcto
-            else
-              valor = valorAfiTv
-            end
-            iva_cpto = conceptofact.porcentajeIva
-            if iva_cpto > 0
-              valor_sin_iva = valor / (iva_cpto / 100 + 1)
-              iva = valor - valor_sin_iva
-              valor = valor_sin_iva
-            end
-            factura = Facturacion.new(entidad_id: entidad.id, documento_id: 1, fechatrn: senal.fechacontrato,
-              fechaven: senal.fechacontrato, valor: valor, iva: iva, dias: 0, prefijo: pref, nrofact: ultimo,
-              estado_id: @estadoD.id, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN', reporta: '0', usuario_id: senal.usuario_id)
-            if factura.save
-              query = <<-SQL 
-              SELECT id FROM facturacion WHERE nrofact=#{factura.nrofact};
-              SQL
-              Senal.connection.clear_query_cache
-              factura_id = Senal.connection.select_all(query)
-              factura_id = (factura_id[0]["id"]).to_i
-              detallef = DetalleFactura.new(factura_id: factura_id, documento_id: factura.documento_id, 
-                prefijo: factura.prefijo, nrofact: factura.nrofact, concepto_id: conceptofact.id, cantidad: 1, 
-                valor: factura.valor, porcentajeIva: iva_cpto, iva: iva, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN' + ' ' + @mes,
-                operacion: '+', usuario_id: factura.usuario_id)
-              if detallef.save
-                return true
-              end
-            end 
-          else   
-            return true
+        if valorAfiTv > 0
+          pref = Resolucion.last.prefijo
+          if @consecutivos == 'S'
+            query = <<-SQL 
+            SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=1;
+            SQL
+          else
+            query = <<-SQL 
+            SELECT MAX(nrofact) as ultimo FROM facturacion;
+            SQL
           end
+          Senal.connection.clear_query_cache
+          ultimo = Senal.connection.select_all(query)
+          if ultimo[0]["ultimo"] == nil
+            ultimo=1
+          else
+            ultimo = (ultimo[0]["ultimo"]).to_i + 1
+          end
+          if valorDcto > 0
+            valor = valorAfiTv - valorDcto
+          else
+            valor = valorAfiTv
+          end
+          iva_cpto = conceptofact.porcentajeIva
+          if iva_cpto > 0
+            valor_sin_iva = valor / (iva_cpto / 100 + 1)
+            iva = valor - valor_sin_iva
+            valor = valor_sin_iva
+          end
+          factura = Facturacion.new(entidad_id: entidad.id, documento_id: 1, fechatrn: senal.fechacontrato,
+            fechaven: senal.fechacontrato, valor: valor, iva: iva, dias: 0, prefijo: pref, nrofact: ultimo,
+            estado_id: @estadoD.id, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN', reporta: '0', usuario_id: senal.usuario_id)
+          if factura.save
+            query = <<-SQL 
+            SELECT id FROM facturacion WHERE nrofact=#{factura.nrofact};
+            SQL
+            Senal.connection.clear_query_cache
+            factura_id = Senal.connection.select_all(query)
+            factura_id = (factura_id[0]["id"]).to_i
+            detallef = DetalleFactura.new(factura_id: factura_id, documento_id: factura.documento_id, 
+              prefijo: factura.prefijo, nrofact: factura.nrofact, concepto_id: conceptofact.id, cantidad: 1, 
+              valor: factura.valor, porcentajeIva: iva_cpto, iva: iva, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN' + ' ' + @mes,
+              operacion: '+', usuario_id: factura.usuario_id)
+            if detallef.save
+              return true
+            end
+          end 
+        else   
+          return true
         end
       end
     end
