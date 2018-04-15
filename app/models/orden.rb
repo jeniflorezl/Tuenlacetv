@@ -185,12 +185,15 @@ class Orden < ApplicationRecord
     t = Time.now
     byebug
     senal = Senal.where(entidad_id: orden[0]["entidad_id"])
+    concepto_fact = 0
     fecha = Date.parse fechaven
     fechaini = '01/#{mes}/{ano}'
     fechaini = Date.parse fechaini
     fechafin = '30/#{mes}/{ano}'
     fechafin = Date.parse fechafin
     pref = Resolucion.last.prefijo
+    f_fact = fechaven.split('/')
+    f_fact = Time.new(f_fact[2], f_fact[1], f_fact[0])
     nombre_mes = Facturacion.mes(f_fact.strftime("%B"))
     consecutivos = Parametro.find_by(descripcion: 'Maneja consecutivos separados').valor
     tipo_fact_ant = TipoFacturacion.find_by(nombre: 'ANTICIPADA').id
@@ -241,10 +244,12 @@ class Orden < ApplicationRecord
           if orden[0]["concepto_id"] == 7
             id = 3
             doc = 1
+            concepto_fact = 3
             observa_d = 'TELEVISION'
           else
             id = 4
             doc = 2
+            concepto_fact = 4
             observa_d = 'INTERNET'
           end
           valor_concepto = PlantillaFact.find_by("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = #{id}").tarifa.valor
@@ -272,7 +277,7 @@ class Orden < ApplicationRecord
           else
             ultimo = (ultimo[0]["ultimo"]).to_i + 1
           end
-          facturacion = Facturacion.new(entidad_id: orden[0]["entidad_id"], documento_id: doc, fechatrn: fechaini.to_s,
+          facturacion = Facturacion.new(entidad_id: orden[0]["entidad_id"], documento_id: doc, fechatrn: fecha.to_s,
             fechaven: fecha.to_s, valor: valor_fact, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
             estado_id: 6, observacion: 'MENSUALIDAD' + ' ' + nombre_mes, reporta: '1', usuario_id: usuario_id)
           if facturacion.save
@@ -283,14 +288,14 @@ class Orden < ApplicationRecord
             facturacion_id = Orden.connection.select_all(query)
             facturacion_id = (facturacion_id[0]["id"]).to_i
             detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
-            prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_id, cantidad: 1, 
+            prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_fact, cantidad: 1, 
             valor: facturacion.valor, porcentajeIva: iva_concepto, iva: facturacion.iva, observacion: observa_d + ' ' + nombre_mes,
             operacion: '+', usuario_id: usuario_id)
             if detallef.save
               FacturaOrden.create(factura_id: facturacion_id, documento_id: facturacion.documento_id,
-                prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, orden_id: orden_id, concepto_id: orden.concepto_id,
-                nrorden: orden.nrorden, usuario_id: usuario_id)
-              plantilla = PlantillaFact.where("entidad_id = #{orden.entidad_id} and concepto_id = #{id}")
+                prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+                nrorden: orden[0]["nrorden"], usuario_id: usuario_id)
+              plantilla = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = #{id}")
               if plantilla.update(estado_id: estado)
                 return true
               else

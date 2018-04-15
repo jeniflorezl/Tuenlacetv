@@ -17,10 +17,10 @@ end
 json.valor_total @valor_total
 json.param_cobradores @param_cobradores
 
-json.conceptos do
-    json.array! @conceptos do |concepto|
-        json.id concepto.id
-        json.abreviatura concepto.abreviatura
+json.documentos do
+    json.array! @documentos do |documento|
+        json.id documento.id
+        json.abreviatura documento.abreviatura
     end
 end
 
