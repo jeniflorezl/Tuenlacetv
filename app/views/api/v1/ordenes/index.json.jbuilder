@@ -24,5 +24,18 @@ json.ordenes do
         json.estado orden["estado"]
         json.valor orden["valor"]
         json.observacion orden["observacion"]
+        json.detalle do
+            json.array! @detalle_orden do |d|
+                if d.orden_id == orden["id"]
+                    json.grupo d.articulo.grupo.descripcion
+                    json.articulo d.articulo.nombre
+                    json.valor d.valor
+                    json.cantidad d.cantidad
+                    json.porIva d.porcentajeIva
+                    json.iva d.iva
+                    json.total d.costo
+                end
+            end
+        end
     end
 end

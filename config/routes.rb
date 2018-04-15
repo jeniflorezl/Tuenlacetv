@@ -59,7 +59,6 @@ Rails.application.routes.draw do
       post 'pagos/anular_pago/:id', to: 'pagos#anular'
       get 'pagos_anticipados/bd/:db', to: 'pagos_anticipados#index'
       get 'pagos_anticipados/info/bd/:db', to: 'pagos_anticipados#index_info'
-      get 'pagos_anticipados/detalle_facturas/:entidad_id/:db', to: 'pagos_anticipados#index_pago'
       get 'pagos_anticipados/:campo/:valor/:db', to: 'pagos_anticipados#show'
       post 'pagos_anticipados/anular_pago/:id', to: 'pagos_anticipados#anular'
       get 'ordenes/bd/:db', to: 'ordenes#index'

@@ -200,6 +200,7 @@ class Pago < ApplicationRecord
 
   def self.generar_pago_anticipado(entidad_id, documento_id, servicio_id, fechatrn, fechapxa, valor, descuento, observacion, forma_pago_id,
     banco_id, cobrador_id, usuario_id)
+    byebug
     ban = 0
     ban1 = 0
     resp = 0
@@ -215,7 +216,7 @@ class Pago < ApplicationRecord
     saldos = Pago.connection.select_all(query)
     saldo_tv = saldos[0]["saldo_tv"]
     saldo_int = saldos[0]["saldo_int"]
-    if servicio_id == serv_tv
+    if servicio_id == serv_tv.to_s
       if saldo_tv == 0
         ban = 1
         concepto = 3
@@ -253,7 +254,7 @@ class Pago < ApplicationRecord
         fecha1 = Date.parse fechapxa
         fecha2 = fecha1 + 29
         if descuento > 0
-          if servicio_id == serv_tv
+          if servicio_id == serv_tv.to_s
             doc_dcto = Documento.find_by(nombre: 'DESCUENTOS TELEVISION').id
           else
             doc_dcto = Documento.find_by(nombre: 'DESCUENTOS INTERNET').id
@@ -298,7 +299,7 @@ class Pago < ApplicationRecord
           fecha2 = fecha1 + 29
         end
         while descuento > 0
-          dcto_anticipo = Acticipo.where(pago_id: pago_id).last
+          dcto_anticipo = Anticipo.where(pago_id: pago_id).last
           if dcto_anticipo.valor < tarifa
             faltante = tarifa - dcto_anticipo.valor
             if descuento >= faltante
@@ -443,14 +444,16 @@ class Pago < ApplicationRecord
     return true
   end
 
-  def self.anular_pago_anticipado(pago_anticipado_id)
+  def self.anular_pago_anticipado(pago_anticipado)
+    byebug
     ban = 0
     query = <<-SQL 
-    SELECT * FROM anticipos WHERE pago_id = #{pago_anticipado_id}
+    SELECT * FROM anticipos WHERE pago_id = #{pago_anticipado[0]["id"]}
     SQL
-    pago_anticipado = Pago.connection.select_all(query)
-    pago_anticipado.each do |p_ant|
-      fechapxa = Date.parse p_ant["fechatrn"]
+    pag_anticipado = Pago.connection.select_all(query)
+    pag_anticipado.each do |p_ant|
+      byebug
+      fechapxa = Date.parse p_ant["fechatrn"].to_s
       query = <<-SQL 
       SELECT * FROM facturacion WHERE (SELECT DATEPART(year, fechatrn)) = #{fechapxa.year} and (SELECT DATEPART(month, fechatrn)) = #{fechapxa.month}
       SQL
@@ -463,18 +466,18 @@ class Pago < ApplicationRecord
       return false
     else
       query = <<-SQL 
-      UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{pago_anticipado_id}
-      UPDATE abonos set saldo = 0, abono = 0 WHERE pago_id = #{pago_anticipado_id}
-      DELETE anticipados WHERE entidad_id = #{pago[0]["entidad_id"]} and pago_id = #{pago_anticipado_id}
+      UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{pago_anticipado[0]["id"]}
+      UPDATE abonos set saldo = 0, abono = 0 WHERE pago_id = #{pago_anticipado[0]["id"]}
+      DELETE anticipos WHERE entidad_id = #{pago_anticipado[0]["entidad_id"]} and pago_id = #{pago_anticipado[0]["id"]}
       SQL
       Pago.connection.select_all(query)
-      dctos = Descuento.where(pago_id: pago_anticipado_id)
+      dctos = Descuento.where(pago_id: pago_anticipado[0]["id"])
       unless dctos.blank?
         dctos.each do |dcto|
           query = <<-SQL 
           UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{dcto.dcto_id}
           UPDATE abonos set saldo = 0, abono = 0 WHERE pago_id = #{dcto.dcto_id}
-          DELETE anticipados WHERE entidad_id = #{pago[0]["entidad_id"]} and pago_id = #{dcto.dcto_id}
+          DELETE anticipos WHERE entidad_id = #{pago_anticipado[0]["entidad_id"]} and pago_id = #{dcto.dcto_id}
           SQL
           Pago.connection.select_all(query)
         end

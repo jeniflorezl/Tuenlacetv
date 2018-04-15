@@ -10,6 +10,7 @@ module Api
                 SELECT * FROM VwOrdenes ORDER BY id;
                 SQL
                 @ordenes = Orden.connection.select_all(query)
+                @detalle_orden = DetalleOrden.all
             end
 
             # GET /info ordenes
@@ -32,12 +33,17 @@ module Api
 
             # POST /ordens
             def create
-                if Orden.generar_orden(params[:entidad_id], params[:concepto_id], params[:fechatrn], 
+                respuesta = 0
+                respuesta = Orden.generar_orden(params[:entidad_id], params[:concepto_id], params[:fechatrn], 
                     params[:fechaven], params[:valor], params[:observacion], params[:tecnico_id],
                     params[:zonaNue], params[:barrioNue], params[:direccionNue], params[:usuario_id])
+                case respuesta
+                when 1
                     render json: { status: :created }
-                else
+                when 2
                     render json: { error: "no se pudo crear orden" }
+                else
+                    render json: { error: "estado erroneo" }
                 end
             end
 

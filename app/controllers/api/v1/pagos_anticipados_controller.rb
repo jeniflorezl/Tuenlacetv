@@ -34,14 +34,14 @@ module Api
                 when 2
                     render json: { error: "no se pudo crear" }
                 else
-                    render json: { error: "el cliente debe tener saldo 0" }
+                    render json: { error: "cliente saldo 0" }
                 end
             end
 
             # POST /pagos_anticipados/id
             def anular
                 if @pago_anticipado
-                    if Pago.anular_pago_anticipado(@pago[0]["id"])
+                    if Pago.anular_pago_anticipado(@pago_anticipado)
                         render json: { status: :deleted }
                     else
                         render json: { error: "error al anular pago anticipado" }
