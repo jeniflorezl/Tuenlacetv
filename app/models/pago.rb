@@ -440,6 +440,7 @@ class Pago < ApplicationRecord
         Pago.connection.select_all(query)
       end
     end
+    return true
   end
 
   def self.anular_pago_anticipado(pago_anticipado_id)
