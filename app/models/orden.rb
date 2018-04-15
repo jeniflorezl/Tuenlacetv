@@ -226,7 +226,7 @@ class Orden < ApplicationRecord
     when 7, 8
       byebug
       ban = 0
-      estado = Estado.find_by(abreviatura: 'C')
+      estado = Estado.find_by(abreviatura: 'C').id
       pregunta = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar corte').valor
       if pregunta == 'S'
         if respuesta == 'S'
