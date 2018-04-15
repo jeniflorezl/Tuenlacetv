@@ -14,7 +14,7 @@ module Api
 
             def index_info
                 @servicios = Servicio.all
-                @conceptos = Concepto.where(abreviatura: 'REC')
+                @documentos = Documento.where(abreviatura: 'REC')
                 @cobradores = Entidad.where(funcion_id: 8)
                 @param_cobradores = Parametro.find_by(descripcion: 'Maneja cobradores').valor
                 @formas_pago = FormaPago.all
