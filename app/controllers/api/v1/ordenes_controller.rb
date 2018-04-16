@@ -42,7 +42,7 @@ module Api
                     render json: { status: :created }
                 when 2
                     render json: { error: "no se pudo crear orden" }
-                else
+                when 3
                     render json: { error: "estado erroneo" }
                 end
             end
@@ -73,7 +73,7 @@ module Api
                         render json: { error: "no se pudo anular orden" }
                     when 3
                         render json: { error: "orden aplicada" }
-                    else 
+                    when 4
                         render json: { error: "orden con pago" }
                     end
                 else

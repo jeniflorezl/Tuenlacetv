@@ -29,8 +29,8 @@ class Senal < ApplicationRecord
     self.vivienda.upcase!
     self.tiposervicio.upcase!
     self.areainstalacion.upcase!
-    self.televisiores = 0 if self.televisiores = nil
-    self.decos = 0 if self.decos = nil
+    self.televisores = 0 if self.televisores == nil
+    self.decos = 0 if self.decos == nil
   end
 
   private
@@ -63,6 +63,18 @@ class Senal < ApplicationRecord
         fechaven: senal.fechacontrato, nrorden: ultimo, estado_id: @estadoD.id, observacion: 'Registro creado en proceso de afiliación',
         tecnico_id: tecnico, usuario_id: senal.usuario_id)
       if orden.save
+        query = <<-SQL 
+        SELECT id FROM ordenes WHERE nrorden=#{orden.nrorden};
+        SQL
+        Orden.connection.clear_query_cache
+        orden_id = Orden.connection.select_all(query)
+        orden_id = (orden_id[0]["id"]).to_i
+        MvtoRorden.create(registro_orden_id: 1, orden_id: orden_id, concepto_id: orden.concepto_id,
+          nrorden: orden.nrorden, valor: senal.fechacontrato, usuario_id: senal.usuario_id)
+        MvtoRorden.create(registro_orden_id: 2, orden_id: orden_id, concepto_id: orden.concepto_id,
+          nrorden: orden.nrorden, valor: senal.usuario_id, usuario_id: senal.usuario_id)
+        MvtoRorden.create(registro_orden_id: 3, orden_id: orden_id, concepto_id: orden.concepto_id,
+          nrorden: orden.nrorden, valor: tecnico, usuario_id: senal.usuario_id)
         if valorAfiTv > 0
           pref = Resolucion.last.prefijo
           if @consecutivos == 'S'

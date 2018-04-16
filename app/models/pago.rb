@@ -467,7 +467,6 @@ class Pago < ApplicationRecord
     else
       query = <<-SQL 
       UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{pago_anticipado[0]["id"]}
-      UPDATE abonos set saldo = 0, abono = 0 WHERE pago_id = #{pago_anticipado[0]["id"]}
       DELETE anticipos WHERE entidad_id = #{pago_anticipado[0]["entidad_id"]} and pago_id = #{pago_anticipado[0]["id"]}
       SQL
       Pago.connection.select_all(query)
@@ -476,7 +475,6 @@ class Pago < ApplicationRecord
         dctos.each do |dcto|
           query = <<-SQL 
           UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{dcto.dcto_id}
-          UPDATE abonos set saldo = 0, abono = 0 WHERE pago_id = #{dcto.dcto_id}
           DELETE anticipos WHERE entidad_id = #{pago_anticipado[0]["entidad_id"]} and pago_id = #{dcto.dcto_id}
           SQL
           Pago.connection.select_all(query)
