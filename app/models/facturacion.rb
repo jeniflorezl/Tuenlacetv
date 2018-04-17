@@ -50,7 +50,8 @@ class Facturacion < ApplicationRecord
     fact_generadas
   end
 
-  def self.generar_facturacion(tipo_fact, f_elaboracion, f_inicio, f_fin, f_vence, f_corte, f_vencidos, observa, zona, usuario_id)
+  def self.generar_facturacion(tipo_fact, f_elaboracion, f_inicio, f_fin, f_vence, f_corte, 
+    f_vencidos, observa, zona, usuario_id)
     observa = observa.upcase! unless observa == observa.upcase
     fech_e = f_elaboracion.split('/')
     resp = 0
@@ -104,12 +105,18 @@ class Facturacion < ApplicationRecord
       ban = 0
       if zona == 'Todos'
         senales = Senal.where(tipo_facturacion_id: tipo_fact)
-        NotaFact.create(fechaElaboracion: f_elaboracion, fechaInicio: f_inicio, fechaFin: f_fin,
+        nota_f = NotaFact.new(fechaElaboracion: f_elaboracion, fechaInicio: f_inicio, fechaFin: f_fin,
           fechaVencimiento: f_vence, fechaCorte: f_corte, fechaPagosVen: f_vencidos, usuario_id: usuario_id)
+        unless nota_f.save
+          return respuesta = 2
+        end
       else
         senales = Senal.where("tipo_facturacion_id = #{tipo_fact} and zona_id = #{zona}")
-        NotaFact.create(zona_id: zona, fechaElaboracion: f_elaboracion, fechaInicio: f_inicio, fechaFin: f_fin,
+        nota_f = NotaFact.new(zona_id: zona, fechaElaboracion: f_elaboracion, fechaInicio: f_inicio, fechaFin: f_fin,
           fechaVencimiento: f_vence, fechaCorte: f_corte, fechaPagosVen: f_vencidos, usuario_id: usuario_id)
+        unless nota_f.save
+          return respuesta = 2
+        end
       end
       fecha1 = Date.parse f_fin
       mes = fecha1.month
@@ -213,6 +220,8 @@ class Facturacion < ApplicationRecord
                     else
                       result1 = 2
                     end
+                  else
+                    result1 = 2
                   end
                   if senal.entidad.persona.condicionfisica == 'D'
                     valor_total_fact = valor_mens + iva
@@ -241,10 +250,15 @@ class Facturacion < ApplicationRecord
                       pago_id = Facturacion.connection.select_all(query)
                       pago_id = (pago_id[0]["id"]).to_i
                       saldo_ab = valor_mens + iva
-                      abono = Abono.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
+                      abono = Abono.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
                         factura_id: facturacion_id, doc_factura_id: facturacion.documento_id,
                         prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id,
                         fechabono: f_elaboracion, saldo: saldo_ab, abono: pago.valor, usuario_id: pago.usuario_id)
+                      unless abono.save
+                        result1 = 2
+                      end
+                    else
+                      result1 = 2
                     end
                   end
                   if ban == 1
@@ -380,6 +394,8 @@ class Facturacion < ApplicationRecord
                     else
                       result1 = 2
                     end
+                  else
+                    result1 = 2
                   end
                   if ban == 1
                     valor_total = valor_mens + iva
@@ -516,6 +532,8 @@ class Facturacion < ApplicationRecord
                     else
                       result1 = 2
                     end
+                  else
+                    result1 = 2
                   end
                   if ban == 1
                     valor_total = valor_mens + iva
@@ -663,6 +681,8 @@ class Facturacion < ApplicationRecord
                     else
                       result1 = 2
                     end
+                  else
+                    result1 = 2
                   end
                   if concepto_id == concepto_tv.id
                     valor_total_fact = valor_mens + iva
@@ -692,10 +712,15 @@ class Facturacion < ApplicationRecord
                         pago_id = Facturacion.connection.select_all(query)
                         pago_id = (pago_id[0]["id"]).to_i
                         saldo_ab = valor_mens + iva
-                        abono = Abono.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
+                        abono = Abono.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
                           factura_id: facturacion_id, doc_factura_id: facturacion.documento_id,
                           prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id,
                           fechabono: f_elaboracion, saldo: saldo_ab, abono: pago.valor, usuario_id: pago.usuario_id)
+                        unless abono.save
+                          result1 = 2
+                        end
+                      else
+                        result1 = 2
                       end
                     end
                   end
@@ -844,6 +869,8 @@ class Facturacion < ApplicationRecord
             else
               return respuesta = 2
             end
+          else
+            return respuesta = 2
           end
         else
           return respuesta = 4
@@ -874,7 +901,7 @@ class Facturacion < ApplicationRecord
           Facturacion.connection.clear_query_cache
           ultimo = Facturacion.connection.select_all(query)
           if ultimo[0]["ultimo"] == nil
-            ultimo=1
+            ultimo = 1 
           else
             ultimo = (ultimo[0]["ultimo"]).to_i + 1
           end
@@ -910,8 +937,10 @@ class Facturacion < ApplicationRecord
             if detallef.save
               return respuesta = 1
             else
-                return respuesta = 2
+              return respuesta = 2
             end
+          else
+            return respuesta = 2
           end
         else
           return respuesta = 4

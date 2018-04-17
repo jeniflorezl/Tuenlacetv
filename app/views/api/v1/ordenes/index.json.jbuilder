@@ -6,6 +6,7 @@ json.ordenes do
         json.direccion orden["direccion"]
         json.telefonos orden["telefonos"]
         json.barrio orden["barrio"]
+        json.zona_id orden["zona_id"]
         json.zona orden["zona"]
         json.fechacontrato orden["fechacontrato"]
         json.precinto orden["precinto"]

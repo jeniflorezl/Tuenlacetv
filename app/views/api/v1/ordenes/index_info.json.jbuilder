@@ -26,17 +26,6 @@ json.tecnicos do
     end
 end
 
-json.empleados do
-    json.array! @empleados do |empleado|
-        json.id empleado.id
-        if empleado.persona.nombre2.blank?
-            json.nombres empleado.persona.nombre1 + ' ' + empleado.persona.apellido1 + ' ' + empleado.persona.apellido2
-        else
-            json.nombres empleado.persona.nombre1 + ' ' + empleado.persona.nombre2 + ' ' + empleado.persona.apellido1 + ' ' + empleado.persona.apellido2
-        end
-    end
-end
-
 json.grupos do
     json.array! @grupos do |grupo|
         json.id grupo.id

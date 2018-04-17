@@ -18,7 +18,6 @@ module Api
                 @conceptos = Concepto.where(clase: 'O')
                 @tarifas = Tarifa.where(estado_id: 1)
                 @tecnicos = Entidad.where(funcion_id: 7)
-                @empleados = Entidad.where(funcion_id: 2)
                 @grupos = Grupo.all
                 @articulos = Articulo.all
                 @param_valor = Parametro.find_by(descripcion: 'Permite cambiar valor de ordenes').valor
