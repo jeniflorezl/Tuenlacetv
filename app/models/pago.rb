@@ -184,7 +184,7 @@ class Pago < ApplicationRecord
                   prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
                   fechabono: fechatrn, saldo: faltante, abono: abono_dcto, usuario_id: pago.usuario_id)
                 if abono.save
-                  descuento_pago = Descuento.create(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago,
+                  descuento_pago = Descuento.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago,
                     dcto_id: dcto_id, doc_dctos_id: dcto.documento_id, nrodcto: dcto.nropago, usuario_id: usuario_id)
                   unless descuento_pago.save
                     return false

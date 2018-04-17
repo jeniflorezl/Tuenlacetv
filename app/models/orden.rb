@@ -184,14 +184,18 @@ class Orden < ApplicationRecord
             valor: facturacion.valor, porcentajeIva: iva_concepto, iva: facturacion.iva, observacion: 'TELEVISION' + ' ' + nombre_mes,
             operacion: '+', usuario_id: usuario_id)
             if detallef.save
-              FacturaOrden.create(factura_id: facturacion_id, documento_id: facturacion.documento_id,
+              fact_orden = FacturaOrden.new(factura_id: facturacion_id, documento_id: facturacion.documento_id,
                 prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, orden_id: orden_id, concepto_id: orden.concepto_id,
                 nrorden: orden.nrorden, usuario_id: usuario_id)
-              traslado = Traslado.new(orden_id: orden_id, concepto_id: concepto_id, nrorden: orden.nrorden, zonaAnt_id: senal.zona_id,
-                barrioAnt_id: senal.barrio_id, direccionAnt: senal.direccion, zonaNue_id: zonaNue, barrioNue_id: barrioNue,
-                direccionNue: direccionNue, usuario_id: usuario_id)
-              if traslado.save
-                return resp = 1
+              if fact_orden.save
+                traslado = Traslado.new(orden_id: orden_id, concepto_id: concepto_id, nrorden: orden.nrorden, zonaAnt_id: senal.zona_id,
+                  barrioAnt_id: senal.barrio_id, direccionAnt: senal.direccion, zonaNue_id: zonaNue, barrioNue_id: barrioNue,
+                  direccionNue: direccionNue, usuario_id: usuario_id)
+                if traslado.save
+                  return resp = 1
+                else
+                  return resp = 2
+                end
               else
                 return resp = 2
               end
@@ -250,15 +254,17 @@ class Orden < ApplicationRecord
     SQL
     Orden.connection.select_all(query)
     detalle.each do |d|
-      detalle_orden = DetalleOrden.create(orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"], nrorden: orden[0]["nrorden"],
+      detalle_orden = DetalleOrden.new(orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"], nrorden: orden[0]["nrorden"],
         articulo_id: d["articulo_id"], cantidad: d["cantidad"], valor: d["valor"], porcentajeIva: d["porcentajeIva"],
         iva: d["iva"], costo: d["total"], observacion: observacion, usuario_id: usuario_id)
+      unless detalle_orden.save
+        return false
+      end
     end
     case orden[0]["concepto_id"]
     when 7, 8
       byebug
       ban = 0
-      ban1 = 0
       estado = Estado.find_by(abreviatura: 'C').id
       pregunta = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar corte').valor
       if pregunta == 'S'
@@ -329,29 +335,21 @@ class Orden < ApplicationRecord
               factura_orden = FacturaOrden.new(factura_id: facturacion_id, documento_id: facturacion.documento_id,
                 prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
                 nrorden: orden[0]["nrorden"], usuario_id: usuario_id)
-              if factura_orden.save
-                ban1 = 1
-              else
-                ban1 = 2
+              unless factura_orden.save
+                return false
               end
             else
-              ban1 = 2
+              return false
             end
           else
-            ban1 = 2
+            return false
           end
         end
       end
-      if ban1 == 1
-        if plantilla.update(estado_id: estado)
-          return true
-        else
-          return false
-        end
-      elsif ban1 == 2
-        return false
-      elsif ban1 == 0
+      if plantilla.update(estado_id: estado)
         return true
+      else
+        return false
       end
     when 11, 12
       byebug
@@ -426,29 +424,21 @@ class Orden < ApplicationRecord
               factura_orden = FacturaOrden.new(factura_id: facturacion_id, documento_id: facturacion.documento_id,
                 prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
                 nrorden: orden[0]["nrorden"], usuario_id: usuario_id)
-              if factura_orden.save
-                ban1 = 1
-              else
-                ban1 = 2
+              unless factura_orden.save
+                return false
               end
             else
-              ban1 = 2
+              return false
             end
           else
-            ban1 = 2
+            return false
           end
         end
       end
-      if ban1 == 1
-        if plantilla.update(estado_id: estado)
-          return true
-        else
-          return false
-        end
-      elsif ban1 == 2
-        return false
-      elsif ban1 == 0
+      if plantilla.update(estado_id: estado)
         return true
+      else
+        return false
       end
     when 13, 14
       byebug
@@ -537,29 +527,21 @@ class Orden < ApplicationRecord
               factura_orden = FacturaOrden.new(factura_id: facturacion_id, documento_id: facturacion.documento_id,
                 prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
                 nrorden: orden[0]["nrorden"], usuario_id: usuario_id)
-              if factura_orden.save
-                ban1 = 1
-              else
-                ban1 = 2
+              unless factura_orden.save
+                return false
               end
             else
-              ban1 = 2
+              return false
             end
           else
-            ban1 = 2
+            return false
           end
         end
       end
-      if ban1 == 1
-        if plantilla.update(estado_id: estado, fechaini: fechaven)
-          return true
-        else
-          return false
-        end
-      elsif ban1 == 2
-        return false
-      elsif ban1 == 0
+      if plantilla.update(estado_id: estado, fechaini: fechaven)
         return true
+      else
+        return false
       end
     when 17, 18
       byebug
@@ -633,29 +615,21 @@ class Orden < ApplicationRecord
               factura_orden = FacturaOrden.new(factura_id: facturacion_id, documento_id: facturacion.documento_id,
                 prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
                 nrorden: orden[0]["nrorden"], usuario_id: usuario_id)
-              if factura_orden.save
-                ban1 = 1
-              else
-                ban1 = 2
+              unless factura_orden.save
+                return false
               end
             else
-              ban1 = 2
+              return false
             end
           else
-            ban1 = 2
+            return false
           end
         end
       end
-      if ban1 == 1
-        if plantilla.update(estado_id: estado)
-          return true
-        else
-          return false
-        end
-      elsif ban1 == 2
-        return false
-      elsif ban1 == 0
+      if plantilla.update(estado_id: estado)
         return true
+      else
+        return false
       end
     end
   end

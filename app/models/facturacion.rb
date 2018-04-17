@@ -100,8 +100,6 @@ class Facturacion < ApplicationRecord
       doc_int = Documento.find_by(nombre: 'FACTURA DE VENTA INTERNET').id
       f_fact = Time.new(fech_e[2], fech_e[1], fech_e[0])
       nombre_mes = Facturacion.mes(f_fact.strftime("%B"))
-      result = 0
-      result1 = 0
       ban = 0
       if zona == 'Todos'
         senales = Senal.where(tipo_facturacion_id: tipo_fact)
@@ -215,13 +213,11 @@ class Facturacion < ApplicationRecord
                       prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_tv.id, cantidad: 1, 
                       valor: facturacion.valor, porcentajeIva: iva_tv, iva: facturacion.iva, observacion: 'TELEVISION' + ' ' + nombre_mes,
                       operacion: '+', usuario_id: usuario_id)
-                    if detallef.save
-                      result = 1
-                    else
-                      result1 = 2
+                    unless detallef.save
+                      return respuesta = 2
                     end
                   else
-                    result1 = 2
+                    return respuesta = 2
                   end
                   if senal.entidad.persona.condicionfisica == 'D'
                     valor_total_fact = valor_mens + iva
@@ -255,10 +251,10 @@ class Facturacion < ApplicationRecord
                         prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id,
                         fechabono: f_elaboracion, saldo: saldo_ab, abono: pago.valor, usuario_id: pago.usuario_id)
                       unless abono.save
-                        result1 = 2
+                        return respuesta = 2
                       end
                     else
-                      result1 = 2
+                      return respuesta = 2
                     end
                   end
                   if ban == 1
@@ -291,7 +287,6 @@ class Facturacion < ApplicationRecord
                     UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_tv}, iva = #{iva}, observacion = 'TELEVISION' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]};
                     SQL
                     Facturacion.connection.select_all(query)
-                    result = 1
                   end
                 end
               end
@@ -389,13 +384,11 @@ class Facturacion < ApplicationRecord
                     prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_int.id, cantidad: 1, 
                     valor: facturacion.valor, porcentajeIva: iva_int, iva: facturacion.iva, observacion: 'INTERNET' + ' ' + nombre_mes,
                     operacion: '+', usuario_id: usuario_id)
-                    if detallef.save
-                      result = 1
-                    else
-                      result1 = 2
+                    unless detallef.save
+                      return respuesta = 2
                     end
                   else
-                    result1 = 2
+                    return respuesta = 2
                   end
                   if ban == 1
                     valor_total = valor_mens + iva
@@ -427,7 +420,6 @@ class Facturacion < ApplicationRecord
                     UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_int}, iva = #{iva}, observacion = 'INTERNET' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]};
                     SQL
                     Facturacion.connection.select_all(query)
-                    result = 1
                   end
                 end
               end
@@ -527,13 +519,11 @@ class Facturacion < ApplicationRecord
                     prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto, cantidad: 1, 
                     valor: facturacion.valor, porcentajeIva: iva_cpto, iva: facturacion.iva, observacion: observa.upcase! + ' ' + nombre_mes,
                     operacion: '+', usuario_id: usuario_id)
-                    if detallef.save
-                      result = 1
-                    else
-                      result1 = 2
+                    unless detallef.save
+                      return respuesta = 2
                     end
                   else
-                    result1 = 2
+                    return respuesta = 2
                   end
                   if ban == 1
                     valor_total = valor_mens + iva
@@ -565,7 +555,6 @@ class Facturacion < ApplicationRecord
                     UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_cpto}, iva = #{iva}, observacion: '#{observa}' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]};
                     SQL
                     Facturacion.connection.select_all(query)
-                    result = 1
                   end
                 end
               end
@@ -676,13 +665,11 @@ class Facturacion < ApplicationRecord
                     prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto_id, cantidad: 1, 
                     valor: facturacion.valor, porcentajeIva: iva_tv, iva: facturacion.iva, observacion: observacion_d + ' ' + nombre_mes,
                     operacion: '+', usuario_id: usuario_id)
-                    if detallef.save
-                      result = 1
-                    else
-                      result1 = 2
+                    unless detallef.save
+                      return respuesta = 2
                     end
                   else
-                    result1 = 2
+                    return respuesta = 2
                   end
                   if concepto_id == concepto_tv.id
                     valor_total_fact = valor_mens + iva
@@ -717,10 +704,10 @@ class Facturacion < ApplicationRecord
                           prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id,
                           fechabono: f_elaboracion, saldo: saldo_ab, abono: pago.valor, usuario_id: pago.usuario_id)
                         unless abono.save
-                          result1 = 2
+                          return respuesta = 2
                         end
                       else
-                        result1 = 2
+                        return respuesta = 2
                       end
                     end
                   end
@@ -754,7 +741,6 @@ class Facturacion < ApplicationRecord
                     UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_cpto}, iva = #{iva}, observacion = '#{observacion_d}' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]};
                     SQL
                     Facturacion.connection.select_all(query)
-                    result = 1 
                   end
                 end
               end
@@ -762,11 +748,7 @@ class Facturacion < ApplicationRecord
           end
         end
       end
-      if (result1 != 2)
-        return respuesta = 1
-      else
-        return respuesta = 2
-      end
+      return respuesta = 1
     end
   end
 
