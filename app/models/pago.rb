@@ -235,6 +235,9 @@ class Pago < ApplicationRecord
     else
       estado = Estado.find_by(abreviatura: 'PE').id
       pref = Resolucion.last.prefijo
+      fecha_fact = fechatrn.split("/")
+      fecha_fact = Time.new(fecha_fact[2], fecha_fact[1], fecha_fact[0])
+      nombre_mes = Facturacion.mes(fecha_fact.strftime("%B"))
       if documento_id == "7"
         concepto = Concepto.find(3)
         iva_cpto = concepto.porcentajeIva
