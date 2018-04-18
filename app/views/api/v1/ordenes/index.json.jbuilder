@@ -40,3 +40,8 @@ json.ordenes do
         end
     end
 end
+
+json.param_instalacion @param_instalacion 
+json.param_corte @param_corte
+json.param_rco @param_rco
+json.param_retiro @param_retiro

@@ -2,7 +2,7 @@ module Api
     module V1
         class PagosController < ApplicationController
             before_action :set_pago_buscar, only: [:show]
-            before_action :set_pago, only: [:update, :anular, :anular_pago_ant]
+            before_action :set_pago, only: [:update, :anular]
 
             # GET /pagos
             def index

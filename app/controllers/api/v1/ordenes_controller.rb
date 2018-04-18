@@ -2,7 +2,7 @@ module Api
     module V1
         class OrdenesController < ApplicationController
             before_action :set_orden_buscar, only: [:show]
-            before_action :set_orden, only: [:update, :destroy]
+            before_action :set_orden, only: [:update, :destroy, :anular]
 
             # GET /ordenes
             def index
@@ -11,6 +11,11 @@ module Api
                 SQL
                 @ordenes = Orden.connection.select_all(query)
                 @detalle_orden = DetalleOrden.all
+                @param_instalacion = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar instalacion').valor
+                @param_corte = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar corte').valor
+                @param_rco = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar reconexion').valor
+                @param_retiro = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar retiro').valor
+
             end
 
             # GET /info ordenes

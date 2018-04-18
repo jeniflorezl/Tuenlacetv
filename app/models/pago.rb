@@ -234,6 +234,7 @@ class Pago < ApplicationRecord
       end
     else
       estado = Estado.find_by(abreviatura: 'PE').id
+      pref = Resolucion.last.prefijo
       if documento_id == "7"
         concepto = Concepto.find(3)
         iva_cpto = concepto.porcentajeIva

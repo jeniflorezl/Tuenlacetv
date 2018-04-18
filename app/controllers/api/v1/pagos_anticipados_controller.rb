@@ -2,7 +2,7 @@ module Api
     module V1
         class PagosAnticipadosController < ApplicationController
             before_action :set_pago_anticipado_buscar, only: [:show]
-            before_action :set_pago_anticipado, only: [:update, :anular, :anular_pago_anticipado]
+            before_action :set_pago_anticipado, only: [:update, :anular]
 
             # GET /pagos_anticipados
             def index
