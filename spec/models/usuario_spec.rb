@@ -38,7 +38,7 @@ RSpec.describe Usuario, :type => :model do
     expect(usuario.errors[:estado]).to include("can't be blank")
   end
 
-  it "is invalid without a user" do
+  it "is invalid without an user" do
     usuario = Usuario.new(usuariocre: nil)
     usuario.valid?
     expect(usuario.errors[:usuariocre]).to include("can't be blank")

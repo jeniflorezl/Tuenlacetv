@@ -28,7 +28,7 @@ RSpec.describe Empresa, :type => :model do
     expect(empresa.errors[:razonsocial]).to include("can't be blank")
   end
 
-  it "is invalid without a address" do
+  it "is invalid without an address" do
     empresa = Empresa.new(direccion: nil)
     empresa.valid?
     expect(empresa.errors[:direccion]).to include("can't be blank")
@@ -46,7 +46,7 @@ RSpec.describe Empresa, :type => :model do
     expect(empresa.errors[:ciudad]).to include("can't be blank")
   end
 
-  it "is invalid without a entity" do
+  it "is invalid without an entity" do
     empresa = Empresa.new(entidad_id: nil)
     empresa.valid?
     expect(empresa.errors[:entidad]).to include("can't be blank")

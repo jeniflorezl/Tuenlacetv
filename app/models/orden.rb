@@ -4,7 +4,7 @@ class Orden < ApplicationRecord
   belongs_to :estado
   belongs_to :usuario
 
-  validates :entidad, :concepto, :nrorden, :estado, :usuario, presence: true #obligatorio
+  validates :entidad, :concepto, :fechatrn, :fechaven, :nrorden, :estado, :usuario, presence: true #obligatorio
 
   private
 

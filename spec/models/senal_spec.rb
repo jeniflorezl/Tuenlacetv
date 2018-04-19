@@ -14,7 +14,7 @@ RSpec.describe Senal, :type => :model do
     expect(senal).to be_valid
   end
   
-  it "is invalid without a entity" do
+  it "is invalid without an entity" do
     senal = Senal.new(entidad_id: nil)
     senal.valid?
     expect(senal.errors[:entidad]).to include("can't be blank")
@@ -32,7 +32,7 @@ RSpec.describe Senal, :type => :model do
     expect(senal.errors[:contrato]).to include("can't be blank")
   end
 
-  it "is invalid without a address" do
+  it "is invalid without an address" do
     senal = Senal.new(direccion: nil)
     senal.valid?
     expect(senal.errors[:direccion]).to include("can't be blank")
@@ -92,7 +92,7 @@ RSpec.describe Senal, :type => :model do
     expect(senal.errors[:usuario]).to include("can't be blank")
   end
 
-  it "is invalid without billing type" do
+  it "is invalid without a billing type" do
     senal = Senal.new(tipo_facturacion_id: nil)
     senal.valid?
     expect(senal.errors[:tipo_facturacion]).to include("can't be blank")

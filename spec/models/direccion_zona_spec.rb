@@ -12,7 +12,7 @@ RSpec.describe DireccionZona, :type => :model do
     expect(direccion_zona.errors[:zona]).to include("can't be blank")
   end
 
-  it "is invalid without a address" do
+  it "is invalid without an address" do
     direccion_zona = DireccionZona.new(direccion: nil)
     direccion_zona.valid?
     expect(direccion_zona.errors[:direccion]).to include("can't be blank")
