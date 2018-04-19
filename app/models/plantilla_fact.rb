@@ -5,5 +5,5 @@ class PlantillaFact < ApplicationRecord
   belongs_to :tarifa
   belongs_to :usuario
 
-  validates :entidad, :concepto, :estado, :tarifa, :usuario, presence: true #obligatorio
+  validates :entidad, :concepto, :estado, :tarifa, :fechaini, :fechafin, :usuario, presence: true #obligatorio
 end

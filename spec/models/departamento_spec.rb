@@ -1,20 +1,26 @@
 require 'rails_helper'
 
 RSpec.describe Departamento, :type => :model do
-  it "is valid with a name and an user" do
-    pais = Departamento.new(nombre: 'uruguay', usuario_id: 1)
-    expect(pais).to be_valid
+  it "is valid with a country, name, code and an user" do
+    departamento = Departamento.new(pais_id: 1, nombre: 'risaralda', codigo: '', usuario_id: 1)
+    expect(departamento).to be_valid
+  end
+
+  it "is invalid without a country" do
+    departamento = Departamento.new(pais_id: nil)
+    departamento.valid?
+    expect(departamento.errors[:pais]).to include("can't be blank")
   end
 
   it "is invalid without a name" do
-    pais = Departamento.new(nombre: nil)
-    pais.valid?
-    expect(pais.errors[:nombre]).to include("can't be blank")
+    departamento = Departamento.new(nombre: nil)
+    departamento.valid?
+    expect(departamento.errors[:nombre]).to include("can't be blank")
   end
 
   it "is invalid without an user" do
-    pais = Departamento.new(usuario_id: nil)
-    pais.valid?
-    expect(pais.errors[:usuario]).to include("can't be blank")
+    departamento = Departamento.new(usuario_id: nil)
+    departamento.valid?
+    expect(departamento.errors[:usuario]).to include("can't be blank")
   end
 end

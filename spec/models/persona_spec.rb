@@ -5,7 +5,7 @@ RSpec.describe Persona, :type => :model do
   zone, city, phones, email, birthdate, type person, stratum, physical condition and an user" do
     persona = Persona.new(tipo_documento_id: 1, documento: '7447852522', nombre1: 'ESTEFANIA', 
     nombre2: '', apellido1: 'FLÓREZ', apellido2: 'LONDOÑO', direccion: 'Cra 47 #53-41', 
-    barrio_id: 2, zona_id: 2, telefono1: '4540312', telefono2: '',  
+    barrio_id: 2, zona_id: 1, telefono1: '4540312', telefono2: '',  
     correo: 'jeniferfl@gmail.com', fechanac: '13/07/1995', tipopersona: 'N', estrato: '3', 
     condicionfisica: 'N', usuario_id: 1)
     expect(persona).to be_valid

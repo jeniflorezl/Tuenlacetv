@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe NotaFact, :type => :model do
-  it "is valid with a zona identifier, elaboration date, starting date, last date, expiration date,
+  it "is valid with a zone, elaboration date, starting date, last date, expiration date,
   cut date, expired payments date and user" do
     nota_fact = NotaFact.new(zona_id: 1, fechaElaboracion: "01/01/2018", fechaInicio: "01/01/2018",
         fechaFin: "30/12/2018", fechaVencimiento: "30/12/2018", fechaCorte: "30/12/2018",

@@ -8,8 +8,6 @@ class Empresa < ApplicationRecord
   validates :tipo, :nit, :razonsocial, :direccion, :telefono1, :ciudad, :entidad, :usuario, 
   presence: true #obligatorio
 
-  validates :correo, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, on: :create }
-
   def uppercase
     self.razonsocial.upcase!
     self.direccion.upcase!

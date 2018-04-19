@@ -12,16 +12,14 @@ class Persona < ApplicationRecord
 
   validates :documento, uniqueness: true
 
-  validates :correo, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, on: :create }
-
   def uppercase
     self.nombre1.upcase!
-    self.nombre2.upcase!
+    self.nombre2.upcase! unless self.nombre2.blank?
     self.apellido1.upcase!
-    self.apellido2.upcase!
+    self.apellido2.upcase! unless self.apellido2.blank?
     self.direccion.upcase!
-    self.correo.downcase!
+    self.correo.downcase! unless self.correo.blank?
     self.tipopersona.upcase!
-    self.condicionfisica.upcase!
+    self.condicionfisica.upcase! unless self.condicionfisica.blank?
   end
 end

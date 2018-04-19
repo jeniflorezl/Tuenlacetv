@@ -18,10 +18,12 @@ class Concepto < ApplicationRecord
   end
 
   def codigo_concepto
-    if self.codigo.length == 1
-      self.codigo = '00' + self.codigo
-    elsif self.codigo.length == 2
-      self.codigo = '0' + self.codigo
+    unless self.codigo == nil
+      if self.codigo.length == 1
+        self.codigo = '00' + self.codigo
+      elsif self.codigo.length == 2
+        self.codigo = '0' + self.codigo
+      end
     end
   end
 end

@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Concepto, :type => :model do
-  it "is valid with a service, code, name, abbreviation, percentage iva, operation
+  it "is valid with a service, code, name, abbreviation, iva percentage, operation
   and an user" do
-    concepto = Concepto.new(servicio_id: 1, codigo: '001', nombre: 'SUSCRIPCION', 
+    concepto = Concepto.new(servicio_id: 1, codigo: '52', nombre: 'SUSCRIPCION', 
     abreviatura: 'AFI', porcentajeIva: '19', operacion: '+', usuario_id: 1)
     expect(concepto).to be_valid
   end

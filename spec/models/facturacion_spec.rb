@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Facturacion, :type => :model do
   it "is valid with a entity, document, transaction date, expiration date, value
-  iva, days, prefix, bill number, state identifier, observation, report and user" do
+  iva, days, prefix, bill number, state, observation, report and user" do
     factura = Facturacion.new(entidad_id: 1, documento_id: 1, fechatrn: "01/01/2018",
         fechaven: "30/01/2018", valor: 20000, iva: 2300, dias: 30, prefijo: "AR", 
         nrofact: 1, estado_id: 1, observacion: "Mensualidad", reporta: "1", usuario_id: 1)
