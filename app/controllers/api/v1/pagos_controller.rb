@@ -36,14 +36,14 @@ module Api
 
             # POST /pagos/id
             def anular
-                if @pago
+                if @pago.blank?
+                    render json: { error: "not found" }
+                else
                     if Pago.anular_pago(@pago[0]["id"])
                         render json: { status: :anulado }
                     else
                         render json: { error: "error al anular pago" }
                     end
-                else
-                    render json: { post: "not found" }
                 end
             end
 

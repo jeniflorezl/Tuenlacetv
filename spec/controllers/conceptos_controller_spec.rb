@@ -46,7 +46,7 @@ RSpec.describe Api::V1::ConceptosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        post "http://localhost:3000/api/v1/conceptos", :params => '{ "servicio_id": 1, "codigo": "053", "nombre": "SUSCRIPCION", "porcentajeIva": 19, "abreviatura": "AFI", "operacion": "+", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
+        post "http://localhost:3000/api/v1/conceptos", :params => '{ "servicio_id": 1, "codigo": "53", "nombre": "SUSCRIPCION", "porcentajeIva": 19, "abreviatura": "AFI", "operacion": "+", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -102,7 +102,7 @@ RSpec.describe Api::V1::ConceptosController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/conceptos/5", :params => '{ "db": "PRUEBAS" }', :headers => headers
+        delete "http://localhost:3000/api/v1/conceptos/49", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
       end
 

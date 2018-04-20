@@ -53,15 +53,15 @@ module Api
 
             # PATCH/PUT /ordenes/id
             def update
-                if @orden
+                if @orden.blank?
+                    render json: { error: "not found" }
+                else
                     if Orden.editar_orden(@orden, params[:fechaven], params[:solicita], params[:tecnico_id], 
                         params[:observacion], params[:detalle], params[:solucion], params[:respuesta], params[:usuario_id])
                         render json: { status: :updated }
                     else
                         render json: { error: "no se pudo actualizar orden" }
                     end
-                else
-                    render json: { error: "not found" }
                 end
             end
 

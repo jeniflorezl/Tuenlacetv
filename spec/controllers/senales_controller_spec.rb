@@ -8,7 +8,7 @@ RSpec.describe Api::V1::SenalesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        get "http://localhost:3000/api/v1/senales/bd/PRUEBAS", :headers => headers
+        get "http://localhost:3000/api/v1/senales/1/bd/PRUEBAS", :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -16,7 +16,7 @@ RSpec.describe Api::V1::SenalesController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        get "http://localhost:3000/api/v1/senales/bd/PRUEBAS", :headers => headers
+        get "http://localhost:3000/api/v1/senales/1/bd/PRUEBAS", :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -27,7 +27,7 @@ RSpec.describe Api::V1::SenalesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        get "http://localhost:3000/api/v1/senales/id/1/PRUEBAS", :headers => headers
+        get "http://localhost:3000/api/v1/senales/1/id/1/PRUEBAS", :headers => headers
         expect(response).to have_http_status(:ok)
       end
 
@@ -35,7 +35,7 @@ RSpec.describe Api::V1::SenalesController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        get "http://localhost:3000/api/v1/senales/id/1/PRUEBAS", :headers => headers
+        get "http://localhost:3000/api/v1/senales/1/id/1/PRUEBAS", :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -64,7 +64,7 @@ RSpec.describe Api::V1::SenalesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        post "http://localhost:3000/api/v1/senales", :params => '{ "persona": { "tipo_documento_id": 1, "documento": "1020470055", "nombre1": "JENIFFER", "nombre2": "", "apellido1": "FLÓREZ", "apellido2": "LONDOÑO", "direccion": "CRA 47 #53-41", "barrio_id": 1, "zona_id": 1, "telefono1": "4540312", "telefono2": "", "correo": "jeniferfl@gmail.com", "fechanac": "1995-07-13", "tipopersona": "N", "estrato": 3, "condicionfisica": "N" }, "senal": { "servicio_id": 1, "contrato": "4789963", "direccion": "CALLE 11 #24-23", "urbanizacion": "", "torre": "", "apto": "", "barrio_id": 1, "zona_id": 1, "telefono1": "4540312", "telefono2": "", "contacto": "", "estrato": 4, "vivienda": "P",  "observacion": "", "estado_id": 1, "fechacontrato": "2017-01-01", "permanencia": null, "televisores": 2, "decos": "", "precinto": "12321", "vendedor_id": 7, "tipo_instalacion_id": 1,"tecnologia_id": 1,"tiposervicio": "R" }, "internet": 1 }', :headers => headers
+        post "http://localhost:3000/api/v1/senales", :params => '{ "persona": { "documento": "1020470055", "nombre1": "JENIFFER", "nombre2": "", "apellido2": "LONDOÑO", "direccion": "CRA 47 #53-41", "barrio_id": 1, "zona_id": 1, "telefono1": "4540312", "telefono2": "", "correo": "jeniferfl@gmail.com", "fechanac": "1995-07-13", "tipopersona": "N", "estrato": 3, "condicionfisica": "N" }, "senal": { "contrato": "4789963", "direccion": "CALLE 11 #24-23", "urbanizacion": "", "torre": "", "apto": "", "telefono2": "", "contacto": "", "estrato": 4, "vivienda": "P",  "observacion": "", "fechacontrato": "2017-01-01", "permanencia": null, "televisores": 2, "decos": "", "precinto": "12321", "vendedor_id": 7, "tipo_instalacion_id": 1,"tecnologia_id": 1,"tiposervicio": "R" }, "internet": 1 }', :headers => headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
@@ -111,17 +111,8 @@ RSpec.describe Api::V1::SenalesController, type: :request do
           "Content-Type" => "application/json",
           "Accept" => "application/json",
           "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/senales/2", :params => '{ "db": "PRUEBAS" }', :headers => headers
+        delete "http://localhost:3000/api/v1/senales/10", :params => '{ "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:ok)
-      end
-
-      it 'is not ok if it is foreign key' do
-        headers = { 
-          "Content-Type" => "application/json",
-          "Accept" => "application/json",
-          "Authorization" => "Bearer 57f58b86dd567bd33a309a1234bc73e9"}
-        delete "http://localhost:3000/api/v1/senales/5", :params => '{ "db": "PRUEBAS" }', :headers => headers
-        expect(response).to have_http_status(:not_acceptable)
       end
 
       it 'Not Found' do

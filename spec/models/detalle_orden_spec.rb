@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe DetalleOrden, :type => :model do
   it "is valid with a order, article, amount, value, iva percentage, iva, cost, observation
   and user" do
-    detalle_orden = DetalleOrden.new(orden_id: 1, concepto_id: 5, nrorden: 1, articulo_id: 1,
-        cantidad: 1, valor: 21000, porcentajeIva: 19, iva: 2400, costo: 25400, 
+    detalle_orden = DetalleOrden.new(orden_id: 1, concepto_id: 5, nrorden: 1, articulo_id: 3,
+        cantidad: 1, valor: 2350, porcentajeIva: 19, iva: 450, costo: 2800, 
         observacion: "punto adcional", usuario_id: 1)
     expect(detalle_orden).to be_valid
   end

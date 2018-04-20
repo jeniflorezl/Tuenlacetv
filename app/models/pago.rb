@@ -15,7 +15,6 @@ class Pago < ApplicationRecord
 
   def self.generar_pago(entidad_id, documento_id, fechatrn, valor, descuento, observacion, forma_pago_id,
     banco_id, cobrador_id, detalle, usuario_id)
-    byebug
     ban = 0
     ban1 = 0
     abono_fact = 0
@@ -59,7 +58,6 @@ class Pago < ApplicationRecord
         pago_id = (pago_id[0]["id"]).to_i
         if descuento > 0
           detalle.each do |d|
-            byebug
             ban = 0
             ban1 = 0
             query = <<-SQL 
@@ -112,7 +110,6 @@ class Pago < ApplicationRecord
               if ban1 == 3
                 dcto_pago = Descuento.where(pago_id: pago_id)
                 dcto_pago.each do |dcto_p|
-                  byebug
                   if dcto_p.doc_dctos_id == doc_dcto
                     dcto_id = dcto_p.dcto_id
                     dcto = dcto_p
@@ -295,7 +292,6 @@ class Pago < ApplicationRecord
 
   def self.generar_pago_anticipado(entidad_id, documento_id, servicio_id, fechatrn, fechapxa, valor, descuento, observacion, forma_pago_id,
     banco_id, cobrador_id, usuario_id)
-    byebug
     ban = 0
     ban1 = 0
     resp = 0
@@ -551,14 +547,12 @@ class Pago < ApplicationRecord
   end
 
   def self.anular_pago_anticipado(pago_anticipado)
-    byebug
     ban = 0
     query = <<-SQL 
     SELECT * FROM anticipos WHERE pago_id = #{pago_anticipado[0]["id"]}
     SQL
     pag_anticipado = Pago.connection.select_all(query)
     pag_anticipado.each do |p_ant|
-      byebug
       fechapxa = Date.parse p_ant["fechatrn"].to_s
       query = <<-SQL 
       SELECT * FROM facturacion WHERE (SELECT DATEPART(year, fechatrn)) = #{fechapxa.year} and (SELECT DATEPART(month, fechatrn)) = #{fechapxa.month}

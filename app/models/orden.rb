@@ -10,7 +10,6 @@ class Orden < ApplicationRecord
 
   def self.generar_orden(entidad_id, concepto_id, fechatrn, fechaven, valor, observacion, tecnico_id, 
     zonaNue, barrioNue, direccionNue, usuario_id)
-    byebug
     senal = Senal.find_by(entidad_id: entidad_id)
     pref = Resolucion.last.prefijo
     ban = 0
@@ -84,7 +83,6 @@ class Orden < ApplicationRecord
       end
       case concepto_id
       when "5", "6", "9", "10", "15", "16", "19", "20"
-        byebug
         if valor > 0
           if concepto_id == "5" || concepto_id == "9" || concepto_id == "15" || concepto_id == "19"
             doc = 1
@@ -148,7 +146,6 @@ class Orden < ApplicationRecord
           return resp = 1
         end
       when "13", "14"
-        byebug
         if valor > 0
           if concepto_id == "13"
             doc = 1
@@ -228,7 +225,6 @@ class Orden < ApplicationRecord
 
   def self.editar_orden(orden, fechaven, solicita, tecnico_id, observacion, detalle, solucion, respuesta, usuario_id)
     t = Time.now
-    byebug
     senal = Senal.find_by(entidad_id: orden[0]["entidad_id"])
     concepto_fact = 0
     fecha = Date.parse fechaven
@@ -273,7 +269,6 @@ class Orden < ApplicationRecord
     end
     case orden[0]["concepto_id"]
     when 7, 8
-      byebug
       ban = 0
       estado = Estado.find_by(abreviatura: 'C').id
       pregunta = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar corte').valor
@@ -360,7 +355,6 @@ class Orden < ApplicationRecord
         return false
       end
     when 11, 12
-      byebug
       ban = 0
       estado = Estado.find_by(abreviatura: 'A').id
       pregunta = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar instalacion').valor
@@ -447,7 +441,6 @@ class Orden < ApplicationRecord
         return false
       end
     when 13, 14
-      byebug
       traslado = Traslado.find_by(orden_id: orden[0]["id"])
       if senal.update(direccion: traslado.direccionNue, zona_id: traslado.zonaNue_id, barrio_id: traslado.barrioNue_id)
         return true
@@ -455,7 +448,6 @@ class Orden < ApplicationRecord
         return false
       end
     when 15, 16
-      byebug
       ban = 0
       estado = Estado.find_by(abreviatura: 'A').id
       pregunta = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar reconexion').valor
@@ -548,7 +540,6 @@ class Orden < ApplicationRecord
         return false
       end
     when 17, 18
-      byebug
       estado = Estado.find_by(abreviatura: 'R').id
       pregunta = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar retiro').valor
       if pregunta == 'S'
@@ -637,7 +628,6 @@ class Orden < ApplicationRecord
   end
 
   def self.anular_orden(orden)
-    byebug
     resp = 0
     ban = 0
     estado_anular = Estado.find_by(abreviatura: 'AN').id

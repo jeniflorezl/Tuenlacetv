@@ -40,14 +40,14 @@ module Api
 
             # POST /pagos_anticipados/id
             def anular
-                if @pago_anticipado
+                if @pago_anticipado.blank?
+                    render json: { error: "not found" }
+                else
                     if Pago.anular_pago_anticipado(@pago_anticipado)
                         render json: { status: :deleted }
                     else
                         render json: { error: "error al anular pago anticipado" }
                     end
-                else
-                    render json: { error: "not found" }
                 end
             end
 

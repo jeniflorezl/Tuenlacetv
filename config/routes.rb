@@ -37,7 +37,7 @@ Rails.application.routes.draw do
       get 'tarifas/bd/:db', to: 'tarifas#index'
       get 'tarifas/:campo/:valor/:db', to: 'tarifas#show'
       get 'senales/:funcion_id/bd/:db', to: 'senales#index'
-      get 'senales/:campo/:valor/:db', to: 'senales#show'
+      get 'senales/:funcion_id/:campo/:valor/:db', to: 'senales#show'
       get 'senales/listado/:db', to: 'senales#listado_suscriptores'
       get 'usuarios/bd/:db', to: 'usuarios#index'
       get 'usuarios/:campo/:valor/:db', to: 'usuarios#show'

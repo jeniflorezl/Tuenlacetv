@@ -121,11 +121,9 @@ class Facturacion < ApplicationRecord
       ano = fecha1.year
       if documentos.valor == 'S'
         senales.each do |senal|
-          byebug
           plantillas = PlantillaFact.where("concepto_id = #{concepto_tv.id} and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
             ban = 0
-            byebug
             if plantilla.estado_id == estado
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
                 tarifa = plantilla.tarifa.valor
@@ -566,7 +564,6 @@ class Facturacion < ApplicationRecord
           plantillas = PlantillaFact.where("entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
             ban = 0
-            byebug
             concepto_id = plantilla.concepto_id
             concepto = Concepto.find(concepto_id)
             observacion_d = concepto.nombre
