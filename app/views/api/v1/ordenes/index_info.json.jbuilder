@@ -29,7 +29,7 @@ end
 json.grupos do
     json.array! @grupos do |grupo|
         json.id grupo.id
-        json.id grupo.descripcion
+        json.descripcion grupo.descripcion
     end
 end
 
