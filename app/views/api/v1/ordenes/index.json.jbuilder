@@ -41,6 +41,23 @@ json.ordenes do
     end
 end
 
+json.grupos do
+    json.array! @grupos do |grupo|
+        json.id grupo.id
+        json.descripcion grupo.descripcion
+    end
+end
+
+json.articulos do
+    json.array! @articulos do |articulo|
+        json.id articulo.id
+        json.grupo_id articulo.grupo_id
+        json.nombre articulo.nombre
+        json.costo articulo.costo
+        json.porcentajeIva articulo.porcentajeIva
+    end
+end
+
 json.param_instalacion @param_instalacion 
 json.param_corte @param_corte
 json.param_rco @param_rco

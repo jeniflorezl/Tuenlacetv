@@ -26,23 +26,6 @@ json.tecnicos do
     end
 end
 
-json.grupos do
-    json.array! @grupos do |grupo|
-        json.id grupo.id
-        json.descripcion grupo.descripcion
-    end
-end
-
-json.articulos do
-    json.array! @articulos do |articulo|
-        json.id articulo.id
-        json.grupo_id articulo.grupo_id
-        json.nombre articulo.nombre
-        json.costo articulo.costo
-        json.porcentajeIva articulo.porcentajeIva
-    end
-end
-
 json.param_valor @param_valor
 json.meses_anteriores @meses_anteriores
 json.meses_posteriores @meses_posteriores
