@@ -26,16 +26,9 @@ class Pago < ApplicationRecord
     serv_int = Servicio.find_by(nombre: 'INTERNET').id
     observacion = observacion.upcase! unless observacion == observacion.upcase
     estado = Estado.find_by(abreviatura: 'PA').id
-    consecutivos = Parametro.find_by(descripcion: 'Maneja consecutivos separados').valor
-    if consecutivos == 'S'
-      query = <<-SQL 
-      SELECT MAX(nropago) as ultimo FROM pagos WHERE documento_id=#{documento_id};
-      SQL
-    else
-      query = <<-SQL 
-      SELECT MAX(nropago) as ultimo FROM pagos;
-      SQL
-    end
+    query = <<-SQL 
+    SELECT MAX(nropago) as ultimo FROM pagos WHERE documento_id = #{documento_id};
+    SQL
     Pago.connection.clear_query_cache
     ultimo = Pago.connection.select_all(query)
     if ultimo[0]["ultimo"] == nil
@@ -51,7 +44,7 @@ class Pago < ApplicationRecord
         banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
       if pago.save
         query = <<-SQL 
-        SELECT id FROM pagos WHERE nropago=#{pago.nropago};
+        SELECT id FROM pagos WHERE nropago = #{pago.nropago};
         SQL
         Pago.connection.clear_query_cache
         pago_id = Pago.connection.select_all(query)
@@ -61,12 +54,12 @@ class Pago < ApplicationRecord
             ban = 0
             ban1 = 0
             query = <<-SQL 
-            SELECT factura_id FROM detalle_factura WHERE nrofact=#{d["nrodcto"]};
+            SELECT factura_id FROM detalle_factura WHERE nrofact = #{d["nrodcto"]};
             SQL
             Pago.connection.clear_query_cache
             factura_id = Pago.connection.select_all(query)
             query = <<-SQL 
-            SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{factura_id[0]["factura_id"]};
+            SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id = #{factura_id[0]["factura_id"]};
             SQL
             Pago.connection.clear_query_cache
             factura = Pago.connection.select_all(query)
@@ -121,16 +114,6 @@ class Pago < ApplicationRecord
                 end
               end
               if ban1 == 1 || ban1 == 5
-                query = <<-SQL 
-                SELECT MAX(nropago) as ultimo FROM pagos;
-                SQL
-                Pago.connection.clear_query_cache
-                ultimo = Pago.connection.select_all(query)
-                if ultimo[0]["ultimo"] == nil
-                  ultimo = 1
-                else
-                  ultimo = (ultimo[0]["ultimo"]).to_i + 1
-                end
                 if abono_fact > 0
                   abono = Abono.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
                     factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
@@ -141,12 +124,22 @@ class Pago < ApplicationRecord
                   end
                 end
                 if abono_dcto > 0
+                  query = <<-SQL 
+                  SELECT MAX(nropago) as ultimo FROM pagos WHERE documento_id = #{doc_dcto};
+                  SQL
+                  Pago.connection.clear_query_cache
+                  ultimo = Pago.connection.select_all(query)
+                  if ultimo[0]["ultimo"] == nil
+                    ultimo = 1
+                  else
+                    ultimo = (ultimo[0]["ultimo"]).to_i + 1
+                  end
                   dcto = Pago.new(entidad_id: entidad_id, documento_id: doc_dcto, nropago: ultimo, fechatrn: fechatrn,
                     valor: abono_dcto, estado_id: estado, observacion: 'DESCUENTO', forma_pago_id: forma_pago_id,
                     banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
                   if dcto.save
                     query = <<-SQL 
-                    SELECT id FROM pagos WHERE nropago=#{dcto.nropago};
+                    SELECT id FROM pagos WHERE nropago = #{dcto.nropago};
                     SQL
                     Pago.connection.clear_query_cache
                     dcto_id = Pago.connection.select_all(query)
@@ -201,12 +194,12 @@ class Pago < ApplicationRecord
         else
           detalle.each do |d|
             query = <<-SQL 
-            SELECT factura_id FROM detalle_factura WHERE nrofact=#{d["nrodcto"]};
+            SELECT factura_id FROM detalle_factura WHERE nrofact = #{d["nrodcto"]};
             SQL
             Pago.connection.clear_query_cache
             factura_id = Pago.connection.select_all(query)
             query = <<-SQL 
-            SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id=#{factura_id[0]["factura_id"]};
+            SELECT documento_id, prefijo, nrofact FROM facturacion WHERE id = #{factura_id[0]["factura_id"]};
             SQL
             Pago.connection.clear_query_cache
             factura = Pago.connection.select_all(query)
@@ -244,15 +237,9 @@ class Pago < ApplicationRecord
         iva_cpto = concepto.porcentajeIva
         observacion_d = 'INTERNET'
       end
-      if consecutivos == 'S'
-        query = <<-SQL 
-        SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id=#{documento_id};
-        SQL
-      else
-        query = <<-SQL 
-        SELECT MAX(nrofact) as ultimo FROM facturacion;
-        SQL
-      end
+      query = <<-SQL 
+      SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id = #{documento_id};
+      SQL
       Facturacion.connection.clear_query_cache
       ultimo = Facturacion.connection.select_all(query)
       if ultimo[0]["ultimo"] == nil
@@ -270,7 +257,7 @@ class Pago < ApplicationRecord
         estado_id: estado, observacion: observacion, reporta: '1', usuario_id: usuario_id)
       if facturacion.save
         query = <<-SQL 
-        SELECT id FROM facturacion WHERE nrofact=#{facturacion.nrofact} and documento_id = #{documento_id};
+        SELECT id FROM facturacion WHERE nrofact = #{facturacion.nrofact} and documento_id = #{documento_id};
         SQL
         Facturacion.connection.clear_query_cache
         facturacion_id = Facturacion.connection.select_all(query)
@@ -320,7 +307,7 @@ class Pago < ApplicationRecord
     end
     if ban == 1
       query = <<-SQL 
-      SELECT MAX(nropago) as ultimo FROM pagos;
+      SELECT MAX(nropago) as ultimo FROM pagos WHERE documento_id = #{documento_id};
       SQL
       Pago.connection.clear_query_cache
       ultimo = Pago.connection.select_all(query)
@@ -335,13 +322,13 @@ class Pago < ApplicationRecord
         banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
       if pago.save
         query = <<-SQL 
-        SELECT id FROM pagos WHERE nropago=#{pago.nropago};
+        SELECT id FROM pagos WHERE nropago = #{pago.nropago};
         SQL
         Pago.connection.clear_query_cache
         pago_id = Pago.connection.select_all(query)
         pago_id = (pago_id[0]["id"]).to_i
-        plantilla = PlantillaFact.where("concepto_id = #{concepto} and entidad_id = #{entidad_id}")
-        tarifa = Tarifa.find(plantilla[0]["tarifa_id"]).valor
+        plantilla = PlantillaFact.find_by(entidad_id: entidad_id, concepto_id: concepto)
+        tarifa = Tarifa.find(plantilla.tarifa_id).valor
         fecha1 = Date.parse fechapxa
         fecha2 = fecha1 + 29
         if descuento > 0
@@ -351,7 +338,7 @@ class Pago < ApplicationRecord
             doc_dcto = Documento.find_by(nombre: 'DESCUENTOS INTERNET').id
           end
           query = <<-SQL 
-          SELECT MAX(nropago) as ultimo FROM pagos;
+          SELECT MAX(nropago) as ultimo FROM pagos WHERE documento_id = #{doc_dcto};
           SQL
           Pago.connection.clear_query_cache
           ultimo = Pago.connection.select_all(query)
@@ -365,7 +352,7 @@ class Pago < ApplicationRecord
             banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
           if dcto.save
             query = <<-SQL 
-            SELECT id FROM pagos WHERE nropago=#{dcto.nropago};
+            SELECT id FROM pagos WHERE nropago = #{dcto.nropago};
             SQL
             Pago.connection.clear_query_cache
             dcto_id = Pago.connection.select_all(query)
