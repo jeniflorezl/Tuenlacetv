@@ -242,12 +242,12 @@ class Facturacion < ApplicationRecord
                     valor_total = facturacion.valor + facturacion.iva
                     if anticipo[0]["valor"] >= valor_total
                       query = <<-SQL 
-                      UPDATE anticipos set factura_id = #{facturacion_id}, doc_factura_id = #{facturacion.documento_id}, prefijo = #{facturacion.prefijo}, nrofact = #{facturacion.nrofact} WHERE id = #{anticipo[0]["id"]};
-                      UPDATE facturacion set estado_id #{estadoD_1} WHERE id = #{facturacion_id};
+                      UPDATE anticipos set factura_id = #{facturacion_id}, doc_factura_id = #{facturacion.documento_id}, prefijo = '#{facturacion.prefijo}', nrofact = #{facturacion.nrofact} WHERE id = #{anticipo[0]["id"]};
+                      UPDATE facturacion set estado_id = #{estadoD_1} WHERE id = #{facturacion_id};
                       SQL
                     else
                       query = <<-SQL 
-                      UPDATE anticipos set factura_id = #{facturacion_id}, doc_factura_id = #{facturacion.documento_id}, prefijo = #{facturacion.prefijo}, nrofact = #{facturacion.nrofact} WHERE id = #{anticipo[0]["id"]};
+                      UPDATE anticipos set factura_id = #{facturacion_id}, doc_factura_id = #{facturacion.documento_id}, prefijo = '#{facturacion.prefijo}', nrofact = #{facturacion.nrofact} WHERE id = #{anticipo[0]["id"]};
                       SQL
                     end
                     Facturacion.connection.select_all(query)
@@ -366,11 +366,15 @@ class Facturacion < ApplicationRecord
                     valor_total = facturacion.valor + facturacion.iva
                     if anticipo[0]["valor"] >= valor_total
                       query = <<-SQL 
-                      UPDATE anticipos set factura_id = #{facturacion_id}, doc_factura_id = #{facturacion.documento_id}, prefijo = #{facturacion.prefijo}, nrofact = #{facturacion.nrofact} WHERE id = #{anticipo[0]["id"]};
-                      UPDATE facturacion set estado_id #{estadoD_1} WHERE id = #{facturacion_id};
+                      UPDATE anticipos set factura_id = #{facturacion_id}, doc_factura_id = #{facturacion.documento_id}, prefijo = '#{facturacion.prefijo}', nrofact = #{facturacion.nrofact} WHERE id = #{anticipo[0]["id"]};
+                      UPDATE facturacion set estado_id = #{estadoD_1} WHERE id = #{facturacion_id};
                       SQL
-                      Facturacion.connection.select_all(query)
+                    else
+                      query = <<-SQL 
+                      UPDATE anticipos set factura_id = #{facturacion_id}, doc_factura_id = #{facturacion.documento_id}, prefijo = '#{facturacion.prefijo}', nrofact = #{facturacion.nrofact} WHERE id = #{anticipo[0]["id"]};
+                      SQL
                     end
+                    Facturacion.connection.select_all(query)
                   end
                 else
                   fecha3 = Date.parse factura[j]["fechaven"].to_s
@@ -645,10 +649,14 @@ class Facturacion < ApplicationRecord
                     if anticipo[0]["valor"] >= valor_total
                       query = <<-SQL 
                       UPDATE anticipos set factura_id = #{facturacion_id}, doc_factura_id = #{facturacion.documento_id}, prefijo = #{facturacion.prefijo}, nrofact = #{facturacion.nrofact} WHERE id = #{anticipo[0]["id"]};
-                      UPDATE facturacion set estado_id #{estadoD_1} WHERE id = #{facturacion_id};
+                      UPDATE facturacion set estado_id = #{estadoD_1} WHERE id = #{facturacion_id};
                       SQL
-                      Facturacion.connection.select_all(query)
+                    else
+                      query = <<-SQL 
+                      UPDATE anticipos set factura_id = #{facturacion_id}, doc_factura_id = #{facturacion.documento_id}, prefijo = '#{facturacion.prefijo}', nrofact = #{facturacion.nrofact} WHERE id = #{anticipo[0]["id"]};
+                      SQL
                     end
+                    Facturacion.connection.select_all(query)
                   end
                 else
                   fecha3 = Date.parse factura[j]["fechaven"].to_s
