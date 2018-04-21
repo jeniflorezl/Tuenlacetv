@@ -11,6 +11,8 @@ module Api
                 SQL
                 @ordenes = Orden.connection.select_all(query)
                 @detalle_orden = DetalleOrden.all
+                @grupos = Grupo.all
+                @articulos = Articulo.all
                 @param_instalacion = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar instalacion').valor
                 @param_corte = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar corte').valor
                 @param_rco = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar reconexion').valor
@@ -23,8 +25,6 @@ module Api
                 @conceptos = Concepto.where(clase: 'O')
                 @tarifas = Tarifa.where(estado_id: 1)
                 @tecnicos = Entidad.where(funcion_id: 7)
-                @grupos = Grupo.all
-                @articulos = Articulo.all
                 @param_valor = Parametro.find_by(descripcion: 'Permite cambiar valor de ordenes').valor
                 @meses_anteriores = Parametro.find_by(descripcion: 'Permite ordenes en meses anteriores').valor
                 @meses_posteriores = Parametro.find_by(descripcion: 'Permire ordenes en meses posteriores').valor
