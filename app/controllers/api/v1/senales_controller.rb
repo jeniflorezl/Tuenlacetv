@@ -225,18 +225,73 @@ module Api
                 end
             end
 
-            def listado_suscriptores
+            def listado_consolidado
                 query = <<-SQL 
-                SELECT * FROM VwSenales;
+                SELECT * FROM VwSenales WHERE funcion_id = 1;
                 SQL
                 @senal = Senal.connection.select_all(query)
-                @senales = Senal.all
-                @plantillas = PlantillaFact.all
                 query = <<-SQL 
-                SELECT * FROM VwEstadoDeCuentaTotal;
+                SELECT * FROM VwOrdenes WHERE concepto_id = 11 or concepto_id = 12;
                 SQL
-                Senal.connection.clear_query_cache
-                @saldos = Senal.connection.select_all(query)
+                @instalaciones = Senal.connection.select_all(query)
+                query = <<-SQL 
+                SELECT * FROM VwOrdenes WHERE concepto_id = 7 or concepto_id = 8;
+                SQL
+                @cortes = Senal.connection.select_all(query)
+                query = <<-SQL 
+                SELECT * FROM VwOrdenes WHERE concepto_id = 13 or concepto_id = 14;
+                SQL
+                @traslados = Senal.connection.select_all(query)
+                query = <<-SQL 
+                SELECT * FROM VwOrdenes WHERE concepto_id = 15 or concepto_id = 16;
+                SQL
+                @reconexiones = Senal.connection.select_all(query)
+            end
+
+            def listado_television
+                query = <<-SQL 
+                SELECT * FROM VwSenales WHERE funcion_id = 1 and tv = 1;
+                SQL
+                @senal = Senal.connection.select_all(query)
+                query = <<-SQL 
+                SELECT * FROM VwOrdenes WHERE concepto_id = 11;
+                SQL
+                @instalaciones = Senal.connection.select_all(query)
+                query = <<-SQL 
+                SELECT * FROM VwOrdenes WHERE concepto_id = 7;
+                SQL
+                @cortes = Senal.connection.select_all(query)
+                query = <<-SQL 
+                SELECT * FROM VwOrdenes WHERE concepto_id = 13;
+                SQL
+                @traslados = Senal.connection.select_all(query)
+                query = <<-SQL 
+                SELECT * FROM VwOrdenes WHERE concepto_id = 15;
+                SQL
+                @reconexiones = Senal.connection.select_all(query)
+            end
+
+            def listado_internet
+                query = <<-SQL 
+                SELECT * FROM VwSenales WHERE funcion_id = 1 and internet = 1;
+                SQL
+                @senal = Senal.connection.select_all(query)
+                query = <<-SQL 
+                SELECT * FROM VwOrdenes WHERE concepto_id = 12;
+                SQL
+                @instalaciones = Senal.connection.select_all(query)
+                query = <<-SQL 
+                SELECT * FROM VwOrdenes WHERE concepto_id = 8;
+                SQL
+                @cortes = Senal.connection.select_all(query)
+                query = <<-SQL 
+                SELECT * FROM VwOrdenes WHERE concepto_id = 14;
+                SQL
+                @traslados = Senal.connection.select_all(query)
+                query = <<-SQL 
+                SELECT * FROM VwOrdenes WHERE concepto_id = 16;
+                SQL
+                @reconexiones = Senal.connection.select_all(query)
             end
 
             private
