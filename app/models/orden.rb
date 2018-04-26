@@ -17,11 +17,12 @@ class Orden < ApplicationRecord
     estado = 0
     tipo_fact_ant = TipoFacturacion.find_by(nombre: 'ANTICIPADA').id
     tipo_fact_ven = TipoFacturacion.find_by(nombre: 'VENCIDA').id
+    estado_pend = Estado.find_by(abreviatura: 'PE').id
     f_fact = fechatrn.split('/')
     f_fact = Time.new(f_fact[2], f_fact[1], f_fact[0])
     nombre_mes = Facturacion.mes(f_fact.strftime("%B"))
     observacion = observacion.upcase! unless observacion == observacion.upcase
-    consecutivos = Parametro.find_by(descripcion: 'Maneja consecutivos separados').valor
+    consecutivos = Parametro.find_by(descripcion: 'Maneja consecutivos separados ordenes').valor
     if consecutivos == 'S'
       query = <<-SQL 
       SELECT MAX(nrorden) as ultimo FROM ordenes WHERE concepto_id = #{concepto_id};
@@ -64,10 +65,10 @@ class Orden < ApplicationRecord
     end
     if ban == 1
       orden = Orden.new(entidad_id: entidad_id, concepto_id: concepto_id, fechatrn: fechatrn, fechaven: fechaven,
-        nrorden: ultimo, estado_id: 6, observacion: observacion, tecnico_id: tecnico_id, usuario_id: usuario_id)
+        nrorden: ultimo, estado_id: estado_pend, observacion: observacion, tecnico_id: tecnico_id, usuario_id: usuario_id)
       if orden.save
         query = <<-SQL 
-        SELECT id FROM ordenes WHERE nrorden = #{orden.nrorden};
+        SELECT id FROM ordenes WHERE nrorden = #{orden.nrorden} and concepto_id = #{concepto_id};
         SQL
         Orden.connection.clear_query_cache
         orden_id = Orden.connection.select_all(query)
@@ -84,11 +85,7 @@ class Orden < ApplicationRecord
       case concepto_id
       when "5", "6", "9", "10", "15", "16", "19", "20"
         if valor > 0
-          if concepto_id == "5" || concepto_id == "9" || concepto_id == "15" || concepto_id == "19"
-            doc = 1
-          else
-            doc = 2
-          end
+          doc = 1
           concepto = Concepto.find(concepto_id)
           observa = concepto.nombre
           iva_concepto = concepto.porcentajeIva
@@ -109,10 +106,10 @@ class Orden < ApplicationRecord
           end
           facturacion = Facturacion.new(entidad_id: entidad_id, documento_id: doc, fechatrn: fechaven,
             fechaven: fechaven, valor: valor, iva: iva, dias: 0, prefijo: pref, nrofact: ultimo,
-            estado_id: 6, observacion: observa, reporta: '0', usuario_id: usuario_id)
+            estado_id: estado_pend, observacion: observa, reporta: '0', usuario_id: usuario_id)
           if facturacion.save
             query = <<-SQL 
-            SELECT id FROM facturacion WHERE nrofact = #{facturacion.nrofact};
+            SELECT id FROM facturacion WHERE nrofact = #{facturacion.nrofact} and documento_id = #{doc};
             SQL
             Orden.connection.clear_query_cache
             facturacion_id = Orden.connection.select_all(query)
@@ -141,11 +138,7 @@ class Orden < ApplicationRecord
         end
       when "13", "14"
         if valor > 0
-          if concepto_id == "13"
-            doc = 1
-          else
-            doc = 2
-          end
+          doc = 1
           concepto = Concepto.find(concepto_id)
           observa = concepto.nombre
           iva_concepto = concepto.porcentajeIva
@@ -166,10 +159,10 @@ class Orden < ApplicationRecord
           end
           facturacion = Facturacion.new(entidad_id: entidad_id, documento_id: doc, fechatrn: fechaven,
             fechaven: fechaven, valor: valor, iva: iva, dias: 0, prefijo: pref, nrofact: ultimo,
-            estado_id: 6, observacion: observa, reporta: '0', usuario_id: usuario_id)
+            estado_id: estado_pend, observacion: observa, reporta: '0', usuario_id: usuario_id)
           if facturacion.save
             query = <<-SQL 
-            SELECT id FROM facturacion WHERE nrofact = #{facturacion.nrofact};
+            SELECT id FROM facturacion WHERE nrofact = #{facturacion.nrofact} and documento_id = #{doc};
             SQL
             Orden.connection.clear_query_cache
             facturacion_id = Orden.connection.select_all(query)
@@ -223,7 +216,11 @@ class Orden < ApplicationRecord
     fechafin = '30/#{mes}/#{ano}'
     fechafin = Date.parse fechafin
     pref = Resolucion.last.prefijo
-    estado = Estado.find_by(abreviatura: 'AP').id
+    estado_ord = Estado.find_by(abreviatura: 'AP').id
+    estado_corte = Estado.find_by(abreviatura: 'C').id
+    estado_act = Estado.find_by(abreviatura: 'A').id
+    estado_pag = Estado.find_by(abreviatura: 'PA').id
+    estado_pend = Estado.find_by(abreviatura: 'PE').id
     f_fact = fechaven.split('/')
     f_fact = Time.new(f_fact[2], f_fact[1], f_fact[0])
     nombre_mes = Facturacion.mes(f_fact.strftime("%B"))
@@ -245,7 +242,7 @@ class Orden < ApplicationRecord
     fecha_ven = Date.parse fechaven
     fecha_t = Date.parse t.to_s
     query = <<-SQL 
-    UPDATE ordenes set fechaven = '#{fecha_ven.to_s}', estado_id = #{estado}, tecnico_id = #{tecnico_id}, observacion = '#{observacion}', fechacam = '#{fecha_t}' WHERE id = #{orden[0]["id"]};
+    UPDATE ordenes set fechaven = '#{fecha_ven.to_s}', estado_id = #{estado_ord}, tecnico_id = #{tecnico_id}, observacion = '#{observacion}', fechacam = '#{fecha_t}' WHERE id = #{orden[0]["id"]};
     SQL
     Orden.connection.select_all(query)
     detalle.each do |d|
@@ -258,8 +255,8 @@ class Orden < ApplicationRecord
     end
     case orden[0]["concepto_id"]
     when 7, 8
+      byebug
       ban = 0
-      estado = Estado.find_by(abreviatura: 'C').id
       pregunta = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar corte').valor
       if pregunta == 'S'
         if respuesta == 'S'
@@ -271,20 +268,21 @@ class Orden < ApplicationRecord
           ban = 1
         end
       end
+      doc = 1
       if orden[0]["concepto_id"] == 7
-        doc = 1
         concepto_fact = 3
         observa_d = 'TELEVISION'
       else
-        doc = 2
         concepto_fact = 4
         observa_d = 'INTERNET'
       end
       plantilla = PlantillaFact.find_by(entidad_id: orden[0]["entidad_id"], concepto_id: concepto_fact)
       if ban == 1
         if senal.tipo_facturacion_id == tipo_fact_ven
+          valor_concepto = plantilla.tarifa.valor
+          iva_concepto = Concepto.find(concepto_fact).porcentajeIva
           query = <<-SQL 
-          SELECT * FROM facturacion WHERE entidad_id = #{orden[0]["entidad_id"]} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes};
+          SELECT * FROM facturacion WHERE entidad_id = #{orden[0]["entidad_id"]} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and documento_id = #{doc};
           SQL
           Facturacion.connection.clear_query_cache
           factura = Facturacion.connection.select_all(query)
@@ -304,10 +302,8 @@ class Orden < ApplicationRecord
           end
           if detallefact.blank? || fact_tv != 1
             dias = (fecha - fechaini).to_i + 1
-            valor_concepto = plantilla.tarifa.valor
             valor_dia = valor_concepto / 30
             valor_fact = valor_dia * dias
-            iva_concepto = Concepto.find(concepto_fact).porcentajeIva
             if iva_concepto > 0
               valor_sin_iva = valor_fact / (iva_concepto / 100 + 1)
               iva = valor_fact - valor_sin_iva
@@ -325,10 +321,10 @@ class Orden < ApplicationRecord
             end
             facturacion = Facturacion.new(entidad_id: orden[0]["entidad_id"], documento_id: doc, fechatrn: fecha.to_s,
               fechaven: fecha.to_s, valor: valor_fact, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
-              estado_id: 6, observacion: 'MENSUALIDAD' + ' ' + nombre_mes, reporta: '1', usuario_id: usuario_id)
+              estado_id: estado_pend, observacion: 'MENSUALIDAD' + ' ' + nombre_mes, reporta: '1', usuario_id: usuario_id)
             if facturacion.save
               query = <<-SQL 
-              SELECT id FROM facturacion WHERE nrofact = #{facturacion.nrofact};
+              SELECT id FROM facturacion WHERE nrofact = #{facturacion.nrofact} and documento_id = #{doc};
               SQL
               Orden.connection.clear_query_cache
               facturacion_id = Orden.connection.select_all(query)
@@ -351,41 +347,50 @@ class Orden < ApplicationRecord
               return false
             end
           else
-            fecha1 = Date.parse fechaven
             fecha3 = Date.parse factura[j]["fechaven"].to_s
-            dias_fact = (fecha1 - fecha3).to_i + 1 
-            if dias_fact > 1
-              valor_dia = tarifa / 30
-              valor_mens = tarifa * dias_fact
+            dias_fact = (fecha - fecha3).to_i
+            if dias_fact > 0
+              valor_dia = valor_concepto / 30
+              valor_mens = valor_dia * dias_fact
               dias_fact = factura[j]["dias"] + dias_fact
-              valor_fact = factura[j]["valor"] + valor_mens
-              if dias_fact > 30 && valor_fact > tarifa
+              valor_fact = (factura[j]["valor"] + factura[j]["iva"]) + valor_mens
+              if dias_fact > 30 && valor_fact > valor_concepto
                 dias_fact = 30
-                valor_fact = tarifa
+                valor_fact = valor_concepto
               end
-              if iva_tv > 0
-                valor_sin_iva = valor_fact / (iva_tv / 100 + 1)
+              if iva_concepto > 0
+                valor_sin_iva = valor_fact / (iva_concepto / 100 + 1)
                 iva = valor_fact - valor_sin_iva
                 valor_fact = valor_sin_iva
               end
-              f_fin_d = Date.parse f_fin.to_s
-              query = <<-SQL 
-              UPDATE facturacion set fechaven = '#{f_fin_d}', valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = '#{observa}' WHERE nrofact = #{factura[j]["nrofact"]};
-              UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_tv}, iva = #{iva}, observacion = 'TELEVISION' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]};
-              SQL
+              valor_fact = (valor_fact.to_f).round
+              iva = (iva.to_f).round
+              if factura[j]["estado_id"] == estado_pag
+                estado_pend = Estado.find_by(abreviatura: 'PE').id
+                saldo = valor_fact + iva
+                query = <<-SQL 
+                UPDATE facturacion set valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, estado_id = #{estado_pend}, observacion = 'MENSUALIDAD' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]} and documento_id = #{factura[j]["documento_id"]};
+                UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_concepto}, iva = #{iva}, observacion = 'TELEVISION' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]} and documento_id = #{factura[j]["documento_id"]};
+                UPDATE abonos set saldo = #{saldo} WHERE factura_id = #{factura[j]["id"]};
+                SQL
+              else
+                query = <<-SQL 
+                UPDATE facturacion set valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = 'MENSUALIDAD' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]} and documento_id = #{factura[j]["documento_id"]};
+                UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_concepto}, iva = #{iva}, observacion = 'TELEVISION' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]} and documento_id = #{factura[j]["documento_id"]};
+                SQL
+              end
               Facturacion.connection.select_all(query)
             end
           end
         end
       end
-      if plantilla.update(estado_id: estado)
+      if plantilla.update(estado_id: estado_corte)
         return true
       else
         return false
       end
     when 11, 12
       ban = 0
-      estado = Estado.find_by(abreviatura: 'A').id
       pregunta = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar instalacion').valor
       if pregunta == 'S'
         if respuesta == 'S'
@@ -397,12 +402,11 @@ class Orden < ApplicationRecord
           ban = 1
         end
       end
+      doc = 1
       if orden[0]["concepto_id"] == 11
-        doc = 1
         concepto_fact = 3
         observa_d = 'TELEVISION'
       else
-        doc = 2
         concepto_fact = 4
         observa_d = 'INTERNET'
       end
@@ -431,10 +435,10 @@ class Orden < ApplicationRecord
           end
           facturacion = Facturacion.new(entidad_id: orden[0]["entidad_id"], documento_id: doc, fechatrn: fecha.to_s,
             fechaven: fecha.to_s, valor: valor_fact, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
-            estado_id: 6, observacion: 'MENSUALIDAD' + ' ' + nombre_mes, reporta: '1', usuario_id: usuario_id)
+            estado_id: estado_pend, observacion: 'MENSUALIDAD' + ' ' + nombre_mes, reporta: '1', usuario_id: usuario_id)
           if facturacion.save
             query = <<-SQL 
-            SELECT id FROM facturacion WHERE nrofact = #{facturacion.nrofact};
+            SELECT id FROM facturacion WHERE nrofact = #{facturacion.nrofact} and documento_id = #{doc};
             SQL
             Orden.connection.clear_query_cache
             facturacion_id = Orden.connection.select_all(query)
@@ -458,7 +462,7 @@ class Orden < ApplicationRecord
           end
         end
       end
-      if plantilla.update(estado_id: estado)
+      if plantilla.update(estado_id: estado_act)
         return true
       else
         return false
@@ -471,8 +475,8 @@ class Orden < ApplicationRecord
         return false
       end
     when 15, 16
+      byebug
       ban = 0
-      estado = Estado.find_by(abreviatura: 'A').id
       pregunta = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar reconexion').valor
       if pregunta == 'S'
         if respuesta == 'S'
@@ -490,20 +494,21 @@ class Orden < ApplicationRecord
           ban = 0
         end
       end
+      doc = 1
       if orden[0]["concepto_id"] == 15
-        doc = 1
         concepto_fact = 3
         observa_d = 'TELEVISION'
       else
-        doc = 2
         concepto_fact = 4
         observa_d = 'INTERNET'
       end
       plantilla = PlantillaFact.find_by(entidad_id: orden[0]["entidad_id"], concepto_id: concepto_fact)
       if ban == 1
         if senal.tipo_facturacion_id == tipo_fact_ant
+          valor_concepto = plantilla.tarifa.valor
+          iva_concepto = Concepto.find(concepto_fact).porcentajeIva
           query = <<-SQL 
-          SELECT * FROM facturacion WHERE entidad_id = #{orden[0]["entidad_id"]} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes};
+          SELECT * FROM facturacion WHERE entidad_id = #{orden[0]["entidad_id"]} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and documento_id = #{doc};
           SQL
           Facturacion.connection.clear_query_cache
           factura = Facturacion.connection.select_all(query)
@@ -523,10 +528,8 @@ class Orden < ApplicationRecord
           end
           if detallefact.blank? || fact_tv != 1
             dias = (fecha - fechaini).to_i + 1
-            valor_concepto = plantilla.tarifa.valor
             valor_dia = valor_concepto / 30
             valor_fact = valor_dia * dias
-            iva_concepto = Concepto.find(concepto_fact).porcentajeIva
             if iva_concepto > 0
               valor_sin_iva = valor_fact / (iva_concepto / 100 + 1)
               iva = valor_fact - valor_sin_iva
@@ -544,10 +547,10 @@ class Orden < ApplicationRecord
             end
             facturacion = Facturacion.new(entidad_id: orden[0]["entidad_id"], documento_id: doc, fechatrn: fecha.to_s,
               fechaven: fecha.to_s, valor: valor_fact, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
-              estado_id: 6, observacion: 'MENSUALIDAD' + ' ' + nombre_mes, reporta: '1', usuario_id: usuario_id)
+              estado_id: estado_pend, observacion: 'MENSUALIDAD' + ' ' + nombre_mes, reporta: '1', usuario_id: usuario_id)
             if facturacion.save
               query = <<-SQL 
-              SELECT id FROM facturacion WHERE nrofact = #{facturacion.nrofact};
+              SELECT id FROM facturacion WHERE nrofact = #{facturacion.nrofact} and documento_id = #{doc};
               SQL
               Orden.connection.clear_query_cache
               facturacion_id = Orden.connection.select_all(query)
@@ -570,40 +573,49 @@ class Orden < ApplicationRecord
               return false
             end
           else
-            fecha1 = Date.parse fechaven
             fecha3 = Date.parse factura[j]["fechaven"].to_s
-            dias_fact = (fecha1 - fecha3).to_i + 1 
-            if dias_fact > 1
-              valor_dia = tarifa / 30
-              valor_mens = tarifa * dias_fact
+            dias_fact = (fecha - fecha3).to_i
+            if dias_fact > 0
+              valor_dia = valor_concepto / 30
+              valor_mens = valor_dia * dias_fact
               dias_fact = factura[j]["dias"] + dias_fact
-              valor_fact = factura[j]["valor"] + valor_mens
-              if dias_fact > 30 && valor_fact > tarifa
+              valor_fact = (factura[j]["valor"] + factura[j]["iva"]) + valor_mens
+              if dias_fact > 30 && valor_fact > valor_concepto
                 dias_fact = 30
-                valor_fact = tarifa
+                valor_fact = valor_concepto
               end
-              if iva_tv > 0
-                valor_sin_iva = valor_fact / (iva_tv / 100 + 1)
+              if iva_concepto > 0
+                valor_sin_iva = valor_fact / (iva_concepto / 100 + 1)
                 iva = valor_fact - valor_sin_iva
                 valor_fact = valor_sin_iva
               end
-              f_fin_d = Date.parse f_fin.to_s
-              query = <<-SQL 
-              UPDATE facturacion set fechaven = '#{f_fin_d}', valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = '#{observa}' WHERE nrofact = #{factura[j]["nrofact"]};
-              UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_tv}, iva = #{iva}, observacion = 'TELEVISION' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]};
-              SQL
+              valor_fact = (valor_fact.to_f).round
+              iva = (iva.to_f).round
+              if factura[j]["estado_id"] == estado_pag
+                estado_pend = Estado.find_by(abreviatura: 'PE').id
+                saldo = valor_fact + iva
+                query = <<-SQL 
+                UPDATE facturacion set valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, estado_id = #{estado_pend}, observacion = 'MENSUALIDAD' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]} and documento_id = #{factura[j]["documento_id"]};
+                UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_concepto}, iva = #{iva}, observacion = 'TELEVISION' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]} and documento_id = #{factura[j]["documento_id"]};
+                UPDATE abonos set saldo = #{saldo} WHERE factura_id = #{factura[j]["id"]};
+                SQL
+              else
+                query = <<-SQL 
+                UPDATE facturacion set valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = 'MENSUALIDAD' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]} and documento_id = #{factura[j]["documento_id"]};
+                UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_concepto}, iva = #{iva}, observacion = 'TELEVISION' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]} and documento_id = #{factura[j]["documento_id"]};
+                SQL
+              end
               Facturacion.connection.select_all(query)
             end
           end
         end
       end
-      if plantilla.update(estado_id: estado, fechaini: fechaven)
+      if plantilla.update(estado_id: estado_act, fechaini: fechaven)
         return true
       else
         return false
       end
     when 17, 18
-      estadoD_1 = Estado.find_by(abreviatura: 'PA').id
       fecha_fact = Date.parse fechaven
       mes = fecha_fact.month
       ano = fecha_fact.year
@@ -619,20 +631,23 @@ class Orden < ApplicationRecord
           ban = 1
         end
       end
+      doc = 1
       if orden[0]["concepto_id"] == 17
-        doc = 1
+        servicio = 1
         concepto_fact = 3
         observa_d = 'TELEVISION'
       else
-        doc = 2
+        servicio = 2
         concepto_fact = 4
         observa_d = 'INTERNET'
       end
       plantilla = PlantillaFact.find_by(entidad_id: orden[0]["entidad_id"], concepto_id: concepto_fact)
       if ban == 1
         if senal.tipo_facturacion_id == tipo_fact_ven
+          valor_concepto = plantilla.tarifa.valor
+          iva_concepto = Concepto.find(concepto_fact).porcentajeIva
           query = <<-SQL 
-          SELECT * FROM facturacion WHERE entidad_id = #{orden[0]["entidad_id"]} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes};
+          SELECT * FROM facturacion WHERE entidad_id = #{orden[0]["entidad_id"]} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and documento_id = #{doc};
           SQL
           Facturacion.connection.clear_query_cache
           factura = Facturacion.connection.select_all(query)
@@ -652,10 +667,8 @@ class Orden < ApplicationRecord
           end
           if detallefact.blank? || fact_tv != 1
             dias = (fecha - fechaini).to_i + 1
-            valor_concepto = plantilla.tarifa.valor
             valor_dia = valor_concepto / 30
             valor_fact = valor_dia * dias
-            iva_concepto = Concepto.find(concepto_fact).porcentajeIva
             if iva_concepto > 0
               valor_sin_iva = valor_fact / (iva_concepto / 100 + 1)
               iva = valor_fact - valor_sin_iva
@@ -673,10 +686,10 @@ class Orden < ApplicationRecord
             end
             facturacion = Facturacion.new(entidad_id: orden[0]["entidad_id"], documento_id: doc, fechatrn: fecha.to_s,
               fechaven: fecha.to_s, valor: valor_fact, iva: iva, dias: dias, prefijo: pref, nrofact: ultimo,
-              estado_id: 6, observacion: 'MENSUALIDAD' + ' ' + nombre_mes, reporta: '1', usuario_id: usuario_id)
+              estado_id: estado_pend, observacion: 'MENSUALIDAD' + ' ' + nombre_mes, reporta: '1', usuario_id: usuario_id)
             if facturacion.save
               query = <<-SQL 
-              SELECT id FROM facturacion WHERE nrofact = #{facturacion.nrofact};
+              SELECT id FROM facturacion WHERE nrofact = #{facturacion.nrofact} and documento_id = #{doc};
               SQL
               Orden.connection.clear_query_cache
               facturacion_id = Orden.connection.select_all(query)
@@ -705,28 +718,38 @@ class Orden < ApplicationRecord
               return false
             end
           else
-            fecha1 = Date.parse fechaven
             fecha3 = Date.parse factura[j]["fechaven"].to_s
-            dias_fact = (fecha1 - fecha3).to_i + 1 
-            if dias_fact > 1
-              valor_dia = tarifa / 30
-              valor_mens = tarifa * dias_fact
+            dias_fact = (fecha - fecha3).to_i
+            if dias_fact > 0
+              valor_dia = valor_concepto / 30
+              valor_mens = valor_dia * dias_fact
               dias_fact = factura[j]["dias"] + dias_fact
-              valor_fact = factura[j]["valor"] + valor_mens
-              if dias_fact > 30 && valor_fact > tarifa
+              valor_fact = (factura[j]["valor"] + factura[j]["iva"]) + valor_mens
+              if dias_fact > 30 && valor_fact > valor_concepto
                 dias_fact = 30
-                valor_fact = tarifa
+                valor_fact = valor_concepto
               end
-              if iva_tv > 0
-                valor_sin_iva = valor_fact / (iva_tv / 100 + 1)
+              if iva_concepto > 0
+                valor_sin_iva = valor_fact / (iva_concepto / 100 + 1)
                 iva = valor_fact - valor_sin_iva
                 valor_fact = valor_sin_iva
               end
-              f_fin_d = Date.parse f_fin.to_s
-              query = <<-SQL 
-              UPDATE facturacion set fechaven = '#{f_fin_d}', valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = '#{observa}' WHERE nrofact = #{factura[j]["nrofact"]};
-              UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_tv}, iva = #{iva}, observacion = 'TELEVISION' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]};
-              SQL
+              valor_fact = (valor_fact.to_f).round
+              iva = (iva.to_f).round
+              if factura[j]["estado_id"] == estado_pag
+                estado_pend = Estado.find_by(abreviatura: 'PE').id
+                saldo = valor_fact + iva
+                query = <<-SQL 
+                UPDATE facturacion set valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, estado_id = #{estado_pend}, observacion = 'MENSUALIDAD' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]} and documento_id = #{factura[j]["documento_id"]};
+                UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_concepto}, iva = #{iva}, observacion = 'TELEVISION' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]} and documento_id = #{factura[j]["documento_id"]};
+                UPDATE abonos set saldo = #{saldo} WHERE factura_id = #{factura[j]["id"]};
+                SQL
+              else
+                query = <<-SQL 
+                UPDATE facturacion set valor = #{valor_fact}, iva = #{iva}, dias = #{dias_fact}, observacion = 'MENSUALIDAD' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]} and documento_id = #{factura[j]["documento_id"]};
+                UPDATE detalle_factura set valor = #{valor_fact}, porcentajeIva = #{iva_concepto}, iva = #{iva}, observacion = 'TELEVISION' + ' ' + '#{nombre_mes}' WHERE nrofact = #{factura[j]["nrofact"]} and documento_id = #{factura[j]["documento_id"]};
+                SQL
+              end
               Facturacion.connection.select_all(query)
               valor_f = factura[j]["valor"]
               valor_iva = factura[j]["iva"]
@@ -737,7 +760,7 @@ class Orden < ApplicationRecord
             end
           end
           query = <<-SQL 
-          SELECT * FROM anticipos WHERE entidad_id = #{orden[0]["entidad_id"]} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and servicio_id = #{doc};
+          SELECT * FROM anticipos WHERE entidad_id = #{orden[0]["entidad_id"]} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and servicio_id = #{servicio};
           SQL
           Facturacion.connection.clear_query_cache
           anticipo = Facturacion.connection.select_all(query)
@@ -746,7 +769,7 @@ class Orden < ApplicationRecord
             if anticipo[0]["valor"] >= valor_total
               query = <<-SQL 
               UPDATE anticipos set factura_id = #{fact_id}, doc_factura_id = #{fact_doc}, prefijo = #{fact_prefijo}, nrofact = #{fact_nrofact} WHERE id = #{anticipo[0]["id"]};
-              UPDATE facturacion set estado_id = #{estadoD_1} WHERE id = #{fact_id};
+              UPDATE facturacion set estado_id = #{estado_pag} WHERE id = #{fact_id};
               SQL
             else
               query = <<-SQL 
@@ -870,7 +893,7 @@ class Orden < ApplicationRecord
         return resp = 1
       when 17, 18
         query = <<-SQL 
-        UPDATE ordenes set estado_id = 7, observacion = 'ANULADA' WHERE id = #{orden[0]["id"]};
+        UPDATE ordenes set estado_id = #{estado_anular}, observacion = 'ANULADA' WHERE id = #{orden[0]["id"]};
         SQL
         Orden.connection.select_all(query)
         return resp = 1

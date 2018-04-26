@@ -408,7 +408,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.integer "orden_id", null: false
     t.bigint "concepto_id", null: false
     t.integer "nrorden", null: false
-    t.money "valor", precision: 19, scale: 4, null: false
+    t.string "valor", limit: 250, null: false
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false

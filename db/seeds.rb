@@ -16,7 +16,6 @@ Estado.create(nombre: 'PENDIENTE', abreviatura: 'PE', tipo: 2, usuario: 'admin')
 Estado.create(nombre: 'ANULADO', abreviatura: 'AN', tipo: 2, usuario: 'admin')
 Estado.create(nombre: 'APLICADO', abreviatura: 'AP', tipo: 2, usuario: 'admin')
 Estado.create(nombre: 'PAGADO', abreviatura: 'PA', tipo: 2, usuario: 'admin')
-
 Pais.create(nombre: 'COLOMBIA', usuario_id: 1)
 Pais.create(nombre: 'PANAMA', usuario_id: 1)
 Pais.create(nombre: 'VENEZUELA',usuario_id: 1)
@@ -39,19 +38,14 @@ Banco.create(nit: '860002964', nombre: 'PTO PAGO OESTE', direccion: 'Cll 56 #10-
 telefono2: '0', contacto: '', cuentaBancaria: '5667434', cuentaContable: '', usuario_id: 1)
 Servicio.create(nombre: 'TELEVISION', usuario_id: 1)
 Servicio.create(nombre: 'INTERNET', usuario_id: 1)
-Documento.create(nombre: 'FACTURA DE VENTA TELEVISION', abreviatura: 'FTV', usuario_id: 1)
-Documento.create(nombre: 'FACTURA DE VENTA INTERNET', abreviatura: 'FIN', usuario_id: 1)
+Documento.create(nombre: 'FACTURA DE VENTA', abreviatura: 'FTV', usuario_id: 1)
 Documento.create(nombre: 'RECIBOS DE CAJA', abreviatura: 'REC', clase: 'P',usuario_id: 1)
 Documento.create(nombre: 'COMPROBANTE EGRESO', abreviatura: 'OPA', clase: 'P', usuario_id: 1)
-Documento.create(nombre: 'NOTA CRÉDITO TELEVISION', abreviatura: 'CRT', clase: 'P', usuario_id: 1)
-Documento.create(nombre: 'NOTA CRÉDITO INTERNET', abreviatura: 'CRI', clase: 'P', usuario_id: 1)
-Documento.create(nombre: 'NOTA DEBITO TELEVISION', abreviatura: 'DBT', clase: 'P', usuario_id: 1)
-Documento.create(nombre: 'NOTA DEBITO INTERNET', abreviatura: 'DBI', clase: 'P', usuario_id: 1)
-Documento.create(nombre: 'DESCUENTOS TELEVISION', abreviatura: 'DST', clase: 'P', usuario_id: 1)
-Documento.create(nombre: 'DESCUENTOS INTERNET', abreviatura: 'DSI', clase: 'P', usuario_id: 1)
+Documento.create(nombre: 'NOTA CRÉDITO', abreviatura: 'CRT', clase: 'P', usuario_id: 1)
+Documento.create(nombre: 'NOTA DEBITO', abreviatura: 'DBT', clase: 'P', usuario_id: 1)
+Documento.create(nombre: 'DESCUENTOS', abreviatura: 'DST', clase: 'P', usuario_id: 1)
 Documento.create(nombre: 'CAUSACIONES', abreviatura: 'CAU', usuario_id: 1)
 Documento.create(nombre: 'ORDENES', abreviatura: 'ORD', usuario_id: 1)
-Documento.create(nombre: 'COMPROBANTES DE PAGO', abreviatura: 'CPG', usuario_id: 1)
 Concepto.create(servicio_id: 1, codigo: '001', nombre: 'SUSCRIPCION TELEVISION', abreviatura: 'AFT',
 porcentajeIva: '19', operacion: '+', clase: '', usuario_id: 1)
 Concepto.create(servicio_id: 2, codigo: '002', nombre: 'SUSCRIPCION INTERNET', abreviatura: 'AFI',
@@ -120,9 +114,7 @@ Concepto.create(servicio_id: 2, codigo: '035', nombre: 'CUOTA EXTRAORDINARIA INT
 porcentajeIva: '19', operacion: '+', clase: '', usuario_id: 1)
 Concepto.create(servicio_id: 1, codigo: '036', nombre: 'RECIBO DE CAJA', abreviatura: 'REC',
 porcentajeIva: '19', operacion: '+', clase: 'P', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '037', nombre: 'COMPROBANTE EGRESO TELEVISION', abreviatura: 'ECT',
-porcentajeIva: '19', operacion: '-', clase: '', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '038', nombre: 'COMPROBANTE EGRESO INTERNET', abreviatura: 'ECI',
+Concepto.create(servicio_id: 1, codigo: '037', nombre: 'COMPROBANTE EGRESO', abreviatura: 'OPA',
 porcentajeIva: '19', operacion: '-', clase: '', usuario_id: 1)
 Concepto.create(servicio_id: 1, codigo: '039', nombre: 'NOTA CREDITO TELEVISION', abreviatura: 'CDT',
 porcentajeIva: '19', operacion: '-', clase: 'P', usuario_id: 1)
@@ -150,7 +142,6 @@ Concepto.create(servicio_id: 1, codigo: '050', nombre: 'REMISION MATERIALES TELE
 porcentajeIva: '19', operacion: '+', clase: '', usuario_id: 1)
 Concepto.create(servicio_id: 2, codigo: '051', nombre: 'REMISION MATERIALES INTERNET', abreviatura: 'RMI',
 porcentajeIva: '19', operacion: '+', clase: '', usuario_id: 1)
-
 Parametro.create(descripcion: 'Permite anular recibos', valor: 'N')
 Parametro.create(descripcion: 'Genera factura de venta', valor: 'S')
 Parametro.create(descripcion: 'formato impresion cta cobro', valor: 'ImprimeProvisional')
@@ -213,9 +204,9 @@ Parametro.create(descripcion: 'Maneja internet en documentos separado', valor: '
 Parametro.create(descripcion: 'Maneja direccion de correspondencia', valor: 'S')
 Parametro.create(descripcion: 'Maneja nomenclatura DIAN', valor: 'S')
 Parametro.create(descripcion: 'Permite modificar valor de afiliación', valor: 'N')
-Parametro.create(descripcion: 'Maneja consecutivos separados', valor: 'N')
+Parametro.create(descripcion: 'Maneja consecutivos separados ordenes', valor: 'N')
 Parametro.create(descripcion: 'Permite ordenes en meses anteriores', valor: 'N')
-Parametro.create(descripcion: 'Permire ordenes en meses posteriores', valor: 'N')
+Parametro.create(descripcion: 'Permite ordenes en meses posteriores', valor: 'N')
 Parametro.create(descripcion: 'Maneja fecha suspension servicio', valor: 'S')
 Parametro.create(descripcion: 'Maneja fecha pagos vencidos', valor: 'S')
 Parametro.create(descripcion: 'Pregunta si desea cobrar dias al editar instalacion', valor: 'S')
@@ -227,17 +218,14 @@ Parametro.create(descripcion: 'Cobra dias al editar corte', valor: 'S')
 Parametro.create(descripcion: 'Cobra dias al editar reconexion', valor: 'S')
 Parametro.create(descripcion: 'Cobra dias al editar retiro', valor: 'S')
 Parametro.create(descripcion: 'Genera factura en reconexion', valor: 'S')
-=end
 Parametro.create(descripcion: 'Maneja cobradores', valor: 'S')
-=begin
+Parametro.create(descripcion: 'Permite facturas manuales mayor a la tarifa', valor: 'S')
 Plan.create(servicio_id: 1, nombre: 'Television', usuario_id: 1)
 Plan.create(servicio_id: 2, nombre: 'Internet 2 megas', usuario_id: 1)
-
 Unidad.create(unidad: 'MTS', usuario_id: 1)
 Unidad.create(unidad: 'PAQ', usuario_id: 1)
 Unidad.create(unidad: 'UND', usuario_id: 1)
 Unidad.create(unidad: 'UNI', usuario_id: 1)
-
 Tarifa.create(zona_id: 1, concepto_id: 1, plan_id: 1, valor: '35000', estado_id: 1, usuario_id: 1)
 Tarifa.create(zona_id: 1, concepto_id: 3, plan_id: 1, valor: '20000', estado_id: 1, usuario_id: 1)
 Tarifa.create(zona_id: 1, concepto_id: 5, plan_id: 1, valor: '18000', estado_id: 1, usuario_id: 1)
@@ -310,12 +298,14 @@ Entidad.create(funcion_id: 1, persona_id: 4, usuario_id: 1)
 Entidad.create(funcion_id: 7, persona_id: 5, usuario_id: 1)
 Entidad.create(funcion_id: 5, persona_id: 6, usuario_id: 1)
 Entidad.create(funcion_id: 5, persona_id: 7, usuario_id: 1)
+=end
 Empresa.create(tipo: '01', nit: '900353347', razonsocial: 'enlace informatico s.a.s', direccion: 'cra 47 #53-41', 
 telefono1: '4540312', telefono2: '', ciudad_id: 2, entidad_id: 50003, logo: '', correo: 'gerencia@enlaceinformatico.com',
 regimen: 's', contribuyente: 's', centrocosto: '0001', usuario_id: 1)
 Resolucion.create(empresa_id: 1, nroResolucion: '18762002425502', tipo: 'AUTORIZADO', prefijo: 'AR',
 rangoRI: '0', rangoRF: '0', rangoI: '0', rangoF: '0', fechainicio: '28/02/2018', 
 fechavence: '28/02/2018', usuario_id: 1)
+=begin
 Senal.create(entidad_id: 1, contrato: '4789963', direccion: 'Calle 11 #24-23', urbanizacion: '', 
 torre: '', apto: '', barrio_id: 1, zona_id: 1, telefono1: '4540312', telefono2: '', contacto: '', estrato: '4',
 vivienda: 'P', observacion: '', fechacontrato: '01/01/2017', permanencia: '', televisores: 2, 
@@ -389,7 +379,7 @@ fechafin: '01/01/2118', usuario_id: 1)
 PlantillaFact.create(senal_id: 7, concepto_id: 4, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
 fechafin: '01/01/2118', usuario_id: 1)
 
-
+=end
 RegistroOrden.create(nombre: 'fecha creacion', usuario_id: 1)
 RegistroOrden.create(nombre: 'usuario creacion', usuario_id: 1)
 RegistroOrden.create(nombre: 'tecnico asigando', usuario_id: 1)
@@ -403,7 +393,7 @@ RegistroOrden.create(nombre: 'motivo anulacion', usuario_id: 1)
 RegistroOrden.create(nombre: 'solicitado por', usuario_id: 1)
 
 Grupo.create(descripcion: 'INVENTARIOS', usuario_id: 1)
-=end
+
 
     
     

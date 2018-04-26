@@ -13,7 +13,7 @@ class Pago < ApplicationRecord
 
   private
 
-  def self.generar_pago(entidad_id, documento_id, fechatrn, valor, descuento, observacion, forma_pago_id,
+  def self.generar_pago(entidad_id, concepto_id, fechatrn, valor, descuento, observacion, forma_pago_id,
     banco_id, cobrador_id, detalle, usuario_id)
     ban = 0
     ban1 = 0
@@ -22,10 +22,19 @@ class Pago < ApplicationRecord
     faltante = 0
     dcto = ''
     dcto_id = 0
-    serv_tv = Servicio.find_by(nombre: 'TELEVISION').id
-    serv_int = Servicio.find_by(nombre: 'INTERNET').id
+    documento_id = 0
     observacion = observacion.upcase! unless observacion == observacion.upcase
     estado = Estado.find_by(abreviatura: 'PA').id
+    case concepto_id
+    when "34"
+      documento_id = 2
+    when "37", "38"
+      documento_id = 4
+    when "39", "40"
+      documento_id = 5
+    when "41", "42"
+      documento_id = 6
+    end
     query = <<-SQL 
     SELECT MAX(nropago) as ultimo FROM pagos WHERE documento_id = #{documento_id};
     SQL
@@ -37,14 +46,14 @@ class Pago < ApplicationRecord
       ultimo = (ultimo[0]["ultimo"]).to_i + 1
     end
     case documento_id
-    when "3", "5", "6", "9", "10"
+    when 2, 4, 6
       valor_pago = valor + descuento
       pago = Pago.new(entidad_id: entidad_id, documento_id: documento_id, nropago: ultimo, fechatrn: fechatrn,
         valor: valor_pago, estado_id: estado, observacion: observacion, forma_pago_id: forma_pago_id,
         banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
       if pago.save
         query = <<-SQL 
-        SELECT id FROM pagos WHERE nropago = #{pago.nropago};
+        SELECT id FROM pagos WHERE nropago = #{pago.nropago} and documento_id = #{documento_id};
         SQL
         Pago.connection.clear_query_cache
         pago_id = Pago.connection.select_all(query)
@@ -87,33 +96,13 @@ class Pago < ApplicationRecord
                 return false
               end
             elsif ban == 2
-              serv = Concepto.find(d["concepto_id"]).servicio_id
-              if serv == serv_tv
-                doc_dcto = Documento.find_by(nombre: 'DESCUENTOS TELEVISION').id
-              else
-                doc_dcto = Documento.find_by(nombre: 'DESCUENTOS INTERNET').id
-              end
+              doc_dcto = Documento.find_by(nombre: 'DESCUENTOS').id
               if dcto.blank?
                 ban1 = 1
-              elsif dcto.documento_id == doc_dcto
-                ban1 = 2
               else
-                ban1 = 3
+                ban1 = 2
               end
-              if ban1 == 3
-                dcto_pago = Descuento.where(pago_id: pago_id)
-                dcto_pago.each do |dcto_p|
-                  if dcto_p.doc_dctos_id == doc_dcto
-                    dcto_id = dcto_p.dcto_id
-                    dcto = dcto_p
-                    ban1 = 4
-                    break
-                  else
-                    ban1 = 5
-                  end
-                end
-              end
-              if ban1 == 1 || ban1 == 5
+              if ban1 == 1
                 if abono_fact > 0
                   abono = Abono.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
                     factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
@@ -139,7 +128,7 @@ class Pago < ApplicationRecord
                     banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
                   if dcto.save
                     query = <<-SQL 
-                    SELECT id FROM pagos WHERE nropago = #{dcto.nropago};
+                    SELECT id FROM pagos WHERE nropago = #{dcto.nropago} and documento_id = #{doc_dcto};
                     SQL
                     Pago.connection.clear_query_cache
                     dcto_id = Pago.connection.select_all(query)
@@ -148,45 +137,29 @@ class Pago < ApplicationRecord
                     return false
                   end
                 end
-              elsif ban1 == 2 || ban1 == 4
+              elsif ban1 == 2
                 query = <<-SQL 
                 UPDATE pagos set valor = valor + #{abono_dcto} WHERE id = #{dcto_id};
                 SQL
                 Pago.connection.select_all(query)
               end
-              if ban1 == 4
-                abono = Abono.new(pago_id: dcto_id, doc_pagos_id: dcto.doc_dctos_id, nropago: dcto.nrodcto, 
-                  factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
-                  prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
-                  fechabono: fechatrn, saldo: faltante, abono: abono_dcto, usuario_id: pago.usuario_id)
-                if abono.save
-                  descuento_pago = Descuento.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago,
-                    dcto_id: dcto_id, doc_dctos_id: dcto.doc_dctos_id, nrodcto: dcto.nrodcto, usuario_id: usuario_id)
-                  unless descuento_pago.save
-                    return false
-                  end
-                else
+              abono = Abono.new(pago_id: dcto_id, doc_pagos_id: dcto.documento_id, nropago: dcto.nropago, 
+                factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
+                prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
+                fechabono: fechatrn, saldo: faltante, abono: abono_dcto, usuario_id: pago.usuario_id)
+              if abono.save
+                descuento_pago = Descuento.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago,
+                  dcto_id: dcto_id, doc_dctos_id: dcto.documento_id, nrodcto: dcto.nropago, usuario_id: usuario_id)
+                unless descuento_pago.save
                   return false
                 end
               else
-                abono = Abono.new(pago_id: dcto_id, doc_pagos_id: dcto.documento_id, nropago: dcto.nropago, 
-                  factura_id: factura_id[0]["factura_id"], doc_factura_id: factura[0]["documento_id"],
-                  prefijo: factura[0]["prefijo"], nrofact: factura[0]["nrofact"], concepto_id: d["concepto_id"],
-                  fechabono: fechatrn, saldo: faltante, abono: abono_dcto, usuario_id: pago.usuario_id)
-                if abono.save
-                  descuento_pago = Descuento.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago,
-                    dcto_id: dcto_id, doc_dctos_id: dcto.documento_id, nrodcto: dcto.nropago, usuario_id: usuario_id)
-                  unless descuento_pago.save
-                    return false
-                  end
-                else
-                  return false
-                end
+                return false
               end
             end
             if d["total"] == 0
               query = <<-SQL 
-              UPDATE facturacion set estado_id = 9 WHERE id = #{factura_id[0]["factura_id"]};
+              UPDATE facturacion set estado_id = #{estado} WHERE id = #{factura_id[0]["factura_id"]};
               SQL
               Pago.connection.select_all(query)
             end
@@ -212,7 +185,7 @@ class Pago < ApplicationRecord
             end
             if d["total"] == 0
               query = <<-SQL 
-              UPDATE facturacion set estado_id = 9 WHERE id = #{factura_id[0]["factura_id"]};
+              UPDATE facturacion set estado_id = #{estado} WHERE id = #{factura_id[0]["factura_id"]};
               SQL
               Pago.connection.select_all(query)
             end
@@ -228,20 +201,13 @@ class Pago < ApplicationRecord
       fecha_fact = fechatrn.split("/")
       fecha_fact = Time.new(fecha_fact[2], fecha_fact[1], fecha_fact[0])
       nombre_mes = Facturacion.mes(fecha_fact.strftime("%B"))
-      if documento_id == "7"
-        concepto = Concepto.find(3)
-        iva_cpto = concepto.porcentajeIva
-        observacion_d = 'TELEVISION'
-      else
-        concepto = Concepto.find(4)
-        iva_cpto = concepto.porcentajeIva
-        observacion_d = 'INTERNET'
-      end
+      concepto = Concepto.find(concepto_id)
+      iva_cpto = concepto.porcentajeIva
       query = <<-SQL 
       SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id = #{documento_id};
       SQL
-      Facturacion.connection.clear_query_cache
-      ultimo = Facturacion.connection.select_all(query)
+      Pago.connection.clear_query_cache
+      ultimo = Pago.connection.select_all(query)
       if ultimo[0]["ultimo"] == nil
         ultimo = 1
       else
@@ -259,12 +225,12 @@ class Pago < ApplicationRecord
         query = <<-SQL 
         SELECT id FROM facturacion WHERE nrofact = #{facturacion.nrofact} and documento_id = #{documento_id};
         SQL
-        Facturacion.connection.clear_query_cache
-        facturacion_id = Facturacion.connection.select_all(query)
+        Pago.connection.clear_query_cache
+        facturacion_id = Pago.connection.select_all(query)
         facturacion_id = (facturacion_id[0]["id"]).to_i
         detallef = DetalleFactura.new(factura_id: facturacion_id, documento_id: facturacion.documento_id, 
           prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: concepto.id, cantidad: 1, 
-          valor: facturacion.valor, porcentajeIva: iva_cpto, iva: facturacion.iva, observacion: observacion_d + ' ' + nombre_mes,
+          valor: facturacion.valor, porcentajeIva: iva_cpto, iva: facturacion.iva, observacion: facturacion.observacion,
           operacion: '+', usuario_id: usuario_id)
         if detallef.save
           return true
@@ -279,6 +245,7 @@ class Pago < ApplicationRecord
 
   def self.generar_pago_anticipado(entidad_id, documento_id, servicio_id, fechatrn, fechapxa, valor, descuento, observacion, forma_pago_id,
     banco_id, cobrador_id, usuario_id)
+    byebug
     ban = 0
     ban1 = 0
     resp = 0
@@ -291,6 +258,7 @@ class Pago < ApplicationRecord
     query = <<-SQL 
     SELECT saldo_tv, saldo_int FROM VwEstadoDeCuentaTotal WHERE entidad_id = #{entidad_id};
     SQL
+    Pago.connection.clear_query_cache
     saldos = Pago.connection.select_all(query)
     saldo_tv = saldos[0]["saldo_tv"]
     saldo_int = saldos[0]["saldo_int"]
@@ -322,7 +290,7 @@ class Pago < ApplicationRecord
         banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
       if pago.save
         query = <<-SQL 
-        SELECT id FROM pagos WHERE nropago = #{pago.nropago};
+        SELECT id FROM pagos WHERE nropago = #{pago.nropago} and documento_id = #{documento_id};
         SQL
         Pago.connection.clear_query_cache
         pago_id = Pago.connection.select_all(query)
@@ -332,11 +300,7 @@ class Pago < ApplicationRecord
         fecha1 = Date.parse fechapxa
         fecha2 = fecha1 + 29
         if descuento > 0
-          if servicio_id == serv_tv.to_s
-            doc_dcto = Documento.find_by(nombre: 'DESCUENTOS TELEVISION').id
-          else
-            doc_dcto = Documento.find_by(nombre: 'DESCUENTOS INTERNET').id
-          end
+          doc_dcto = Documento.find_by(nombre: 'DESCUENTOS').id
           query = <<-SQL 
           SELECT MAX(nropago) as ultimo FROM pagos WHERE documento_id = #{doc_dcto};
           SQL
@@ -352,7 +316,7 @@ class Pago < ApplicationRecord
             banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
           if dcto.save
             query = <<-SQL 
-            SELECT id FROM pagos WHERE nropago = #{dcto.nropago};
+            SELECT id FROM pagos WHERE nropago = #{dcto.nropago} and documento_id = #{doc_dcto};
             SQL
             Pago.connection.clear_query_cache
             dcto_id = Pago.connection.select_all(query)
@@ -439,8 +403,9 @@ class Pago < ApplicationRecord
     saldos = Pago.connection.select_all(query)
     saldo_tv = saldos[0]["saldo_tv"]
     saldo_int = saldos[0]["saldo_int"]
+    estado = Estado.find_by(abreviatura: 'AN').id
     query = <<-SQL 
-    SELECT * FROM facturacion WHERE entidad_id = #{entidad_id} and estado_id <> 7 ORDER BY id;
+    SELECT * FROM facturacion WHERE entidad_id = #{entidad_id} and estado_id <> #{estado} ORDER BY id;
     SQL
     facturas = Pago.connection.select_all(query)
     query = <<-SQL 
@@ -515,16 +480,17 @@ class Pago < ApplicationRecord
   end
 
   def self.anular_pago(pago_id)
+    estado = Estado.find_by(abreviatura: 'AN').id
     dctos = Descuento.where(pago_id: pago_id)
     query = <<-SQL 
-    UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{pago_id}
+    UPDATE pagos set valor = 0, estado_id = #{estado}, observacion = 'ANULADO' WHERE id = #{pago_id}
     UPDATE abonos set saldo = 0, abono = 0 WHERE pago_id = #{pago_id}
     SQL
     Pago.connection.select_all(query)
     unless dctos.blank?
       dctos.each do |dcto|
         query = <<-SQL 
-        UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{dcto.dcto_id}
+        UPDATE pagos set valor = 0, estado_id = #{estado}, observacion = 'ANULADO' WHERE id = #{dcto.dcto_id}
         UPDATE abonos set saldo = 0, abono = 0 WHERE pago_id = #{dcto.dcto_id}
         SQL
         Pago.connection.select_all(query)
@@ -534,26 +500,30 @@ class Pago < ApplicationRecord
   end
 
   def self.anular_pago_anticipado(pago_anticipado)
+    byebug
     ban = 0
+    estado = Estado.find_by(abreviatura: 'AN').id
     query = <<-SQL 
     SELECT * FROM anticipos WHERE pago_id = #{pago_anticipado[0]["id"]}
     SQL
     pag_anticipado = Pago.connection.select_all(query)
     pag_anticipado.each do |p_ant|
+      byebug
       fechapxa = Date.parse p_ant["fechatrn"].to_s
       query = <<-SQL 
-      SELECT * FROM facturacion WHERE (SELECT DATEPART(year, fechatrn)) = #{fechapxa.year} and (SELECT DATEPART(month, fechatrn)) = #{fechapxa.month}
+      SELECT * FROM facturacion WHERE (SELECT DATEPART(year, fechatrn)) = #{fechapxa.year} and (SELECT DATEPART(month, fechatrn)) = #{fechapxa.month} and entidad_id = #{pago_anticipado[0]["entidad_id"]};
       SQL
       factura = Pago.connection.select_all(query)
-      if factura.blank?
-        ban == 1
+      unless factura.blank?
+        ban = 1
+        break
       end
     end
     if ban == 1
       return false
     else
       query = <<-SQL 
-      UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{pago_anticipado[0]["id"]}
+      UPDATE pagos set valor = 0, estado_id = #{estado}, observacion = 'ANULADO' WHERE id = #{pago_anticipado[0]["id"]}
       DELETE anticipos WHERE entidad_id = #{pago_anticipado[0]["entidad_id"]} and pago_id = #{pago_anticipado[0]["id"]}
       SQL
       Pago.connection.select_all(query)
@@ -561,12 +531,13 @@ class Pago < ApplicationRecord
       unless dctos.blank?
         dctos.each do |dcto|
           query = <<-SQL 
-          UPDATE pagos set valor = 0, estado_id = 7, observacion = 'ANULADO' WHERE id = #{dcto.dcto_id}
+          UPDATE pagos set valor = 0, estado_id = #{estado}, observacion = 'ANULADO' WHERE id = #{dcto.dcto_id}
           DELETE anticipos WHERE entidad_id = #{pago_anticipado[0]["entidad_id"]} and pago_id = #{dcto.dcto_id}
           SQL
           Pago.connection.select_all(query)
         end
       end
+      return true
     end
   end
 end

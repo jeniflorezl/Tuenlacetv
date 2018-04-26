@@ -16,7 +16,7 @@ module Api
             def index_pago
                 @detalle_facts = Pago.detalle_facturas(params[:entidad_id])
                 @valor_total = Pago.valor_total(@detalle_facts)
-                @documentos = Documento.where(clase: 'P')
+                @conceptos = Concepto.where(clase: 'P')
                 @cobradores = Entidad.where(funcion_id: 8)
                 @param_cobradores = Parametro.find_by(descripcion: 'Maneja cobradores').valor
                 @formas_pago = FormaPago.all
@@ -25,7 +25,7 @@ module Api
             
             # POST /pagos
             def create
-                if Pago.generar_pago(params[:entidad_id], params[:documento_id], params[:fechatrn],
+                if Pago.generar_pago(params[:entidad_id], params[:concepto_id], params[:fechatrn],
                     params[:valor], params[:descuento], params[:observacion], params[:forma_pago_id],
                     params[:banco_id], params[:cobrador_id], params[:detalle], params[:usuario_id])
                     render json: { status: :created }

@@ -18,8 +18,8 @@ class Senal < ApplicationRecord
   @t = Time.now
   @mes = Senal.mes(@t.strftime("%B"))
   @consecutivos = Parametro.find_by(descripcion: 'Maneja consecutivos separados ordenes').valor
-  @estadoD = Estado.find_by(abreviatura: 'PE')
-  @estadoU = Estado.find_by(abreviatura: 'P')
+  @estadoD = Estado.find_by(abreviatura: 'PE').id
+  @estadoU = Estado.find_by(abreviatura: 'P').id
 
   def setting
     self.direccion.upcase!
@@ -40,13 +40,13 @@ class Senal < ApplicationRecord
     conceptord = Concepto.find(11)
     conceptoplant = Concepto.find(3)
     conceptofact = Concepto.find(1)
-    doc_tv = Documento.find_by(nombre: 'FACTURA DE VENTA TELEVISION').id
-    plantilla = PlantillaFact.new(entidad_id: entidad.id, concepto_id: conceptoplant.id, estado_id: @estadoU.id, tarifa_id: tarifaTv, 
+    doc = Documento.find_by(nombre: 'FACTURA DE VENTA').id
+    plantilla = PlantillaFact.new(entidad_id: entidad.id, concepto_id: conceptoplant.id, estado_id: @estadoU, tarifa_id: tarifaTv, 
       fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: senal.usuario_id)
     if plantilla.save
       if @consecutivos == 'S'
         query = <<-SQL 
-        SELECT MAX(nrorden) as ultimo FROM ordenes WHERE concepto_id = #{conceptord};
+        SELECT MAX(nrorden) as ultimo FROM ordenes WHERE concepto_id = #{conceptord.id};
         SQL
       else
         query = <<-SQL 
@@ -61,11 +61,11 @@ class Senal < ApplicationRecord
         ultimo = (ultimo[0]["ultimo"]).to_i + 1
       end
       orden = Orden.new(entidad_id: entidad.id, concepto_id: conceptord.id, fechatrn: senal.fechacontrato,
-        fechaven: senal.fechacontrato, nrorden: ultimo, estado_id: @estadoD.id, observacion: 'Registro creado en proceso de afiliación',
+        fechaven: senal.fechacontrato, nrorden: ultimo, estado_id: @estadoD, observacion: 'Registro creado en proceso de afiliación',
         tecnico_id: tecnico, usuario_id: senal.usuario_id)
       if orden.save
         query = <<-SQL 
-        SELECT id FROM ordenes WHERE nrorden = #{orden.nrorden};
+        SELECT id FROM ordenes WHERE nrorden = #{orden.nrorden} and concepto_id = #{conceptord.id};
         SQL
         Senal.connection.clear_query_cache
         orden_id = Senal.connection.select_all(query)
@@ -79,7 +79,7 @@ class Senal < ApplicationRecord
         if valorAfiTv > 0
           pref = Resolucion.last.prefijo
           query = <<-SQL 
-          SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id = #{doc_tv};
+          SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id = #{doc};
           SQL
           Senal.connection.clear_query_cache
           ultimo = Senal.connection.select_all(query)
@@ -99,12 +99,12 @@ class Senal < ApplicationRecord
             iva = valor - valor_sin_iva
             valor = valor_sin_iva
           end
-          factura = Facturacion.new(entidad_id: entidad.id, documento_id: doc_tv, fechatrn: senal.fechacontrato,
+          factura = Facturacion.new(entidad_id: entidad.id, documento_id: doc, fechatrn: senal.fechacontrato,
             fechaven: senal.fechacontrato, valor: valor, iva: iva, dias: 0, prefijo: pref, nrofact: ultimo,
-            estado_id: @estadoD.id, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN', reporta: '0', usuario_id: senal.usuario_id)
+            estado_id: @estadoD, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN', reporta: '0', usuario_id: senal.usuario_id)
           if factura.save
             query = <<-SQL 
-            SELECT id FROM facturacion WHERE nrofact = #{factura.nrofact};
+            SELECT id FROM facturacion WHERE nrofact = #{factura.nrofact} and documento_id = #{doc};
             SQL
             Senal.connection.clear_query_cache
             factura_id = Senal.connection.select_all(query)
@@ -138,13 +138,13 @@ class Senal < ApplicationRecord
     conceptord = Concepto.find(12)
     conceptoplant = Concepto.find(4)
     conceptofact = Concepto.find(2)
-    doc_int = Documento.find_by(nombre: 'FACTURA DE VENTA INTERNET').id
-    plantillaint = PlantillaFact.new(entidad_id: entidad.id, concepto_id: conceptoplant.id, estado_id: @estadoU.id, tarifa_id: tarifaInt, 
+    doc = Documento.find_by(nombre: 'FACTURA DE VENTA').id
+    plantillaint = PlantillaFact.new(entidad_id: entidad.id, concepto_id: conceptoplant.id, estado_id: @estadoU, tarifa_id: tarifaInt, 
       fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: senal.usuario_id)
     if plantillaint.save
       if @consecutivos == 'S'
         query = <<-SQL  
-        SELECT MAX(nrorden) as ultimo FROM ordenes WHERE concepto_id = #{conceptord};
+        SELECT MAX(nrorden) as ultimo FROM ordenes WHERE concepto_id = #{conceptord.id};
         SQL
       else
         query = <<-SQL 
@@ -159,11 +159,11 @@ class Senal < ApplicationRecord
         ultimo = (ultimo[0]["ultimo"]).to_i + 1
       end
       ordenin = Orden.new(entidad_id: entidad.id, concepto_id: conceptord.id, fechatrn: @t.strftime("%d/%m/%Y %H:%M:%S"),
-      fechaven: @t.strftime("%d/%m/%Y %H:%M:%S"), nrorden: ultimo, estado_id: @estadoD.id, observacion: 'Registro creado en proceso de afiliación',
+      fechaven: @t.strftime("%d/%m/%Y %H:%M:%S"), nrorden: ultimo, estado_id: @estadoD, observacion: 'Registro creado en proceso de afiliación',
       tecnico_id: tecnico, usuario_id: senal.usuario_id)
       if ordenin.save
         query = <<-SQL 
-        SELECT id FROM ordenes WHERE nrorden = #{ordenin.nrorden};
+        SELECT id FROM ordenes WHERE nrorden = #{ordenin.nrorden} and concepto_id = #{conceptord.id};
         SQL
         Senal.connection.clear_query_cache
         ordenin_id = Senal.connection.select_all(query)
@@ -177,7 +177,7 @@ class Senal < ApplicationRecord
         if valorAfiInt > 0
           pref = Resolucion.last.prefijo
           query = <<-SQL 
-          SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id = #{doc_int};
+          SELECT MAX(nrofact) as ultimo FROM facturacion WHERE documento_id = #{doc};
           SQL
           Senal.connection.clear_query_cache
           ultimo = Senal.connection.select_all(query)
@@ -197,12 +197,12 @@ class Senal < ApplicationRecord
             iva = valor - valor_sin_iva
             valor = valor_sin_iva
           end
-          facturain = Facturacion.new(entidad_id: entidad.id, documento_id: 2, fechatrn: senal.fechacontrato,
+          facturain = Facturacion.new(entidad_id: entidad.id, documento_id: doc, fechatrn: senal.fechacontrato,
             fechaven: senal.fechacontrato, valor: valor, iva: iva, dias: 0, prefijo: pref, nrofact: ultimo,
-            estado_id: @estadoD.id, observacion: 'SUSCRIPCIÓN SERVICIO DE INTERNET', reporta: '0', usuario_id: senal.usuario_id)
+            estado_id: @estadoD, observacion: 'SUSCRIPCIÓN SERVICIO DE INTERNET', reporta: '0', usuario_id: senal.usuario_id)
           if facturain.save
             query = <<-SQL 
-            SELECT id FROM facturacion WHERE nrofact = #{facturain.nrofact};
+            SELECT id FROM facturacion WHERE nrofact = #{facturain.nrofact} and documento_id = #{doc};
             SQL
             Senal.connection.clear_query_cache
             facturain_id = Senal.connection.select_all(query)

@@ -44,7 +44,7 @@ module Api
                     render json: { error: "not found" }
                 else
                     if Pago.anular_pago_anticipado(@pago_anticipado)
-                        render json: { status: :deleted }
+                        render json: { status: :anulado }
                     else
                         render json: { error: "error al anular pago anticipado" }
                     end
@@ -55,7 +55,7 @@ module Api
 
             def set_pago_anticipado
                 query = <<-SQL 
-                SELECT * FROM VwPagosAnticipados WHERE id=#{params[:id]};
+                SELECT * FROM VwPagosAnticipados WHERE id = #{params[:id]};
                 SQL
                 Pago.connection.clear_query_cache
                 @pago_anticipado = Pago.connection.select_all(query)

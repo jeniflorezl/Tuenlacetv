@@ -27,7 +27,7 @@ module Api
                 @tecnicos = Entidad.where(funcion_id: 7)
                 @param_valor = Parametro.find_by(descripcion: 'Permite cambiar valor de ordenes').valor
                 @meses_anteriores = Parametro.find_by(descripcion: 'Permite ordenes en meses anteriores').valor
-                @meses_posteriores = Parametro.find_by(descripcion: 'Permire ordenes en meses posteriores').valor
+                @meses_posteriores = Parametro.find_by(descripcion: 'Permite ordenes en meses posteriores').valor
             end
 
             # GET /ordens/id

@@ -43,8 +43,8 @@ module Api
             def create_factura
                 respuesta = 0
                 respuesta = Facturacion.factura_manual(params[:tipo_facturacion_id], params[:servicio_id], 
-                    params[:f_elaboracion], params[:f_inicio], params[:f_fin], params[:entidad_id], 
-                    params[:valor], params[:observa], params[:usuario_id])
+                    params[:f_elaboracion], params[:f_inicio], params[:f_fin], params[:f_vencimiento],
+                    params[:entidad_id], params[:valor], params[:observa], params[:usuario_id])
                 case respuesta
                 when 1
                     render json: { status: :created }
@@ -53,12 +53,12 @@ module Api
                 when 3
                     render json: { error: "mes diferente al corriente" }
                 else 4
-                    render json: { error: "ya tiene factura en el mes corriente" }
+                    render json: { error: "valor mayor a la tarifa" }
                 end
             end
 
             def anular_factura
-                if Facturacion.anular_factura(params[:entidad_id], params[:nrodcto])
+                if Facturacion.anular_factura(params[:entidad_id], params[:concepto_id], params[:nrodcto])
                     render json: { status: :anulada }
                 else
                     render json: { error: "no se anulo factura" }
