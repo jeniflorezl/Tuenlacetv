@@ -57,7 +57,7 @@ class Facturacion < ApplicationRecord
     resp = 0
     resp1 = 0
     respuesta = 0
-    notasfact = NotaFact.where("(SELECT DATEPART(year, fechaElaboracion)) = #{fech_e[2]} and (SELECT DATEPART(month, fechaElaboracion)) = #{fech_e[1]}")
+    notasfact = NotaFact.where("year(fechaElaboracion) = #{fech_e[2]} and month(fechaElaboracion) = #{fech_e[1]}")
     unless notasfact.blank?
       if notasfact[0]["zona_id"] == nil && zona == 'Todos'
         return respuesta = 3
@@ -128,7 +128,7 @@ class Facturacion < ApplicationRecord
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
                 tarifa = plantilla.tarifa.valor
                 query = <<-SQL 
-                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and documento_id = #{doc};
+                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and year(fechatrn) = #{ano} and month(fechatrn) = #{mes} and documento_id = #{doc};
                 SQL
                 Facturacion.connection.clear_query_cache
                 factura = Facturacion.connection.select_all(query)
@@ -280,7 +280,7 @@ class Facturacion < ApplicationRecord
                   end
                 end
                 query = <<-SQL 
-                SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and servicio_id = #{serv_tv};
+                SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and year(fechatrn) = #{ano} and month(fechatrn) = #{mes} and servicio_id = #{serv_tv};
                 SQL
                 Facturacion.connection.clear_query_cache
                 anticipo = Facturacion.connection.select_all(query)
@@ -330,7 +330,7 @@ class Facturacion < ApplicationRecord
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
                 tarifa = plantilla.tarifa.valor
                 query = <<-SQL 
-                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and documento_id = #{doc};
+                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and year(fechatrn) = #{ano} and month(fechatrn) = #{mes} and documento_id = #{doc};
                 SQL
                 Facturacion.connection.clear_query_cache
                 factura = Facturacion.connection.select_all(query)
@@ -445,7 +445,7 @@ class Facturacion < ApplicationRecord
                   end
                 end
                 query = <<-SQL 
-                SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and servicio_id = #{serv_int};
+                SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and year(fechatrn) = #{ano} and month(fechatrn) = #{mes} and servicio_id = #{serv_int};
                 SQL
                 Facturacion.connection.clear_query_cache
                 anticipo = Facturacion.connection.select_all(query)
@@ -496,7 +496,7 @@ class Facturacion < ApplicationRecord
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
                 tarifa = plantilla.tarifa.valor
                 query = <<-SQL 
-                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and documento_id = #{doc};
+                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and year(fechatrn) = #{ano} and month(fechatrn) = #{mes} and documento_id = #{doc};
                 SQL
                 Facturacion.connection.clear_query_cache
                 factura = Facturacion.connection.select_all(query)
@@ -616,7 +616,7 @@ class Facturacion < ApplicationRecord
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
                 tarifa = plantilla.tarifa.valor
                 query = <<-SQL 
-                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and documento_id = #{doc};
+                SELECT * FROM facturacion WHERE entidad_id = #{senal.entidad_id} and year(fechatrn) = #{ano} and month(fechatrn) = #{mes} and documento_id = #{doc};
                 SQL
                 Facturacion.connection.clear_query_cache
                 factura = Facturacion.connection.select_all(query)
@@ -777,11 +777,11 @@ class Facturacion < ApplicationRecord
                 if concepto_id == concepto_tv.id || concepto_id == concepto_int.id
                   if concepto_id == concepto_tv.id
                     query = <<-SQL 
-                    SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and servicio_id = #{serv_tv};
+                    SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and year(fechatrn) = #{ano} and month(fechatrn) = #{mes} and servicio_id = #{serv_tv};
                     SQL
                   else
                     query = <<-SQL 
-                    SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and servicio_id = #{serv_int};
+                    SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and year(fechatrn) = #{ano} and month(fechatrn) = #{mes} and servicio_id = #{serv_int};
                     SQL
                   end
                   Facturacion.connection.clear_query_cache
@@ -861,7 +861,7 @@ class Facturacion < ApplicationRecord
       ban = 0
       ban1 = 0
       query = <<-SQL 
-      SELECT * FROM facturacion WHERE entidad_id = #{entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and documento_id = #{doc};
+      SELECT * FROM facturacion WHERE entidad_id = #{entidad_id} and year(fechatrn) = #{ano} and month(fechatrn) = #{mes} and documento_id = #{doc};
       SQL
       Facturacion.connection.clear_query_cache
       factura = Facturacion.connection.select_all(query)
@@ -985,7 +985,7 @@ class Facturacion < ApplicationRecord
           end
         end
         query = <<-SQL 
-        SELECT * FROM anticipos WHERE entidad_id = #{entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and servicio_id = #{serv_tv};
+        SELECT * FROM anticipos WHERE entidad_id = #{entidad_id} and year(fechatrn) = #{ano} and month(fechatrn) = #{mes} and servicio_id = #{serv_tv};
         SQL
         Facturacion.connection.clear_query_cache
         anticipo = Facturacion.connection.select_all(query)
@@ -1103,7 +1103,7 @@ class Facturacion < ApplicationRecord
           return respuesta = 4
         end
         query = <<-SQL 
-        SELECT * FROM anticipos WHERE entidad_id = #{entidad_id} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and servicio_id = #{serv_int};
+        SELECT * FROM anticipos WHERE entidad_id = #{entidad_id} and year(fechatrn) = #{ano} and month(fechatrn) = #{mes} and servicio_id = #{serv_int};
         SQL
         Facturacion.connection.clear_query_cache
         anticipo = Facturacion.connection.select_all(query)
@@ -1183,7 +1183,10 @@ class Facturacion < ApplicationRecord
     else
       return false
     end
+  end
 
+  def listado_fras_ventas(f_ini, f_fin)
+    
   end
 
   def self.generar_impresion

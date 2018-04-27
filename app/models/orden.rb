@@ -206,6 +206,7 @@ class Orden < ApplicationRecord
 
   def self.editar_orden(orden, fechaven, solicita, tecnico_id, observacion, detalle, solucion, respuesta, usuario_id)
     t = Time.now
+    byebug
     senal = Senal.find_by(entidad_id: orden[0]["entidad_id"])
     concepto_fact = 0
     fecha = Date.parse fechaven
@@ -282,7 +283,7 @@ class Orden < ApplicationRecord
           valor_concepto = plantilla.tarifa.valor
           iva_concepto = Concepto.find(concepto_fact).porcentajeIva
           query = <<-SQL 
-          SELECT * FROM facturacion WHERE entidad_id = #{orden[0]["entidad_id"]} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and documento_id = #{doc};
+          SELECT * FROM facturacion WHERE entidad_id = #{orden[0]["entidad_id"]} and year(fechatrn) = #{ano} and month(fechatrn) = #{mes} and documento_id = #{doc};
           SQL
           Facturacion.connection.clear_query_cache
           factura = Facturacion.connection.select_all(query)
@@ -390,6 +391,7 @@ class Orden < ApplicationRecord
         return false
       end
     when 11, 12
+      byebug
       ban = 0
       pregunta = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar instalacion').valor
       if pregunta == 'S'
@@ -508,7 +510,7 @@ class Orden < ApplicationRecord
           valor_concepto = plantilla.tarifa.valor
           iva_concepto = Concepto.find(concepto_fact).porcentajeIva
           query = <<-SQL 
-          SELECT * FROM facturacion WHERE entidad_id = #{orden[0]["entidad_id"]} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and documento_id = #{doc};
+          SELECT * FROM facturacion WHERE entidad_id = #{orden[0]["entidad_id"]} and year(fechatrn) = #{ano} and month(fechatrn) = #{mes} and documento_id = #{doc};
           SQL
           Facturacion.connection.clear_query_cache
           factura = Facturacion.connection.select_all(query)
@@ -647,7 +649,7 @@ class Orden < ApplicationRecord
           valor_concepto = plantilla.tarifa.valor
           iva_concepto = Concepto.find(concepto_fact).porcentajeIva
           query = <<-SQL 
-          SELECT * FROM facturacion WHERE entidad_id = #{orden[0]["entidad_id"]} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and documento_id = #{doc};
+          SELECT * FROM facturacion WHERE entidad_id = #{orden[0]["entidad_id"]} and year(fechatrn) = #{ano} month(fechatrn) = #{mes} and documento_id = #{doc};
           SQL
           Facturacion.connection.clear_query_cache
           factura = Facturacion.connection.select_all(query)
@@ -760,7 +762,7 @@ class Orden < ApplicationRecord
             end
           end
           query = <<-SQL 
-          SELECT * FROM anticipos WHERE entidad_id = #{orden[0]["entidad_id"]} and (SELECT DATEPART(year, fechatrn)) = #{ano} and (SELECT DATEPART(month, fechatrn)) = #{mes} and servicio_id = #{servicio};
+          SELECT * FROM anticipos WHERE entidad_id = #{orden[0]["entidad_id"]} and year(fechatrn) = #{ano} and month(fechatrn) = #{mes} and servicio_id = #{servicio};
           SQL
           Facturacion.connection.clear_query_cache
           anticipo = Facturacion.connection.select_all(query)

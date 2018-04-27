@@ -38,7 +38,7 @@ json.senales do
                     end
                 end
             end
-            if senal["int"] == "1"
+            if senal["internet"] == "1"
                 json.array! @instalaciones do |instalacion|
                     if instalacion["concepto_id"] == 12 && instalacion["entidad_id"] == senal["id"]
                         json.inst_int instalacion["fechaven"]

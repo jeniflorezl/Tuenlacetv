@@ -226,72 +226,30 @@ module Api
             end
 
             def listado_consolidado
-                query = <<-SQL 
-                SELECT * FROM VwSenales WHERE funcion_id = 1;
-                SQL
-                @senal = Senal.connection.select_all(query)
-                query = <<-SQL 
-                SELECT * FROM VwOrdenes WHERE concepto_id = 11 or concepto_id = 12;
-                SQL
-                @instalaciones = Senal.connection.select_all(query)
-                query = <<-SQL 
-                SELECT * FROM VwOrdenes WHERE concepto_id = 7 or concepto_id = 8;
-                SQL
-                @cortes = Senal.connection.select_all(query)
-                query = <<-SQL 
-                SELECT * FROM VwOrdenes WHERE concepto_id = 13 or concepto_id = 14;
-                SQL
-                @traslados = Senal.connection.select_all(query)
-                query = <<-SQL 
-                SELECT * FROM VwOrdenes WHERE concepto_id = 15 or concepto_id = 16;
-                SQL
-                @reconexiones = Senal.connection.select_all(query)
+                @senales = Senal.rango_fechas(params[:fechaini], params[:fechafin])
+                @senal = Senal.senales_consol
+                @instalaciones = Senal.instalaciones_consol
+                @cortes = Senal.cortes_consol
+                @traslados = Senal.traslados_consol
+                @reconexiones = Senal.reconexiones_consol
             end
 
             def listado_television
-                query = <<-SQL 
-                SELECT * FROM VwSenales WHERE funcion_id = 1 and tv = 1;
-                SQL
-                @senal = Senal.connection.select_all(query)
-                query = <<-SQL 
-                SELECT * FROM VwOrdenes WHERE concepto_id = 11;
-                SQL
-                @instalaciones = Senal.connection.select_all(query)
-                query = <<-SQL 
-                SELECT * FROM VwOrdenes WHERE concepto_id = 7;
-                SQL
-                @cortes = Senal.connection.select_all(query)
-                query = <<-SQL 
-                SELECT * FROM VwOrdenes WHERE concepto_id = 13;
-                SQL
-                @traslados = Senal.connection.select_all(query)
-                query = <<-SQL 
-                SELECT * FROM VwOrdenes WHERE concepto_id = 15;
-                SQL
-                @reconexiones = Senal.connection.select_all(query)
+                @senales = Senal.rango_fechas(params[:fechaini], params[:fechafin])
+                @senal = Senal.senales_tv
+                @instalaciones = Senal.instalaciones_tv
+                @cortes = Senal.cortes_tv
+                @traslados = Senal.traslados_tv
+                @reconexiones = Senal.reconexiones_tv
             end
 
             def listado_internet
-                query = <<-SQL 
-                SELECT * FROM VwSenales WHERE funcion_id = 1 and internet = 1;
-                SQL
-                @senal = Senal.connection.select_all(query)
-                query = <<-SQL 
-                SELECT * FROM VwOrdenes WHERE concepto_id = 12;
-                SQL
-                @instalaciones = Senal.connection.select_all(query)
-                query = <<-SQL 
-                SELECT * FROM VwOrdenes WHERE concepto_id = 8;
-                SQL
-                @cortes = Senal.connection.select_all(query)
-                query = <<-SQL 
-                SELECT * FROM VwOrdenes WHERE concepto_id = 14;
-                SQL
-                @traslados = Senal.connection.select_all(query)
-                query = <<-SQL 
-                SELECT * FROM VwOrdenes WHERE concepto_id = 16;
-                SQL
-                @reconexiones = Senal.connection.select_all(query)
+                @senales = Senal.rango_fechas(params[:fechaini], params[:fechafin])
+                @senal = Senal.senales_int
+                @instalaciones = Senal.instalaciones_int
+                @cortes = Senal.cortes_int
+                @traslados = Senal.traslados_int
+                @reconexiones = Senal.reconexiones_int
             end
 
             private

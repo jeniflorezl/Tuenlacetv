@@ -511,7 +511,7 @@ class Pago < ApplicationRecord
       byebug
       fechapxa = Date.parse p_ant["fechatrn"].to_s
       query = <<-SQL 
-      SELECT * FROM facturacion WHERE (SELECT DATEPART(year, fechatrn)) = #{fechapxa.year} and (SELECT DATEPART(month, fechatrn)) = #{fechapxa.month} and entidad_id = #{pago_anticipado[0]["entidad_id"]};
+      SELECT * FROM facturacion WHERE year(fechatrn) = #{fechapxa.year} and month(fechatrn) = #{fechapxa.month} and entidad_id = #{pago_anticipado[0]["entidad_id"]};
       SQL
       factura = Pago.connection.select_all(query)
       unless factura.blank?
