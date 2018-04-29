@@ -1185,8 +1185,35 @@ class Facturacion < ApplicationRecord
     end
   end
 
-  def listado_fras_ventas(f_ini, f_fin)
-    
+  def self.listado_fras_ventas(f_ini, f_fin)
+    facturas = Array.new
+    fechaini = Date.parse f_ini.to_s
+    fechafin = Date.parse f_fin.to_s
+    query = <<-SQL 
+    SELECT * FROM facturacion WHERE fechatrn >= '#{fechaini}' and fechatrn <= '#{fechafin}' ORDER BY nrofact;
+    SQL
+    facturacion = Facturacion.connection.select_all(query)
+    entidades = Entidad.all
+    i = 0
+    facturacion.each do |f|
+      entidad = Entidad.find(f["entidad_id"])
+      fecha = (f["fechatrn"].to_s).split(' ')
+      fecha1 = fecha[0].split('-')
+      fecha_time = Time.new(fecha1[0], fecha1[1], fecha1[2])
+      f_formato = fecha_time.strftime("%d/%m/%Y")
+      if entidad.persona.nombre2.blank?
+        nombres = entidad.persona.nombre1 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
+      else
+        nombres = entidad.persona.nombre1 + ' ' + entidad.persona.nombre2 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
+      end
+      facturas[i] = { 'entidad_id' => f["entidad_id"], 'documento' => entidad.persona.documento,
+        'nombres' => nombres, 'nrofact' => f["nrofact"],
+        'valor' => (f["valor"].to_f).round, 'iva' => (f["iva"].to_f).round, 
+        'total' => (f["valor"].to_f).round + (f["iva"].to_f).round, 'fecha' => f_formato,
+        'observacion' => f["observacion"] }
+      i += 1
+    end
+    facturas
   end
 
   def self.generar_impresion

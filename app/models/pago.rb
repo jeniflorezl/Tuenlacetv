@@ -540,4 +540,52 @@ class Pago < ApplicationRecord
       return true
     end
   end
+
+  def self.detallle_recibos(f_ini, f_fin)
+    recibos = Array.new
+    dcto = 0
+    fechaini = Date.parse f_ini.to_s
+    fechafin = Date.parse f_fin.to_s
+    query = <<-SQL 
+    SELECT * FROM pagos WHERE fechatrn >= '#{fechaini}' and fechatrn <= '#{fechafin}' ORDER BY nropago;
+    SQL
+    pagos = Facturacion.connection.select_all(query)
+    entidades = Entidad.all
+    i = 0
+    pagos.each do |p|
+      entidad = Entidad.find(p["entidad_id"])
+      fecha = (p["fechatrn"].to_s).split(' ')
+      fecha1 = fecha[0].split('-')
+      fecha_time = Time.new(fecha1[0], fecha1[1], fecha1[2])
+      f_mes = fecha_time.strftime("%m")
+      f_ano = fecha_time.strftime("%Y")
+      if entidad.persona.nombre2.blank?
+        nombres = entidad.persona.nombre1 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
+      else
+        nombres = entidad.persona.nombre1 + ' ' + entidad.persona.nombre2 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
+      end
+      descuento = Descuento.find_by(pago_id: p["id"])
+      dcto = (descuento.valor.to_f).round unless descuento.blank?
+      abonos = Abono.where(pago_id: p["id"])
+      if abonos.blank?
+        anticipos = Anticipo.where("pago_id = #{p["id"]} and month(fechatrn) = #{f_mes} and year(fechatrn) = #{f_ano}")
+        anticipos.each do |ant|
+          recibos[i] = { 'entidad_id' => p["entidad_id"], 'nombres' => nombres, 
+            'valor' => (ant["valor"].to_f).round, 'descuento' => dcto, 
+            'total' => (ant["valor"].to_f).round + dcto, 'nrorecibo' => p["nropago"], 
+            'mes' => f_mes, 'nrofact' => ant["nrofact"], 'observacion' => p["observacion"] }
+          i += 1
+        end
+      else
+        abonos.each do |a|
+          recibos[i] = { 'entidad_id' => p["entidad_id"], 'nombres' => nombres, 
+            'valor' => (a["abono"].to_f).round, 'descuento' => dcto, 
+            'total' => (a["abono"].to_f).round + dcto, 'nrorecibo' => p["nropago"], 
+            'mes' => f_mes, 'nrofact' => a["nrofact"], 'observacion' => p["observacion"] }
+          i += 1
+        end
+      end
+    end
+    recibos
+  end
 end

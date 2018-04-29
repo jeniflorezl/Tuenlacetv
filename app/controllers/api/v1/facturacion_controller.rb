@@ -65,6 +65,10 @@ module Api
                 end
             end
 
+            def listado_fras
+                @listado = Facturacion.listado_fras_ventas(params[:fechaini], params[:fechafin])
+            end
+
             def generar_facturacion
                 @filename = 'my_report.pdf'
                 @documentos = Documento.all

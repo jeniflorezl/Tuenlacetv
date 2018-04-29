@@ -902,4 +902,107 @@ class Orden < ApplicationRecord
       end
     end
   end
+
+  def self.listado_ordenes(f_ini, f_fin)
+    ordenes_array = Array.new
+    f_creacion = ''
+    u_creacion = ''
+    tec_asigando = ''
+    f_ejecucion = ''
+    tec_ejecucion = ''
+    u_cierra = ''
+    solucion = ''
+    f_anulacion = ''
+    u_anula = ''
+    motivo_anl = ''
+    solicitado = ''
+    valor = 0
+    fechaini = Date.parse f_ini.to_s
+    fechafin = Date.parse f_fin.to_s
+    query = <<-SQL 
+    SELECT * FROM ordenes WHERE fechatrn >= '#{fechaini}' and fechatrn <= '#{fechafin}' ORDER BY nrorden;
+    SQL
+    ordenes = Facturacion.connection.select_all(query)
+    entidades = Entidad.all
+    i = 0
+    ordenes.each do |o|
+      entidad = Entidad.find(o["entidad_id"])
+      fecha = (o["fechatrn"].to_s).split(' ')
+      fecha1 = fecha[0].split('-')
+      fecha_time = Time.new(fecha1[0], fecha1[1], fecha1[2])
+      f_formato = fecha_time.strftime("%d/%m/%Y")
+      concepto = Concepto.find(o["concepto_id"])
+      concepto_cod = concepto.codigo
+      concepto_nom = concepto.nombre
+      if entidad.persona.nombre2.blank?
+        nombres = entidad.persona.nombre1 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
+      else
+        nombres = entidad.persona.nombre1 + ' ' + entidad.persona.nombre2 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
+      end
+      zona = Zona.find(entidad.senales[0]["zona_id"]).nombre
+      barrio = Barrio.find(entidad.senales[0]["barrio_id"]).nombre
+      fact_orden = FacturaOrden.find_by(orden_id: o["id"])
+      estado = Estado.find(o["estado_id"]).nombre
+      mvto_orden = MvtoRorden.where(orden_id: o["id"])
+      mvto_orden.each do |m|
+        case m["registro_orden_id"]
+        when 1
+          f_creacion = m["valor"]
+        when 2
+          u_creacion_id = m["valor"]
+          u_creacion = Usuario.find(u_creacion_id).nombre 
+        when 3
+          tec_asigando_id = m["valor"]
+          tec_ent = Entidad.find(tec_asigando_id)
+          if tec_ent.persona.nombre2.blank?
+            tec_asigando = tec_ent.persona.nombre1 + ' ' + tec_ent.persona.apellido1 + ' ' + tec_ent.persona.apellido2
+          else
+            tec_asigando = tec_ent.persona.nombre1 + ' ' + tec_ent.persona.nombre2 + ' ' + tec_ent.persona.apellido1 + ' ' + tec_ent.persona.apellido2
+          end
+        when 4
+          f_ejecucion = m["valor"]
+        when 5
+          tec_ejecucion_id = m["valor"]
+          tec_ent_ejec = Entidad.find(tec_ejecucion_id)
+          if tec_ent_ejec.persona.nombre2.blank?
+            tec_ejecucion = tec_ent_ejec.persona.nombre1 + ' ' + tec_ent_ejec.persona.apellido1 + ' ' + tec_ent_ejec.persona.apellido2
+          else
+            tec_ejecucion = tec_ent_ejec.persona.nombre1 + ' ' + tec_ent_ejec.persona.nombre2 + ' ' + tec_ent_ejec.persona.apellido1 + ' ' + tec_ent_ejec.persona.apellido2
+          end
+        when 6
+          u_cierra_id = m["valor"]
+          u_cierra = Usuario.find(u_cierra_id).login
+        when 7
+          solucion = m["valor"]
+        when 8
+          f_anulacion = m["valor"]
+        when 9
+          u_anula_id = m["valor"]
+          u_anula = Usuario.find(u_anula_id).login
+        when 10
+          motivo_anl = m["valor"]
+        when 11
+          solicitado = m["valor"]
+        end
+      end
+      unless fact_orden.blank?
+        query = <<-SQL 
+        SELECT valor, iva FROM facturacion WHERE id = #{fact_orden["factura_id"]};
+        SQL
+        Orden.connection.clear_query_cache
+        factura = Orden.connection.select_all(query)
+        valor = (factura[0]["valor"].to_f).round + (factura[0]["iva"].to_f).round
+      end
+      ordenes_array[i] = { 'cpto_cod' => concepto_cod, 'cpto_nombre' => concepto_nom,
+        'entidad_id' => o["entidad_id"], 'nombres' => nombres, 'direccion' => entidad.senales[0]["direccion"],
+        'zona' => zona, 'barrio' => barrio, 'nrorden' => o["nrorden"],
+        'valor' => valor, 'observacion' => o["observacion"], 'estado' => estado, 
+        'fechacreacion' => f_creacion, 'usuariocreacion' => u_creacion, 
+        'tecnico_asignado' => tec_asigando, 'fechaejec' => f_ejecucion,'tecnico_ejec' => tec_ejecucion, 
+        'usuariocierra' => u_cierra, 'solucion' => solucion, 'fecha_anul' => f_anulacion, 
+        'usuarioanula' => u_anula, 'solicitado' => solicitado }
+      i += 1
+    end
+    ordenes_array
+  end
 end

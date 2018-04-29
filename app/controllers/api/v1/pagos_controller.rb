@@ -47,6 +47,10 @@ module Api
                 end
             end
 
+            def listado_recibos
+                @listado = Pago.detallle_recibos(params[:fechaini], params[:fechafin])
+            end
+
             private
 
             def set_pago

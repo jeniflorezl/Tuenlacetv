@@ -1,0 +1,25 @@
+json.listado_ordenes do
+    json.array! @listado do |l|
+        json.cpto_cod l["cpto_cod"]
+        json.cpto_nombre l["cpto_nombre"]
+        json.entidad_id l["entidad_id"]
+        json.nombres l["nombres"]
+        json.direccion l["direccion"]
+        json.zona l["zona"] 
+        json.barrio l["barrio"]
+        json.nrorden l["nrorden"]
+        json.valor l["valor"]
+        json.observacion l["observacion"]
+        json.estado l["estado"]
+        json.fechacreacion l["fechacreacion"]
+        json.usuariocreacion l["usuariocreacion"]
+        json.tecnico_asignado l["tecnico_asignado"]
+        json.fechaejec l["fechaejec"]
+        json.tecnico_ejec l["tecnico_ejec"]
+        json.usuariocierra l["usuariocierra"]
+        json.solucion l["solucion"]
+        json.fecha_anul l["fecha_anul"]
+        json.usuarioanula l["usuarioanula"]
+        json.solicitado l["solicitado"]
+    end
+end

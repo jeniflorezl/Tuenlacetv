@@ -85,6 +85,10 @@ module Api
                 end
             end
 
+            def listado_ordenes
+                @listado = Orden.listado_ordenes(params[:fechaini], params[:fechafin])
+            end
+
             private
 
             def set_orden
