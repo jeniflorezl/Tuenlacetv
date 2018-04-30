@@ -226,30 +226,15 @@ module Api
             end
 
             def listado_consolidado
-                @senales = Senal.rango_fechas(params[:fechaini], params[:fechafin])
-                @senal = Senal.senales_consol
-                @instalaciones = Senal.instalaciones_consol
-                @cortes = Senal.cortes_consol
-                @traslados = Senal.traslados_consol
-                @reconexiones = Senal.reconexiones_consol
+                @senales = Senal.senales_consol(params[:fechaini], params[:fechafin])
             end
 
             def listado_television
-                @senales = Senal.rango_fechas(params[:fechaini], params[:fechafin])
-                @senal = Senal.senales_tv
-                @instalaciones = Senal.instalaciones_tv
-                @cortes = Senal.cortes_tv
-                @traslados = Senal.traslados_tv
-                @reconexiones = Senal.reconexiones_tv
+                @senales = Senal.senales_tv(params[:fechaini], params[:fechafin])
             end
 
             def listado_internet
-                @senales = Senal.rango_fechas(params[:fechaini], params[:fechafin])
-                @senal = Senal.senales_int
-                @instalaciones = Senal.instalaciones_int
-                @cortes = Senal.cortes_int
-                @traslados = Senal.traslados_int
-                @reconexiones = Senal.reconexiones_int
+                @senales = Senal.senales_int(params[:fechaini], params[:fechafin])
             end
 
             private
