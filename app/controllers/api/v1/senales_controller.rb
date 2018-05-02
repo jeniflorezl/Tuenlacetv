@@ -125,11 +125,11 @@ module Api
                             render :json => {:message1 => message1,
                                 :message2 => message2 }.to_json
                         else
-                            render json: { error: "Persona creada con exito" }
+                            render json: { message: "Persona creada con exito" }
                         end
                     end
                 else
-                    render json: { error: "Ya existe un suscriptor con esa información" }
+                    render json: { error: "Datos incorrectos o ya existe un suscriptor con esa información" }
                 end
             end
 
