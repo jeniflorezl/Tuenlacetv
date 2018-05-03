@@ -7,6 +7,9 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 =begin
 Estado.create(nombre: 'ACTIVO', abreviatura: 'A', tipo: 1, usuario: 'admin')
+=end
+Estado.create(nombre: 'INACTIVO', abreviatura: 'IN', tipo: 1, usuario: 'admin')
+=begin
 Estado.create(nombre: 'CORTADO', abreviatura: 'C', tipo: 1, usuario: 'admin')
 Estado.create(nombre: 'EXENTOS', abreviatura: 'E', tipo: 1, usuario: 'admin')
 Estado.create(nombre: 'PENDIENTE',  abreviatura: 'P', tipo: 1, usuario: 'admin')
@@ -16,6 +19,7 @@ Estado.create(nombre: 'PENDIENTE', abreviatura: 'PE', tipo: 2, usuario: 'admin')
 Estado.create(nombre: 'ANULADO', abreviatura: 'AN', tipo: 2, usuario: 'admin')
 Estado.create(nombre: 'APLICADO', abreviatura: 'AP', tipo: 2, usuario: 'admin')
 Estado.create(nombre: 'PAGADO', abreviatura: 'PA', tipo: 2, usuario: 'admin')
+
 Pais.create(nombre: 'COLOMBIA', usuario_id: 1)
 Pais.create(nombre: 'PANAMA', usuario_id: 1)
 Pais.create(nombre: 'VENEZUELA',usuario_id: 1)
@@ -298,14 +302,14 @@ Entidad.create(funcion_id: 1, persona_id: 4, usuario_id: 1)
 Entidad.create(funcion_id: 7, persona_id: 5, usuario_id: 1)
 Entidad.create(funcion_id: 5, persona_id: 6, usuario_id: 1)
 Entidad.create(funcion_id: 5, persona_id: 7, usuario_id: 1)
-=end
+
 Empresa.create(tipo: '01', nit: '900353347', razonsocial: 'enlace informatico s.a.s', direccion: 'cra 47 #53-41', 
 telefono1: '4540312', telefono2: '', ciudad_id: 2, entidad_id: 50003, logo: '', correo: 'gerencia@enlaceinformatico.com',
 regimen: 's', contribuyente: 's', centrocosto: '0001', usuario_id: 1)
 Resolucion.create(empresa_id: 1, nroResolucion: '18762002425502', tipo: 'AUTORIZADO', prefijo: 'AR',
 rangoRI: '0', rangoRF: '0', rangoI: '0', rangoF: '0', fechainicio: '28/02/2018', 
 fechavence: '28/02/2018', usuario_id: 1)
-=begin
+
 Senal.create(entidad_id: 1, contrato: '4789963', direccion: 'Calle 11 #24-23', urbanizacion: '', 
 torre: '', apto: '', barrio_id: 1, zona_id: 1, telefono1: '4540312', telefono2: '', contacto: '', estrato: '4',
 vivienda: 'P', observacion: '', fechacontrato: '01/01/2017', permanencia: '', televisores: 2, 
@@ -379,7 +383,7 @@ fechafin: '01/01/2118', usuario_id: 1)
 PlantillaFact.create(senal_id: 7, concepto_id: 4, estado_id: 1, tarifa_id: 3, fechaini: '01/01/2018', 
 fechafin: '01/01/2118', usuario_id: 1)
 
-=end
+
 RegistroOrden.create(nombre: 'fecha creacion', usuario_id: 1)
 RegistroOrden.create(nombre: 'usuario creacion', usuario_id: 1)
 RegistroOrden.create(nombre: 'tecnico asigando', usuario_id: 1)
@@ -393,7 +397,7 @@ RegistroOrden.create(nombre: 'motivo anulacion', usuario_id: 1)
 RegistroOrden.create(nombre: 'solicitado por', usuario_id: 1)
 
 Grupo.create(descripcion: 'INVENTARIOS', usuario_id: 1)
-
+=end
 
     
     
