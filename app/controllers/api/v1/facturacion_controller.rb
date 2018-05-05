@@ -10,7 +10,7 @@ module Api
             def info_facturacion
                 @tipo_facturacion = TipoFacturacion.all
                 @zonas = Zona.all
-                @fecha_suspension = Parametro.find_by(descripcion: 'Maneja fecha suspension servicio').valor
+                @fecha_corte = Parametro.find_by(descripcion: 'Maneja fecha suspension servicio').valor
                 @fecha_pagos_ven = Parametro.find_by(descripcion: 'Maneja fecha pagos vencidos').valor
             end
 
