@@ -14,6 +14,7 @@ json.pagos_anticipados do
         json.fecha_ult_pago pago["fecha_ult_pago"]
         json.saldo_tv pago["saldo_tv"]
         json.saldo_int pago["saldo_int"]
+        json.servicio pago["servicio"]
         json.documento pago["documento"]
         json.nropago pago["nropago"]
         json.fechatrn pago["fechatrn"]

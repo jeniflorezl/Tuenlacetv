@@ -1,7 +1,11 @@
 prawn_document do |pdf|
-    pdf.text "Hello World"
-    pdf.table @documentos.collect{|d| [d.id,d.nombre]}
-    pdf.move_to [100,50]
-    pdf.line [100,100], [200,250]
-    pdf.circle [100,100], 25
+    pdf.stroke_axis
+    pdf.line_width = 0.6 
+    pdf.move_down 4
+    pdf.stroke do
+        pdf.rounded_rectangle [650, 300], 100, 30, 10
+    end
+    pdf.move_down 20
+    pdf.rectangle [0, 300], 300, 300
+    pdf.stroke { pdf.line [0, 100], [100, 100] }
 end
