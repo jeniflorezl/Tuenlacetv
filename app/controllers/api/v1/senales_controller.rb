@@ -237,6 +237,9 @@ module Api
                 @senales = Senal.senales_int(params[:fechaini], params[:fechafin])
             end
 
+            def pdf
+            end
+
             private
 
             def set_senal

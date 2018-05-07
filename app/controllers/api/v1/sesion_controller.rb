@@ -9,7 +9,8 @@ module Api
 
                 if usuario1.login_valido?(params[:login],params[:password])
                     auth_token = usuario1.generar_auth_token
-                    render json: { auth_token: auth_token, usuario_id: usuario1.id}
+                    render json: { auth_token: auth_token, 
+                        usuario_id: usuario1.id, nivel: usuario1.nivel}
                 else
                     login_invalido
                 end

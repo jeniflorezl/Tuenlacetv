@@ -38,6 +38,7 @@ Rails.application.routes.draw do
       get 'tarifas/:campo/:valor/:db', to: 'tarifas#show'
       get 'senales/:funcion_id/bd/:db', to: 'senales#index'
       get 'senales/:funcion_id/:campo/:valor/:db', to: 'senales#show'
+      get 'senales/sacar/pdf', to: 'senales#pdf'
       post 'senales/listado_consol', to: 'senales#listado_consolidado'
       post 'senales/listado_tv', to: 'senales#listado_television'
       post 'senales/listado_int', to: 'senales#listado_internet'

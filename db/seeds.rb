@@ -211,7 +211,7 @@ Parametro.create(descripcion: 'Permite modificar valor de afiliación', valor: '
 Parametro.create(descripcion: 'Maneja consecutivos separados ordenes', valor: 'N')
 Parametro.create(descripcion: 'Permite ordenes en meses anteriores', valor: 'N')
 Parametro.create(descripcion: 'Permite ordenes en meses posteriores', valor: 'N')
-Parametro.create(descripcion: 'Maneja fecha suspension servicio', valor: 'S')
+Parametro.create(descripcion: 'Maneja fecha corte servicio', valor: 'S')
 Parametro.create(descripcion: 'Maneja fecha pagos vencidos', valor: 'S')
 Parametro.create(descripcion: 'Pregunta si desea cobrar dias al editar instalacion', valor: 'S')
 Parametro.create(descripcion: 'Pregunta si desea cobrar dias al editar corte', valor: 'S')
