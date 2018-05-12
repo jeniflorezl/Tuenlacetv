@@ -25,6 +25,7 @@ json.entidades do
             json.torre entidad["torre"]
             json.apto entidad["apto"]
             json.barrio entidad["barrio"]
+            json.zona_id entidad["zona_id"]
             json.zona entidad["zona"]
             json.telefono1 entidad["telefono1"]
             json.telefono2 entidad["telefono2"]

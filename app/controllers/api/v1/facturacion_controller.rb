@@ -70,6 +70,28 @@ module Api
             end
 
             def generar_facturacion
+                byebug
+                facturacion = [10][20]
+                f_elaboracion = params[:f_elaboracion]
+                f_inicio = params[:f_inicio]
+                fecha_ini = Date.parse f_inicio
+                @f_inicio_dia = fecha_ini.day
+                @f_inicio_mes = fecha_ini.month
+                @f_inicio_ano = fecha_ini.year
+                f_fin = params[:f_fin]
+                f_vencimiento = params[:f_vencimiento]
+                fecha_ven = Date.parse f_vencimiento
+                @f_ven_dia = fecha_ven.day
+                @f_ven_mes = fecha_ven.month
+                @f_ven_ano = fecha_ven.year
+                fact_inicial = params[:fact_inicial]
+                fact_final = params[:fact_final]
+                saldo_inicial = params[:saldo_inicial]
+                saldo_final = params[:saldo_final]
+                @f_corte = params[:f_corte]
+                facturacion = Facturacion.impresion_facturacion(params[:zona], params[:tipo_fact], f_elaboracion, 
+                    f_inicio, f_fin, f_vencimiento, fact_inicial, fact_final, saldo_inicial, saldo_final, 
+                    @f_corte, params[:nota_1], params[:nota_2], params[:nota_3], params[:rango])
             end
         end
     end
