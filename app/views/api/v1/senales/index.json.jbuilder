@@ -18,6 +18,7 @@ json.entidades do
         json.tipopersona entidad["tipopersona"]
         json.estratoP entidad["estratoP"]
         json.condicion_fisica entidad["condicionfisica"]
+        json.funcion entidad["funcion_id"]
         if @funcion == "1"
             json.contrato entidad["contrato"]
             json.direccion entidad["direccion"]
@@ -44,7 +45,6 @@ json.entidades do
             json.tecnologia entidad["tecnologia"]
             json.tiposervicio entidad["tiposervicio"]
             json.areainstalacion entidad["areainstalacion"]
-            json.funcion entidad["funcion_id"]
             json.tipo_facturacion entidad["tipo_facturacion"]
             json.tecnico_id entidad["tecnico_id"]
             json.tecnico entidad["tecnico"]
@@ -127,7 +127,7 @@ end
 
 json.tarifas_tv do
     json.array! @tarifas do |tarifa|
-        if tarifa.plan.servicio_id == 1
+        if tarifa.plan.servicio_id == 1 && tarifa.concepto_id == 3
             json.id tarifa.id
             json.zona tarifa.zona.nombre
             json.concepto tarifa.concepto.nombre
@@ -143,7 +143,7 @@ json.param_valor_afi @param_valor_afi
 
 json.tarifas_int do
     json.array! @tarifas do |tarifa|
-        if tarifa.plan.servicio_id == 2
+        if tarifa.plan.servicio_id == 2 && tarifa.concepto_id == 4
             json.id tarifa.id
             json.zona tarifa.zona.nombre
             json.concepto tarifa.concepto.nombre

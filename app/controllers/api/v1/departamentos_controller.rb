@@ -41,7 +41,7 @@ module Api
                     @departamento.destroy
                     render json: { status: :deleted }
                 else
-                    render json: { post: "not found" }
+                    render json: { error: "not found" }
                 end
             end
         

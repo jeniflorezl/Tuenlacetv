@@ -17,20 +17,28 @@ module Api
                 @zonas = Zona.all
                 @ciudades = Ciudad.all
                 @funciones = Funcion.all
-                if @funcion == "1"
-                    @servicios = Servicio.all
-                    @planes_tv = Plan.where(servicio_id: 1)
-                    @planes_int = Plan.where(servicio_id: 2)
-                    @tarifas = Tarifa.where(estado_id: 1)
-                    @valor_afi_tv = Tarifa.find_by(concepto_id: 1).valor
-                    @valor_afi_int = Tarifa.find_by(concepto_id: 2).valor
-                    @param_valor_afi = Parametro.find_by(descripcion: 'Permite modificar valor de afiliación').valor
-                    @tipo_instalaciones = TipoInstalacion.all
-                    @tecnologias = Tecnologia.all
-                    @vendedores = Entidad.where(funcion_id: 5)
-                    @tecnicos = Entidad.where(funcion_id: 7)
-                    @tipo_facturacion = TipoFacturacion.all
+                @servicios = Servicio.all
+                @planes_tv = Plan.where(servicio_id: 1)
+                @planes_int = Plan.where(servicio_id: 2)
+                @tarifas = Tarifa.where(estado_id: 1)
+                @valor_afi_tv = Tarifa.find_by(concepto_id: 1)
+                if  @valor_afi_tv == nil
+                    @valor_afi_tv = 0
+                else
+                    @valor_afi_tv = @valor_afi_tv.valor
                 end
+                @valor_afi_int = Tarifa.find_by(concepto_id: 2)
+                if  @valor_afi_int == nil
+                    @valor_afi_int = 0
+                else
+                    @valor_afi_int = @valor_afi_int.valor
+                end
+                @param_valor_afi = Parametro.find_by(descripcion: 'Permite modificar valor de afiliación').valor
+                @tipo_instalaciones = TipoInstalacion.all
+                @tecnologias = Tecnologia.all
+                @vendedores = Entidad.where(funcion_id: 5)
+                @tecnicos = Entidad.where(funcion_id: 7)
+                @tipo_facturacion = TipoFacturacion.all
             end
 
             # GET /senales/id
@@ -135,8 +143,9 @@ module Api
 
             # PATCH/PUT /senales/id
             def update
-                result=0
-                result1=0
+                byebug
+                result = 0
+                result1 = 0
                 message1 = ''
                 message2 = ''
                 t = Time.now
@@ -213,15 +222,21 @@ module Api
 
             # DELETE /senales/id
             def destroy
-                if @senal
-                    if Senal.eliminar_suscriptor(@entidad, @persona, @senal, @info_internet, 
-                        @plantilla_tv, @plantilla_int)
-                        render json: { status: :deleted }
+                if @funcion == 1
+                    if @senal
+                        if Senal.eliminar_suscriptor(@entidad, @persona, @senal, @info_internet, 
+                            @plantilla_tv, @plantilla_int)
+                            render json: { status: :deleted }
+                        else
+                            render json: { error: "El suscriptor no se puede eliminar" }
+                        end
                     else
-                        render json: { error: "El suscriptor no se puede eliminar" }
+                        render json: { error: "not found" }
                     end
                 else
-                    render json: { post: "not found" }
+                    @entidad.destroy()
+                    @persona.destroy()
+                    render json: { status: :deleted }
                 end
             end
 
@@ -241,6 +256,7 @@ module Api
 
             def set_senal
                 @entidad = Entidad.find(params[:id])
+                @funcion = @entidad.funcion_id
                 @persona = Persona.find(@entidad.persona_id)
                 @senal = Senal.find_by(entidad_id: @entidad.id)
                 @info_internet = InfoInternet.find_by(entidad_id: @entidad.id)

@@ -45,7 +45,7 @@ module Api
                     @empresa.destroy()
                     render json: { status: :deleted }
                 else
-                    render json: { post: "not found" }
+                    render json: { error: "not found" }
                 end
             end
 
