@@ -70,8 +70,7 @@ module Api
             end
 
             def generar_facturacion
-                byebug
-                facturacion = [10][20]
+                @ciudad = Ciudad.first.nombre
                 f_elaboracion = params[:f_elaboracion]
                 f_inicio = params[:f_inicio]
                 fecha_ini = Date.parse f_inicio
@@ -89,9 +88,18 @@ module Api
                 saldo_inicial = params[:saldo_inicial]
                 saldo_final = params[:saldo_final]
                 @f_corte = params[:f_corte]
-                facturacion = Facturacion.impresion_facturacion(params[:zona], params[:tipo_fact], f_elaboracion, 
+                @zona = params[:zona]
+                Facturacion.impresion_facturacion(@zona, params[:tipo_fact], f_elaboracion, 
                     f_inicio, f_fin, f_vencimiento, fact_inicial, fact_final, saldo_inicial, saldo_final, 
                     @f_corte, params[:nota_1], params[:nota_2], params[:nota_3], params[:rango])
+                query = <<-SQL 
+                SELECT * FROM VwSenales WHERE funcion_id = 1 ORDER BY id;
+                SQL
+                @senales = Facturacion.connection.select_all(query)
+                query = <<-SQL 
+                SELECT * FROM VwImpresionFacturacion ORDER BY entidad_id;
+                SQL
+                @facturas = Facturacion.connection.select_all(query)
             end
         end
     end

@@ -1183,59 +1183,24 @@ class Facturacion < ApplicationRecord
 
   def self.impresion_facturacion(zona, tipo_fact, f_elaboracion, f_inicio, f_fin, f_vencimiento, 
     fact_inicial, fact_final, saldo_inicial, saldo_final, corte_serv, nota_1, nota_2, nota_3, rango)
-    byebug
-    facturas_array = [10][20]
     fecha_ini = Date.parse f_inicio
     f_inicio_dia = fecha_ini.day
     f_inicio_mes = fecha_ini.month
     f_inicio_ano = fecha_ini.year
-    i = 0
     query = <<-SQL
-    DROP VIEW VwImpresionFacturacion
-    CREATE VIEW [dbo].[VwImpresionFacturacion] AS
-    SELECT fact.id, fact.entidad_id, df.cantidad, df.observacion, df.valor, df.iva, ab.abono as descuento 
-    FROM facturacion fact
-    LEFT OUTER JOIN detalle_factura df ON id = df.factura_id
-    LEFT OUTER JOIN plantilla_fact plantilla ON fact.entidad_id = plantilla.entidad_id
-    LEFT OUTER JOIN abonos ab ON fact.id = ab.factura_id and ab.doc_pagos_id = 6
-    WHERE fact.nrofact >= #{fact_inicial} and fact.nrofact <= #{fact_final} and plantilla.estado_id = 1 and month(fact.fechatrn) = #{f_inicio_mes} and year(fact.fechatrn) = #{f_inicio_ano}; 
+    if object_id('VwImpresionFacturacion','v') is not null
+    drop view VwImpresionFacturacion;
     SQL
     facturacion = Facturacion.connection.select_all(query)
-    facturacion.each do |f|
-      byebug
-      j = 0
-      query = <<-SQL 
-      SELECT * FROM VwSenales WHERE id = #{f["entidad_id"]};
-      SQL
-      senal = Facturacion.connection.select_all(query)
-      facturas_array[i][j] = { 'nombre' => senal[0]["nombres"], 'documento' => senal[0]["documento"],
-        'telefono' => senal[0]["telefono1"] + ' ' + senal[0]["telefono1"], 'direccion' => senal[0]["direccion"],
-        'zona' => senal[0]["zonaP"], 'barrio' => senal[0]["barrioP"], 'codigo' => f["entidad_id"], 'ciudad' => 'ciudad',
-        'correo' => senal[0]["correo"], 'saldo_tv' => senal[0]["saldo_tv"], 'saldo_int' => senal[0]["saldo_int"] }
-      j += 1
-      query = <<-SQL 
-      SELECT * FROM facturacion WHERE entidad_id = #{f["entidad_id"]} and year(fechatrn) = #{f_inicio_ano} and month(fechatrn) = #{f_inicio_mes};
-      SQL
-      facturas = Facturacion.connection.select_all(query)
-      facturas.each do |facts|
-        byebug
-        abono_dcto = 0
-        detalle_fact = DetalleFactura.where(factura_id: facts["id"])
-        detalle_fact.each do |detalle|
-          byebug
-          doc_descuento = Documento.find_by(nombre: 'DESCUENTOS').id
-          abonos = Abono.where("factura_id = #{facts["id"]} and doc_pagos_id = #{doc_descuento}")
-          unless abonos.blank?
-            abono_dcto = abonos[0]["abono"]
-          end
-          facturas_array[i][j] = { 'cantidad' => detalle["cantidad"], 'observacion' => facts["observacion"],
-            'valor_unitario' => facts["valor"], 'iva' => facts["iva"], 'valor_total' => facts["valor"], 
-            'valor_dcto' => abono_dcto }
-          j += 1
-        end
-      end
-      i += 1
-    end
-    facturas_array
+    query = <<-SQL
+    CREATE VIEW [dbo].[VwImpresionFacturacion] AS
+    SELECT DISTINCT (fact.id), fact.entidad_id, df.cantidad, df.observacion, df.valor, df.iva, ab.abono as descuento 
+    FROM facturacion fact
+    LEFT OUTER JOIN detalle_factura df ON fact.id = df.factura_id
+    LEFT OUTER JOIN plantilla_fact plantilla ON fact.entidad_id = plantilla.entidad_id
+    LEFT OUTER JOIN abonos ab ON fact.id = ab.factura_id and ab.doc_pagos_id = 6
+    WHERE fact.nrofact >= #{fact_inicial} and fact.nrofact <= #{fact_final} and plantilla.estado_id = 1 and fact.estado_id <> 8 and fact.documento_id = 1 and month(fact.fechatrn) = #{f_inicio_mes} and year(fact.fechatrn) = #{f_inicio_ano}; 
+    SQL
+    facturacion = Facturacion.connection.select_all(query)
   end
 end

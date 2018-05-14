@@ -22,6 +22,7 @@ gem 'bcrypt', git: 'https://github.com/codahale/bcrypt-ruby.git', :require => 'b
 # gem 'capistrano-rails', group: :development
 
 gem 'prawn-rails'
+gem 'numbers_and_words'
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 gem 'rack-cors'

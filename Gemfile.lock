@@ -74,6 +74,8 @@ GEM
     nio4r (2.2.0)
     nokogiri (1.8.2-x64-mingw32)
       mini_portile2 (~> 2.3.0)
+    numbers_and_words (0.11.5)
+      i18n
     pdf-core (0.7.0)
     prawn (2.2.2)
       pdf-core (~> 0.7.0)
@@ -157,6 +159,7 @@ DEPENDENCIES
   bcrypt!
   byebug
   jbuilder (~> 2.5)
+  numbers_and_words
   prawn-rails
   puma (~> 3.7)
   rack-cors
