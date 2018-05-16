@@ -11,7 +11,7 @@ module Api
                     SQL
                     @tarifas = Tarifa.connection.select_all(query)
                     @zonas = Zona.all
-                    @conceptos = Concepto.all
+                    @conceptos = Concepto.where("clase <> 'P'")
                     @planes = Plan.all
                     @estados = Estado.where("abreviatura = 'A' or abreviatura = 'IN'")
                 end

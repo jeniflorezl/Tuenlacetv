@@ -44,6 +44,16 @@ class Senal < ApplicationRecord
     plantilla = PlantillaFact.new(entidad_id: entidad.id, concepto_id: conceptoplant.id, estado_id: @estadoU, tarifa_id: tarifaTv, 
       fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: senal.usuario_id)
     if plantilla.save
+      if senal.decos > 0
+        concepto_decos = Concepto.find_by(nombre: 'DECODIFICADORES').id
+        plan_tv = Plan.find_by(nombre: 'TELEVISION').id
+        tarifa_decos = Tarifa.where("zona_id = #{senal.zona_id} and concepto_id = #{concepto_decos.id} and plan_id = #{plan_tv}")
+        t_senal_dcos = (tarifa_decos[0]["valor"]) * senal.decos
+        unless tarifa_decos == nil
+          plantilla_decos = PlantillaFact.new(entidad_id: entidad.id, concepto_id: concepto_decos.id, estado_id: @estadoU, tarifa_id: (t_senal_dcos.to_f).round, 
+            fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: senal.usuario_id)
+        end
+      end
       if @consecutivos == 'S'
         query = <<-SQL 
         SELECT MAX(nrorden) as ultimo FROM ordenes WHERE concepto_id = #{conceptord.id};
@@ -253,6 +263,7 @@ class Senal < ApplicationRecord
         orden_id.each do |o|
           query = <<-SQL
           DELETE detalle_orden WHERE orden_id = #{o["id"]}; 
+          DELETE mvto_rorden WHERE orden_id = #{o["id"]};
           DELETE ordenes WHERE entidad_id = #{entidad.id} and id = #{o["id"]};
           SQL
           Senal.connection.select_all(query)

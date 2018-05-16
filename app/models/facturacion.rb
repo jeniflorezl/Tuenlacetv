@@ -87,6 +87,7 @@ class Facturacion < ApplicationRecord
       documentos = Parametro.find_by(descripcion: 'Maneja internet en documentos separado')
       concepto_tv = Concepto.find(3)
       concepto_int = Concepto.find(4)
+      concepto_decos = Concepto.find(51)
       iva_int = concepto_int.porcentajeIva
       iva = 0
       estado = Estado.find_by(abreviatura: 'A').id
@@ -185,6 +186,10 @@ class Facturacion < ApplicationRecord
                     valor_mens = tarifa
                     dias = 30
                   end
+                  if concepto.id == concepto_decos.id
+                    decos = senal.decos
+                    valor_mens = valor_mens * decos
+                  end
                   if iva > 0
                     valor_sin_iva = valor_mens / (iva / 100 + 1)
                     iva_fact = valor_mens - valor_sin_iva
@@ -260,7 +265,7 @@ class Facturacion < ApplicationRecord
                       Facturacion.connection.clear_query_cache
                       pago_id = Facturacion.connection.select_all(query)
                       pago_id = (pago_id[0]["id"]).to_i
-                      saldo_ab = valor_mens + iva
+                      saldo_ab = facturacion.valor + facturacion.iva
                       abono = Abono.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
                         factura_id: facturacion_id, doc_factura_id: facturacion.documento_id,
                         prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id,
@@ -309,8 +314,8 @@ class Facturacion < ApplicationRecord
                     end
                     Facturacion.connection.select_all(query)
                     fact_vent_id = factura[i]["id"]
-                    fact_vent_valor = factura[i]["valor"]
-                    fact_vent_iva = factura[i]["iva"]
+                    fact_vent_valor = factura[i]["valor"] + valor_mens_detalle
+                    fact_vent_iva = factura[i]["iva"] + iva_fact
                     fact_vent_documento_id = factura[i]["documento_id"]
                     fact_vent_prefijo = factura[i]["prefijo"]
                     fact_vent_nrofact = factura[i]["nrofact"]
@@ -492,8 +497,8 @@ class Facturacion < ApplicationRecord
                     end
                     Facturacion.connection.select_all(query)
                     fact_vent_id = factura[i]["id"]
-                    fact_vent_valor = factura[i]["valor"]
-                    fact_vent_iva = factura[i]["iva"]
+                    fact_vent_valor = factura[i]["valor"] + valor_mens_detalle
+                    fact_vent_iva = factura[i]["iva"] + iva_fact
                     fact_vent_documento_id = factura[i]["documento_id"]
                     fact_vent_prefijo = factura[i]["prefijo"]
                     fact_vent_nrofact = factura[i]["nrofact"]
@@ -595,6 +600,10 @@ class Facturacion < ApplicationRecord
                     valor_mens = tarifa
                     dias = 30
                   end
+                  if concepto.id == concepto_decos.id
+                    decos = senal.decos
+                    valor_mens = valor_mens * decos
+                  end
                   if concepto.id == concepto_tv.id
                     observacion_d = 'TELEVISION'
                   elsif concepto.id == concepto_int.id
@@ -676,7 +685,7 @@ class Facturacion < ApplicationRecord
                         Facturacion.connection.clear_query_cache
                         pago_id = Facturacion.connection.select_all(query)
                         pago_id = (pago_id[0]["id"]).to_i
-                        saldo_ab = valor_mens + iva
+                        saldo_ab = facturacion.valor + facturacion.iva
                         abono = Abono.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
                           factura_id: facturacion_id, doc_factura_id: facturacion.documento_id,
                           prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id,
@@ -726,8 +735,8 @@ class Facturacion < ApplicationRecord
                     end
                     Facturacion.connection.select_all(query)
                     fact_vent_id = factura[i]["id"]
-                    fact_vent_valor = factura[i]["valor"]
-                    fact_vent_iva = factura[i]["iva"]
+                    fact_vent_valor = factura[i]["valor"] + valor_mens_detalle
+                    fact_vent_iva = factura[i]["iva"] + iva_fact
                     fact_vent_documento_id = factura[i]["documento_id"]
                     fact_vent_prefijo = factura[i]["prefijo"]
                     fact_vent_nrofact = factura[i]["nrofact"]
@@ -747,7 +756,7 @@ class Facturacion < ApplicationRecord
                   anticipo = Facturacion.connection.select_all(query)
                   unless anticipo.blank?
                     if anticipo[0]["factura_id"] == nil
-                      valor_total = facturacion.valor + facturacion.iva
+                      valor_total = fact_vent_valor + fact_vent_iva
                       if anticipo[0]["valor"] >= valor_total
                         pagado = true
                       else

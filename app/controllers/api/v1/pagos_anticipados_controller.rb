@@ -33,7 +33,7 @@ module Api
                     render json: { status: :created }
                 when 2
                     render json: { error: "no se pudo crear" }
-                else
+                when 3
                     render json: { error: "cliente saldo 0" }
                 end
             end

@@ -1,6 +1,7 @@
 json.conceptos do
     json.array! @conceptos do |concepto|
         json.id concepto.id
+        json.nombre concepto.nombre
         json.abreviatura concepto.abreviatura
     end
 end
