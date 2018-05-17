@@ -47,7 +47,7 @@ module Api
                     if @tarifa.update(tarifa_params)
                         htarifa = HistorialTarifa.find_by(tarifa_id: @tarifa.id)
                         if htarifa
-                            if (htarifa.fechainicio == params[:fechainicio]) and (htarifa.fechavence == params[:fechaven])
+                            if (htarifa.fechainicio == params[:fechainicio]) && (htarifa.fechavence == params[:fechaven])
                                 htarifa.update(tarifa_id: @tarifa.id, zona_id: @tarifa.zona_id,
                                     concepto_id: @tarifa.concepto_id, plan_id: @tarifa.plan_id, valor: @tarifa.valor,
                                     fechainicio: params[:fechainicio], fechavence: params[:fechaven], 

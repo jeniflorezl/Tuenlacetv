@@ -53,7 +53,6 @@ class Facturacion < ApplicationRecord
 
   def self.generar_facturacion(tipo_fact, f_elaboracion, f_inicio, f_fin, f_vence, f_corte, 
     f_vencidos, observa, zona, usuario_id)
-    byebug
     observa = observa.upcase! unless observa == observa.upcase
     fech_e = f_elaboracion.split('/')
     resp = 0
@@ -93,6 +92,7 @@ class Facturacion < ApplicationRecord
       estado = Estado.find_by(abreviatura: 'A').id
       fecha1 = ''
       fecha2 = ''
+      abono = ''
       pref = Resolucion.last.prefijo
       estado_pend = Estado.find_by(abreviatura: 'PE').id
       estado_pag = Estado.find_by(abreviatura: 'PA').id
@@ -131,6 +131,7 @@ class Facturacion < ApplicationRecord
         senales.each do |senal|
           byebug
           facturacion = ''
+          abono = ''
           pagado = false
           plantillas = PlantillaFact.where("concepto_id <> #{concepto_int.id} and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
@@ -156,10 +157,8 @@ class Facturacion < ApplicationRecord
                 detallefact = ''
                 unless factura.blank?
                   factura.each do |row|
-                    byebug
                     detallefact = DetalleFactura.where(nrofact: row["nrofact"])
                     detallefact.each do |d|
-                      byebug
                       if d["concepto_id"] == concepto.id
                         fact_tv = 1
                         break
@@ -370,13 +369,19 @@ class Facturacion < ApplicationRecord
             SQL
             Facturacion.connection.select_all(query)
           end
+          unless abono.blank?
+            query = <<-SQL 
+            SELECT valor + iva as saldo FROM Facturacion WHERE id = #{facturacion_id};
+            SQL
+            saldo_ab = Facturacion.connection.select_all(query)
+            saldo_ab = (saldo_ab[0]["saldo"].to_f).round
+            abono.update(saldo: saldo_ab)
+          end
         end
         senales.each do |senal|
-          byebug
           plantillas = PlantillaFact.where("concepto_id = #{concepto_int.id} and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
             ban = 0
-            byebug
             if plantilla.estado_id == estado
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
                 tarifa = plantilla.tarifa.valor
@@ -550,6 +555,7 @@ class Facturacion < ApplicationRecord
         senales.each do |senal|
           byebug
           facturacion = ''
+          abono = ''
           pagado = false
           plantillas = PlantillaFact.where("entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
@@ -797,6 +803,14 @@ class Facturacion < ApplicationRecord
             SQL
             Facturacion.connection.select_all(query)
           end
+          unless abono.blank?
+            query = <<-SQL 
+            SELECT valor + iva as saldo FROM Facturacion WHERE id = #{facturacion_id};
+            SQL
+            saldo_ab = Facturacion.connection.select_all(query)
+            saldo_ab = (saldo_ab[0]["saldo"].to_f).round
+            abono.update(saldo: saldo_ab)
+          end
         end
       end
       return respuesta = 1
@@ -850,9 +864,15 @@ class Facturacion < ApplicationRecord
         unless factura.blank?
           factura.each do |row|
             detallefact = DetalleFactura.where(nrofact: row["nrofact"])
-            if detallefact[0]["concepto_id"] == concepto_tv.id
-              fact = 1
-              j = i
+            detallefact.each do |d|
+              if d["concepto_id"] == concepto_tv.id
+                fact = 1
+                break
+              end
+              j += 1
+            end
+            if fact == 1
+              break
             end
             i += 1
           end
@@ -866,7 +886,7 @@ class Facturacion < ApplicationRecord
             ban1 = 1
           end
         else
-          valor_f = factura[j]["valor"] + factura[j]["iva"]
+          valor_f = factura[i]["valor"] + factura[i]["iva"]
           valor_t = valor_f + valor_fact
           if ban == 1
             if valor_t <= tarifa
@@ -946,7 +966,7 @@ class Facturacion < ApplicationRecord
             Facturacion.connection.clear_query_cache
             pago_id = Facturacion.connection.select_all(query)
             pago_id = (pago_id[0]["id"]).to_i
-            saldo_ab = valor_fact + iva
+            saldo_ab = valor_total_fact
             abono = Abono.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
               factura_id: facturacion_id, doc_factura_id: facturacion.documento_id,
               prefijo: facturacion.prefijo, nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id,
@@ -1005,9 +1025,15 @@ class Facturacion < ApplicationRecord
         unless factura.blank?
           factura.each do |row|
             detallefact = DetalleFactura.where(nrofact: row["nrofact"])
-            if detallefact[0]["concepto_id"] == concepto_int.id
-              fact = 1
-              j = i
+            detallefact.each do |d|
+              if d["concepto_id"] == concepto_tv.id
+                fact = 1
+                break
+              end
+              j += 1
+            end
+            if fact == 1
+              break
             end
             i += 1
           end
@@ -1021,7 +1047,7 @@ class Facturacion < ApplicationRecord
             ban1 = 1
           end
         else
-          valor_f = factura[j]["valor"] + factura[j]["iva"]
+          valor_f = factura[i]["valor"] + factura[i]["iva"]
           valor_t = valor_f + valor_fact
           if ban == 1
             if valor_t <= tarifa
