@@ -44,7 +44,7 @@ module Api
                 respuesta = 0
                 respuesta = Facturacion.factura_manual(params[:tipo_facturacion_id], params[:servicio_id], 
                     params[:f_elaboracion], params[:f_inicio], params[:f_fin], params[:f_vencimiento],
-                    params[:entidad_id], params[:valor], params[:observa], params[:usuario_id])
+                    params[:entidad_id], params[:valor], params[:valor2], params[:observa], params[:usuario_id])
                 case respuesta
                 when 1
                     render json: { status: :created }
