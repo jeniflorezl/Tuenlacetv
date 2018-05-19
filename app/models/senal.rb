@@ -45,7 +45,7 @@ class Senal < ApplicationRecord
       fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: senal.usuario_id)
     if plantilla.save
       if senal.decos > 0
-        concepto_decos = Concepto.find_by(nombre: 'DECODIFICADORES').id
+        concepto_decos = Concepto.find_by(nombre: 'ADICCIONAR DECODIFICADOR').id
         plan_tv = Plan.find_by(nombre: 'TELEVISION').id
         tarifa_decos = Tarifa.where("zona_id = #{senal.zona_id} and concepto_id = #{concepto_decos.id} and plan_id = #{plan_tv}")
         t_senal_dcos = (tarifa_decos[0]["valor"]) * senal.decos

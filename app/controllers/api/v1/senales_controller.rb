@@ -58,8 +58,9 @@ module Api
 
             # POST /senales
             def create
-                result=0
-                result1=0
+                byebug
+                result = 0
+                result1 = 0
                 message1 = ''
                 message2 = ''
                 msg = ''
