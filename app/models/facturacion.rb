@@ -33,6 +33,8 @@ class Facturacion < ApplicationRecord
         fecha3 = Facturacion.formato_fecha(fecha_fin)
         fecha_ven = nota["fechaVencimiento"]
         fecha4 = Facturacion.formato_fecha(fecha_ven)
+        fecha_corte = nota["fechaCorte"]
+        fecha5 = Facturacion.formato_fecha(fecha_corte)
         documento = Documento.find_by(nombre: 'FACTURA DE VENTA').id
         query = <<-SQL 
         SELECT nrofact FROM facturacion WHERE fechatrn >= '#{fecha_ela}' and fechaven <= '#{fecha_fin}' and documento_id = #{documento} ORDER BY id;
@@ -44,7 +46,7 @@ class Facturacion < ApplicationRecord
         fact_fin = factura.last
         nrofact_fin = fact_fin["nrofact"]
         fact_generadas[i] = { 'nrofact_ini' => nrofact_ini, 'nrofact_fin' => nrofact_fin, 'f_elaboracion' => fecha1,
-        'f_inicio' => fecha2, 'f_fin' => fecha3, 'f_ven' => fecha4}
+        'f_inicio' => fecha2, 'f_fin' => fecha3, 'f_ven' => fecha4, 'f_corte' => fecha5 }
         i += 1
       end
     end
@@ -1539,7 +1541,7 @@ class Facturacion < ApplicationRecord
     facturacion = Facturacion.connection.select_all(query)
     query = <<-SQL
     CREATE VIEW [dbo].[VwImpresionFacturacion] AS
-    SELECT DISTINCT (fact.id), fact.entidad_id, df.cantidad, df.observacion, df.valor, df.iva, ab.abono as descuento 
+    SELECT DISTINCT (fact.id), fact.prefijo, fact.entidad_id, df.cantidad, df.observacion, df.valor, df.iva, ab.abono as descuento 
     FROM facturacion fact
     LEFT OUTER JOIN detalle_factura df ON fact.id = df.factura_id
     LEFT OUTER JOIN plantilla_fact plantilla ON fact.entidad_id = plantilla.entidad_id

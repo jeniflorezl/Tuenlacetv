@@ -1,10 +1,9 @@
-prawn_document do |pdf|
-    pdf.stroke_axis
-    pdf.font "Helvetica"
-    pdf.font_size 7
-    pdf.line_width = 0.6
+prawn_document() do |pdf|
     @senales.each do |s|
         pdf.start_new_page
+        pdf.font "Helvetica"
+        pdf.font_size 7
+        pdf.line_width = 0.6
         pdf.draw_text "Resolución Dian No 18762007285790", :at => [180, 788]
         pdf.draw_text "Fecha expedición 09 de Marzo de 2018", :at => [180, 778]
         pdf.draw_text "Numero habilitado del 71644 al 200000", :at => [180, 768]
@@ -94,7 +93,6 @@ prawn_document do |pdf|
             pos = 610 
             @facturas.each do |f|
                 if (s["id"] == f["entidad_id"])
-                    pdf.draw_text pos, :at => [25, 777]
                     pdf.draw_text f["cantidad"], :at => [22, pos]
                     pdf.draw_text f["observacion"], :at => [139, pos]
                     pdf.draw_text (f["valor"].to_f).round, :at => [408, pos]

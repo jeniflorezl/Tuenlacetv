@@ -6,5 +6,6 @@ json.facturaciones do
         json.fecha_inicio f['f_inicio']
         json.fecha_fin f['f_fin']
         json.fecha_vence f['f_ven']
+        json.fecha_corte f['f_corte']
     end
 end

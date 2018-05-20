@@ -73,10 +73,16 @@ module Api
                 @ciudad = Ciudad.first.nombre
                 f_elaboracion = params[:f_elaboracion]
                 f_inicio = params[:f_inicio]
+                @usuario = Usuario.find(params[:usuario_id]).login.upcase!
+                @db = params[:db]
+                #fech_e = f_elaboracion.split('/')
+                #f_fact = Time.new(fech_e[2], fech_e[1], fech_e[0])
+                #@nombre_mes = Facturacion.mes(f_fact.strftime("%B"))
                 fecha_ini = Date.parse f_inicio
                 @f_inicio_dia = fecha_ini.day
                 @f_inicio_mes = fecha_ini.month
                 @f_inicio_ano = fecha_ini.year
+                #@filename = 'Facturacion' + @usuario + @db + @nombre_mes + @f_inicio_ano.to_s + @f_inicio_mes.to_s + @f_inicio_dia.to_s + '.pdf'
                 f_fin = params[:f_fin]
                 f_vencimiento = params[:f_vencimiento]
                 fecha_ven = Date.parse f_vencimiento
@@ -88,13 +94,19 @@ module Api
                 saldo_inicial = params[:saldo_inicial]
                 saldo_final = params[:saldo_final]
                 @f_corte = params[:f_corte]
-                @zona = params[:zona]
-                Facturacion.impresion_facturacion(@zona, params[:tipo_fact], f_elaboracion, 
+                zona = params[:zona]
+                Facturacion.impresion_facturacion(zona, params[:tipo_fact], f_elaboracion, 
                     f_inicio, f_fin, f_vencimiento, fact_inicial, fact_final, saldo_inicial, saldo_final, 
                     @f_corte, params[:nota_1], params[:nota_2], params[:nota_3], params[:rango])
-                query = <<-SQL 
-                SELECT * FROM VwSenales WHERE funcion_id = 1 ORDER BY id;
-                SQL
+                if zona == "Todos"
+                    query = <<-SQL 
+                    SELECT * FROM VwSenales WHERE funcion_id = 1 ORDER BY id;
+                    SQL
+                else
+                    query = <<-SQL 
+                    SELECT * FROM VwSenales WHERE funcion_id = 1 and zona_id = #{zona} ORDER BY id;
+                    SQL
+                end
                 @senales = Facturacion.connection.select_all(query)
                 query = <<-SQL 
                 SELECT * FROM VwImpresionFacturacion ORDER BY entidad_id;

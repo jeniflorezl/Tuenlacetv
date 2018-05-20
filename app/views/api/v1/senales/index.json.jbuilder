@@ -77,6 +77,7 @@ json.entidades do
     end
 end
 
+
 json.servicios do
     json.array! @servicios do |servicio|
         json.id servicio.id
