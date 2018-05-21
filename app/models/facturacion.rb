@@ -1539,15 +1539,29 @@ class Facturacion < ApplicationRecord
     drop view VwImpresionFacturacion;
     SQL
     facturacion = Facturacion.connection.select_all(query)
-    query = <<-SQL
-    CREATE VIEW [dbo].[VwImpresionFacturacion] AS
-    SELECT DISTINCT (fact.id), fact.prefijo, fact.entidad_id, df.cantidad, df.observacion, df.valor, df.iva, ab.abono as descuento 
-    FROM facturacion fact
-    LEFT OUTER JOIN detalle_factura df ON fact.id = df.factura_id
-    LEFT OUTER JOIN plantilla_fact plantilla ON fact.entidad_id = plantilla.entidad_id
-    LEFT OUTER JOIN abonos ab ON fact.id = ab.factura_id and ab.doc_pagos_id = 6
-    WHERE fact.nrofact >= #{fact_inicial} and fact.nrofact <= #{fact_final} and plantilla.estado_id = 1 and fact.estado_id <> 8 and fact.documento_id = 1 and month(fact.fechatrn) = #{f_inicio_mes} and year(fact.fechatrn) = #{f_inicio_ano}; 
-    SQL
+    if zona == "Todos"
+      query = <<-SQL
+      CREATE VIEW [dbo].[VwImpresionFacturacion] AS
+      SELECT DISTINCT (fact.id), fact.prefijo, fact.entidad_id, df.cantidad, df.observacion, df.valor, df.iva, ab.abono as descuento 
+      FROM facturacion fact
+      INNER JOIN detalle_factura df ON fact.id = df.factura_id
+      INNER JOIN plantilla_fact plantilla ON fact.entidad_id = plantilla.entidad_id
+      LEFT OUTER JOIN abonos ab ON fact.id = ab.factura_id and ab.doc_pagos_id = 6
+      INNER JOIN senales s ON fact.entidad_id = s.entidad_id
+      WHERE fact.nrofact >= #{fact_inicial} and fact.nrofact <= #{fact_final} and plantilla.estado_id = 1 and fact.estado_id <> 8 and fact.documento_id = 1 and month(fact.fechatrn) = #{f_inicio_mes} and year(fact.fechatrn) = #{f_inicio_ano} and s.tipo_facturacion_id = #{tipo_fact}; 
+      SQL
+    else
+      query = <<-SQL
+      CREATE VIEW [dbo].[VwImpresionFacturacion] AS
+      SELECT DISTINCT (fact.id), fact.prefijo, fact.entidad_id, df.cantidad, df.observacion, df.valor, df.iva, ab.abono as descuento 
+      FROM facturacion fact
+      INNER JOIN detalle_factura df ON fact.id = df.factura_id
+      INNER JOIN plantilla_fact plantilla ON fact.entidad_id = plantilla.entidad_id
+      LEFT OUTER JOIN abonos ab ON fact.id = ab.factura_id and ab.doc_pagos_id = 6
+      INNER JOIN senales s ON fact.entidad_id = s.entidad_id
+      WHERE fact.nrofact >= #{fact_inicial} and fact.nrofact <= #{fact_final} and plantilla.estado_id = 1 and fact.estado_id <> 8 and fact.documento_id = 1 and month(fact.fechatrn) = #{f_inicio_mes} and year(fact.fechatrn) = #{f_inicio_ano} and s.zona_id = #{zona} and s.tipo_facturacion_id = #{tipo_fact}; 
+      SQL
+    end
     facturacion = Facturacion.connection.select_all(query)
   end
 end
