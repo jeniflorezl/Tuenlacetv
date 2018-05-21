@@ -99,19 +99,20 @@ module Api
                     f_inicio, f_fin, f_vencimiento, fact_inicial, fact_final, saldo_inicial, saldo_final, 
                     @f_corte, params[:nota_1], params[:nota_2], params[:nota_3], params[:rango])
                 query = <<-SQL 
-                SELECT * FROM VwSenales WHERE funcion_id = 1 ORDER BY id;
-                SQL
-                @senales = Facturacion.connection.select_all(query)
-                query = <<-SQL 
-                SELECT * FROM VwUltimoPago ORDER BY entidad_id;
-                SQL
-                @ult_pagos = Facturacion.connection.select_all(query)
-                query = <<-SQL 
                 SELECT * FROM VwImpresionFacturacion ORDER BY entidad_id;
                 SQL
                 @facturas = Facturacion.connection.select_all(query)
                 if @facturas.blank?
                     render json: { error: "no hay registros para imprimir" }
+                else
+                    query = <<-SQL 
+                    SELECT * FROM VwSenales WHERE funcion_id = 1 ORDER BY id;
+                    SQL
+                    @senales = Facturacion.connection.select_all(query)
+                    query = <<-SQL 
+                    SELECT * FROM VwUltimoPago ORDER BY entidad_id;
+                    SQL
+                    @ult_pagos = Facturacion.connection.select_all(query)
                 end
             end
         end

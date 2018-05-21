@@ -128,7 +128,7 @@ prawn_document() do |pdf|
             pdf.draw_text "SALDO ANTERIOR", :at => [384, 512]
             pdf.draw_text "TOTAL A PAGAR", :at => [384, 500]
             pdf.font "Helvetica", :style => :normal
-            pdf.bounding_box([482, 568], :width => 50, :height => 500) do
+            pdf.bounding_box([482, 568], :width => 50, :height => 300) do
                 pdf.text number_to_currency(valor_total, unit: ""), :align => :right
                 pdf.move_down 5
                 pdf.text number_to_currency(descuento, unit: ""), :align => :right
