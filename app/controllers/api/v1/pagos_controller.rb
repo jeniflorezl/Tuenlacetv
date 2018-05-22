@@ -7,7 +7,7 @@ module Api
             # GET /pagos
             def index
                 query = <<-SQL 
-                SELECT * FROM VwPagos ORDER BY id;
+                SELECT * FROM VwPagos ORDER BY id DESC;
                 SQL
                 @pagos = Pago.connection.select_all(query)
                 @param_cobradores = Parametro.find_by(descripcion: 'Maneja cobradores').valor

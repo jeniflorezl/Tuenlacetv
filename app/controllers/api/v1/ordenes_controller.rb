@@ -7,7 +7,7 @@ module Api
             # GET /ordenes
             def index
                 query = <<-SQL 
-                SELECT * FROM VwOrdenes ORDER BY id;
+                SELECT * FROM VwOrdenes ORDER BY estado DESC, id DESC;
                 SQL
                 @ordenes = Orden.connection.select_all(query)
                 @detalle_orden = DetalleOrden.all
@@ -94,7 +94,7 @@ module Api
 
             def set_orden
                 query = <<-SQL 
-                SELECT * FROM ordenes WHERE id=#{params[:id]};
+                SELECT * FROM ordenes WHERE id = #{params[:id]};
                 SQL
                 Orden.connection.clear_query_cache
                 @orden = Orden.connection.select_all(query)
