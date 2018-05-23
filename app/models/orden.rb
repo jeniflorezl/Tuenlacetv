@@ -8,7 +8,7 @@ class Orden < ApplicationRecord
 
   private
 
-  def self.generar_orden(entidad_id, concepto_id, fechatrn, fechaven, valor, observacion, tecnico_id, 
+  def self.generar_orden(entidad_id, concepto_id, fechatrn, fechaven, valor, observacion, tecnico_id, solicita,
     zonaNue, barrioNue, direccionNue, decos, usuario_id)
     senal = Senal.find_by(entidad_id: entidad_id)
     pref = Resolucion.last.prefijo
@@ -101,6 +101,8 @@ class Orden < ApplicationRecord
           nrorden: orden.nrorden, valor: usuario_id, usuario_id: usuario_id)
         MvtoRorden.create(registro_orden_id: 3, orden_id: orden_id, concepto_id: orden.concepto_id,
           nrorden: orden.nrorden, valor: tecnico_id, usuario_id: usuario_id)
+        MvtoRorden.create(registro_orden_id: 11, orden_id: orden_id, concepto_id: orden.concepto_id,
+          nrorden: orden.nrorden, valor: solicita, usuario_id: usuario_id)
       else
         return resp = 2
       end
