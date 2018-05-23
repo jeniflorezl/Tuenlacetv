@@ -49,6 +49,8 @@ module Api
                     render json: { error: "no se pudo crear orden" }
                 when 3
                     render json: { error: "estado erroneo" }
+                when 4
+                    render json: { error: "no tiene decos" }
                 end
             end
 
@@ -80,6 +82,8 @@ module Api
                         render json: { error: "orden aplicada" }
                     when 4
                         render json: { error: "orden con pago" }
+                    when 5
+                        render json: { error: "no se puede anular orden decos" }
                     end
                 else
                     render json: { error: "not found" }

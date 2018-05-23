@@ -86,24 +86,28 @@ Concepto.create(servicio_id: 1, codigo: '017', nombre: 'RETIRO DEFINITIVO TELEVI
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
 Concepto.create(servicio_id: 2, codigo: '018', nombre: 'RETIRO DEFINITIVO INTERNET', abreviatura: 'RTI',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '021', nombre: 'MULTA TELEVISION', abreviatura: 'MUT',
+Concepto.create(servicio_id: 1, codigo: '019', nombre: 'MULTA TELEVISION', abreviatura: 'MUT',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '022', nombre: 'MULTA INTERNET', abreviatura: 'MUI',
+Concepto.create(servicio_id: 2, codigo: '020', nombre: 'MULTA INTERNET', abreviatura: 'MUI',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '036', nombre: 'RECIBO DE CAJA', abreviatura: 'REC',
+Concepto.create(servicio_id: 1, codigo: '021', nombre: 'RECIBO DE CAJA', abreviatura: 'REC',
 porcentajeIva: '19', operacion: '+', clase: 'P', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '039', nombre: 'NOTA CREDITO TELEVISION', abreviatura: 'CDT',
+Concepto.create(servicio_id: 1, codigo: '022', nombre: 'NOTA CREDITO TELEVISION', abreviatura: 'CDT',
 porcentajeIva: '19', operacion: '-', clase: 'P', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '040', nombre: 'NOTA CREDITO INTERNET', abreviatura: 'CDI',
+Concepto.create(servicio_id: 2, codigo: '023', nombre: 'NOTA CREDITO INTERNET', abreviatura: 'CDI',
 porcentajeIva: '19', operacion: '-', clase: 'P', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '041', nombre: 'NOTA DEBITO TELEVISION', abreviatura: 'DBT',
+Concepto.create(servicio_id: 1, codigo: '024', nombre: 'NOTA DEBITO TELEVISION', abreviatura: 'DBT',
 porcentajeIva: '19', operacion: '+', clase: 'P', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '042', nombre: 'NOTA DEBITO INTERNET', abreviatura: 'DBI',
+Concepto.create(servicio_id: 2, codigo: '025', nombre: 'NOTA DEBITO INTERNET', abreviatura: 'DBI',
 porcentajeIva: '19', operacion: '+', clase: 'P', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '043', nombre: 'DESCUENTOS TELEVISION', abreviatura: 'DCT',
+Concepto.create(servicio_id: 1, codigo: '026', nombre: 'DESCUENTOS TELEVISION', abreviatura: 'DCT',
 porcentajeIva: '19', operacion: '-', clase: 'P', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '044', nombre: 'DESCUENTOS INTERNET', abreviatura: 'DCI',
+Concepto.create(servicio_id: 2, codigo: '027', nombre: 'DESCUENTOS INTERNET', abreviatura: 'DCI',
 porcentajeIva: '19', operacion: '-', clase: 'P', usuario_id: 1)
+Concepto.create(servicio_id: 1, codigo: '028', nombre: 'ADICCIONAR DECODIFICADORES', abreviatura: 'DCO',
+porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
+Concepto.create(servicio_id: 1, codigo: '029', nombre: 'RETIRAR DECODIFICADORES', abreviatura: 'RDC',
+porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
 Parametro.create(descripcion: 'Permite anular recibos', valor: 'N')
 Parametro.create(descripcion: 'Genera factura de venta', valor: 'S')
 Parametro.create(descripcion: 'formato impresion cta cobro', valor: 'ImprimeProvisional')

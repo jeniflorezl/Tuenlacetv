@@ -13,10 +13,12 @@ class Orden < ApplicationRecord
     senal = Senal.find_by(entidad_id: entidad_id)
     pref = Resolucion.last.prefijo
     ban = 0
+    ban1 = 0
     resp = 0
     estado = 0
     tipo_fact_ant = TipoFacturacion.find_by(nombre: 'ANTICIPADA').id
     tipo_fact_ven = TipoFacturacion.find_by(nombre: 'VENCIDA').id
+    estado_aplicado = Estado.find_by(abreviatura: 'AP').id
     estado_pend = Estado.find_by(abreviatura: 'PE').id
     f_fact = fechatrn.split('/')
     f_fact = Time.new(f_fact[2], f_fact[1], f_fact[0])
@@ -67,8 +69,25 @@ class Orden < ApplicationRecord
       end
     end
     if ban == 1
-      orden = Orden.new(entidad_id: entidad_id, concepto_id: concepto_id, fechatrn: fechatrn, fechaven: fechaven,
-        nrorden: ultimo, estado_id: estado_pend, observacion: observacion, tecnico_id: tecnico_id, usuario_id: usuario_id)
+      if concepto_id == "51" || concepto_id == "53"
+        if concepto_id == "53"
+          plantilla_decos = PlantillaFact.find_by(entidad_id: entidad_id, concepto_id: 51)
+          if plantilla_decos
+            ban1 = 1
+          else
+            return resp = 4
+          end
+        else
+          ban1 = 1
+        end
+        if ban1 == 1
+          orden = Orden.new(entidad_id: entidad_id, concepto_id: concepto_id, fechatrn: fechatrn, fechaven: fechaven,
+            nrorden: ultimo, estado_id: estado_aplicado, observacion: observacion, tecnico_id: tecnico_id, usuario_id: usuario_id)
+        end
+      else
+        orden = Orden.new(entidad_id: entidad_id, concepto_id: concepto_id, fechatrn: fechatrn, fechaven: fechaven,
+          nrorden: ultimo, estado_id: estado_pend, observacion: observacion, tecnico_id: tecnico_id, usuario_id: usuario_id)
+      end
       if orden.save
         query = <<-SQL 
         SELECT id FROM ordenes WHERE nrorden = #{orden.nrorden} and concepto_id = #{concepto_id};
@@ -226,6 +245,12 @@ class Orden < ApplicationRecord
         plantilla = PlantillaFact.new(entidad_id: entidad_id, concepto_id: concepto_id, estado_id: estado_activo, 
           tarifa_id: tarifa_id, fechaini: fechatrn, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: usuario_id)
         if senal.update(decos: decos)
+          return resp = 1
+        else
+          return resp = 2
+        end
+      when "53"
+        if plantilla_decos.destroy()
           return resp = 1
         else
           return resp = 2
@@ -1198,14 +1223,13 @@ class Orden < ApplicationRecord
         end
       end
       return true
-    when 51
-
     end
   end
 
   def self.anular_orden(orden)
     resp = 0
     ban = 0
+    byebug
     estado_anular = Estado.find_by(abreviatura: 'AN').id
     estado = Estado.find_by(abreviatura: 'AP').id
     if orden[0]["estado_id"] == estado
@@ -1312,6 +1336,8 @@ class Orden < ApplicationRecord
         SQL
         Orden.connection.select_all(query)
         return resp = 1
+      when 51
+        return resp = 5
       end
     end
   end
