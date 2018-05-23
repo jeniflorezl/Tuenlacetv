@@ -138,7 +138,7 @@ module Api
                         end
                     end
                 else
-                    render json: { error: "Datos incorrectos o ya existe un suscriptor con esa información" }
+                    render json: { error: "datos incorrectos o ya existe un suscriptor con esa informacion" }
                 end
             end
 
