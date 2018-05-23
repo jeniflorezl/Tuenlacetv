@@ -101,6 +101,7 @@ class Orden < ApplicationRecord
           nrorden: orden.nrorden, valor: usuario_id, usuario_id: usuario_id)
         MvtoRorden.create(registro_orden_id: 3, orden_id: orden_id, concepto_id: orden.concepto_id,
           nrorden: orden.nrorden, valor: tecnico_id, usuario_id: usuario_id)
+        solicita = solicita.upcase! unless solicita == solicita.upcase
         MvtoRorden.create(registro_orden_id: 11, orden_id: orden_id, concepto_id: orden.concepto_id,
           nrorden: orden.nrorden, valor: solicita, usuario_id: usuario_id)
       else
@@ -252,7 +253,7 @@ class Orden < ApplicationRecord
           return resp = 2
         end
       when "53"
-        if plantilla_decos.destroy()
+        if plantilla_decos.destroy() && senal.update(decos: 0)
           return resp = 1
         else
           return resp = 2
@@ -299,8 +300,11 @@ class Orden < ApplicationRecord
       nrorden: orden[0]["nrorden"], valor: usuario_id, usuario_id: usuario_id)
     MvtoRorden.create(registro_orden_id: 7, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
       nrorden: orden[0]["nrorden"], valor: solucion, usuario_id: usuario_id)
-    MvtoRorden.create(registro_orden_id: 11, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
-      nrorden: orden[0]["nrorden"], valor: solicita, usuario_id: usuario_id)
+    mvto_solicita = MvtoRorden.find_by(orden_id: orden.id, registro_orden_id: 11)
+    if mvto_solicita.valor != solicita
+      MvtoRorden.create(registro_orden_id: 11, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+        nrorden: orden[0]["nrorden"], valor: solicita, usuario_id: usuario_id)
+    end
     fecha_ven = Date.parse fechaven
     fecha_t = Date.parse t.to_s
     query = <<-SQL 

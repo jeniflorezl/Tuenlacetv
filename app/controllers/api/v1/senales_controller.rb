@@ -121,14 +121,14 @@ module Api
                                 if result == 1
                                     message1 = "creado servicio tv"
                                 else
-                                    message1 = @senal.errors
+                                    message1 = "error al crear servicio tv"
                                 end
                             end
                             if params[:internet] == 1
                                 if result1 == 1
                                     message2 = "creado servicio internet"
                                 else
-                                    message2 = @info_internet.errors
+                                    message2 = "error al crear servicio internet"
                                 end
                             end
                             render :json => {:message1 => message1,

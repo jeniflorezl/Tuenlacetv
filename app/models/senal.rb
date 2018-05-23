@@ -36,6 +36,7 @@ class Senal < ApplicationRecord
   private
 
   def self.afiliacion_tv(senal, entidad, valorAfiTv, valorDcto, tarifaTv, tecnico)
+    byebug
     ultimo = 0
     conceptord = Concepto.find(11)
     conceptoplant = Concepto.find(3)
@@ -45,13 +46,13 @@ class Senal < ApplicationRecord
       fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: senal.usuario_id)
     if plantilla.save
       if senal.decos > 0
-        concepto_decos = Concepto.find_by(nombre: 'ADICCIONAR DECODIFICADOR').id
+        concepto_decos = Concepto.find_by(nombre: 'ADICCIONAR DECODIFICADORES').id
         plan_tv = Plan.find_by(nombre: 'TELEVISION').id
-        tarifa_decos = Tarifa.where("zona_id = #{senal.zona_id} and concepto_id = #{concepto_decos.id} and plan_id = #{plan_tv}")
-        t_senal_dcos = (tarifa_decos[0]["valor"]) * senal.decos
-        unless tarifa_decos == nil
-          plantilla_decos = PlantillaFact.new(entidad_id: entidad.id, concepto_id: concepto_decos.id, estado_id: @estadoU, tarifa_id: (t_senal_dcos.to_f).round, 
-            fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: senal.usuario_id)
+        tarifa_decos = Tarifa.where("zona_id = #{senal.zona_id} and concepto_id = #{concepto_decos} and plan_id = #{plan_tv}")
+        plantilla_decos = PlantillaFact.new(entidad_id: entidad.id, concepto_id: concepto_decos, estado_id: @estadoU, tarifa_id: tarifa_decos[0]["id"], 
+          fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: senal.usuario_id)
+        unless plantilla_decos.save
+          return false
         end
       end
       if @consecutivos == 'S'

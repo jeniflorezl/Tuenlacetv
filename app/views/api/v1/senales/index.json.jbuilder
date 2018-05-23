@@ -19,6 +19,7 @@ json.entidades do
         json.estratoP entidad["estratoP"]
         json.condicion_fisica entidad["condicionfisica"]
         json.funcion entidad["funcion_id"]
+        json.ciudad entidad["ciudad"]
         if @funcion == "1"
             json.contrato entidad["contrato"]
             json.direccion entidad["direccion"]

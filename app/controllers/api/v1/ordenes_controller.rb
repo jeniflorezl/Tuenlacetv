@@ -39,7 +39,7 @@ module Api
             def create
                 respuesta = 0
                 respuesta = Orden.generar_orden(params[:entidad_id], params[:concepto_id], params[:fechatrn], 
-                    params[:fechaven], params[:valor], params[:observacion], params[:tecnico_id], params[:solicita]
+                    params[:fechaven], params[:valor], params[:observacion], params[:tecnico_id], params[:solicita],
                     params[:zonaNue], params[:barrioNue], params[:direccionNue], params[:decos], 
                     params[:usuario_id])
                 case respuesta
