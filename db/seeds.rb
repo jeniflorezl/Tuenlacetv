@@ -104,7 +104,7 @@ Concepto.create(servicio_id: 1, codigo: '026', nombre: 'DESCUENTOS TELEVISION', 
 porcentajeIva: '19', operacion: '-', clase: 'P', usuario_id: 1)
 Concepto.create(servicio_id: 2, codigo: '027', nombre: 'DESCUENTOS INTERNET', abreviatura: 'DCI',
 porcentajeIva: '19', operacion: '-', clase: 'P', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '028', nombre: 'ADICCIONAR DECODIFICADORES', abreviatura: 'DCO',
+Concepto.create(servicio_id: 1, codigo: '028', nombre: 'ADICIONAR DECODIFICADORES', abreviatura: 'DCO',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
 Concepto.create(servicio_id: 1, codigo: '029', nombre: 'RETIRAR DECODIFICADORES', abreviatura: 'RDC',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)

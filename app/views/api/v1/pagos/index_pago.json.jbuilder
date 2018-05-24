@@ -13,6 +13,7 @@ json.detalle_facturas do
         json.total d["total"]
     end
 end
+json.observacion @observacion
 
 json.valor_total @valor_total
 json.param_cobradores @param_cobradores

@@ -479,6 +479,15 @@ class Pago < ApplicationRecord
     valor_total
   end
 
+  def self.observacion_pago(detalle_facts)
+    ordenado = detalle_facts.sort_by { |hsh| hsh[:fechatrn] }
+    fecha_observa = ordenado.last["fechatrn"]
+    fecha_observa = fecha_observa.split("/")
+    f_fact = Time.new(fecha_observa[2], fecha_observa[1], fecha_observa[0])
+    nombre_mes = Facturacion.mes(f_fact.strftime("%B"))
+    observacion = 'PAGA HASTA ' + nombre_mes
+  end
+
   def self.anular_pago(pago_id)
     estado = Estado.find_by(abreviatura: 'AN').id
     dctos = Descuento.where(pago_id: pago_id)
