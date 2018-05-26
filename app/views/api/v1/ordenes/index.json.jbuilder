@@ -24,6 +24,8 @@ json.ordenes do
         json.estado orden["estado"]
         json.valor orden["valor"]
         json.observacion orden["observacion"]
+        json.solicita orden["solicita"]
+        json.solucion orden["solucion"]
         json.detalle do
             json.array! @detalle_orden do |d|
                 if d.orden_id == orden["id"]

@@ -42,21 +42,21 @@ class Orden < ApplicationRecord
       ultimo = (ultimo[0]["ultimo"]).to_i + 1
     end
     case concepto_id
-    when "7", "8", "17", "18"
-      if concepto_id == "7" || concepto_id == "17"
+    when "6", "7", "16", "17"
+      if concepto_id == "6" || concepto_id == "16"
         concepto_plant = 3
       else
         concepto_plant = 4
       end
       estado = Estado.find_by(abreviatura: 'A').id
-    when "15", "16"
-      if concepto_id == "15"
+    when "14", "15"
+      if concepto_id == "14"
         concepto_plant = 3
       else
         concepto_plant = 4
       end
       estado = Estado.find_by(abreviatura: 'C').id
-    when "51"
+    when "27"
       concepto_plant = 3
       estado = Estado.find_by(abreviatura: 'A').id
     else
@@ -69,9 +69,9 @@ class Orden < ApplicationRecord
       end
     end
     if ban == 1
-      if concepto_id == "51" || concepto_id == "53"
-        if concepto_id == "53"
-          plantilla_decos = PlantillaFact.find_by(entidad_id: entidad_id, concepto_id: 51)
+      if concepto_id == "27" || concepto_id == "28"
+        if concepto_id == "28"
+          plantilla_decos = PlantillaFact.find_by(entidad_id: entidad_id, concepto_id: 27)
           if plantilla_decos
             ban1 = 1
           else
@@ -108,7 +108,7 @@ class Orden < ApplicationRecord
         return resp = 2
       end
       case concepto_id
-      when "5", "6", "9", "10", "15", "16", "19", "20"
+      when "5", "8", "9", "14", "15", "18", "19"
         if valor > 0
           doc = 1
           concepto = Concepto.find(concepto_id)
@@ -161,7 +161,7 @@ class Orden < ApplicationRecord
         else
           return resp = 1
         end
-      when "13", "14"
+      when "12", "13"
         if valor > 0
           doc = 1
           concepto = Concepto.find(concepto_id)
@@ -221,7 +221,7 @@ class Orden < ApplicationRecord
         else
           return resp = 1
         end
-      when "51"
+      when "27"
         tarifa_id = 0
         estado_activo = Estado.find_by(abreviatura: 'A').id
         estado_ord = Estado.find_by(abreviatura: 'AP').id
@@ -252,7 +252,7 @@ class Orden < ApplicationRecord
         else
           return resp = 2
         end
-      when "53"
+      when "28"
         if plantilla_decos.destroy() && senal.update(decos: 0)
           return resp = 1
         else
@@ -300,7 +300,7 @@ class Orden < ApplicationRecord
       nrorden: orden[0]["nrorden"], valor: usuario_id, usuario_id: usuario_id)
     MvtoRorden.create(registro_orden_id: 7, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
       nrorden: orden[0]["nrorden"], valor: solucion, usuario_id: usuario_id)
-    mvto_solicita = MvtoRorden.find_by(orden_id: orden.id, registro_orden_id: 11)
+    mvto_solicita = MvtoRorden.find_by(orden_id: orden[0]["id"], registro_orden_id: 11)
     if mvto_solicita.valor != solicita
       MvtoRorden.create(registro_orden_id: 11, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
         nrorden: orden[0]["nrorden"], valor: solicita, usuario_id: usuario_id)
@@ -320,7 +320,7 @@ class Orden < ApplicationRecord
       end
     end
     case orden[0]["concepto_id"]
-    when 7, 8
+    when 6, 7
       byebug
       facturacion = ''
       ban = 0
@@ -337,9 +337,11 @@ class Orden < ApplicationRecord
       end
       doc = 1
       if orden[0]["concepto_id"] == 7
+        plantilla_orden = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = 3")
         plantillas = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id <> 4")
       else
-        plantillas = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = 4")
+        plantilla_orden = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = 4")
+        plantillas = plantilla_orden
       end
       if ban == 1
         if senal.tipo_facturacion_id == tipo_fact_ven
@@ -347,6 +349,7 @@ class Orden < ApplicationRecord
             byebug
             ban = 0
             tarifa = plantilla.tarifa.valor
+            fecha_plantilla = Date.parse plantilla.fechaini
             concepto = Concepto.find(plantilla.concepto_id)
             iva = concepto.porcentajeIva
             observacion_d = concepto.nombre
@@ -383,7 +386,12 @@ class Orden < ApplicationRecord
               end
             end
             if detallefact.blank? || fact_tv != 1
-              dias = (fecha - fechaini).to_i + 1
+              dias_afi = (fechaini - fecha_plantilla).to_i
+              if dias_afi > 0
+                dias = (fecha - fechaini).to_i + 1
+              else
+                dias = (fecha - fecha_plantilla).to_i + 1
+              end
               if dias < 30
                 if fecha.month == 2
                   valor_mens = tarifa
@@ -520,13 +528,11 @@ class Orden < ApplicationRecord
           end
         end
       end
-      plantillas.each do |plantilla|
-        unless plantilla.update(estado_id: estado_corte)
-          return false
-        end
+      unless plantilla_orden.update(estado_id: estado_corte)
+        return false
       end
       return true
-    when 11, 12
+    when 10, 11
       byebug
       ban = 0
       pregunta = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar instalacion').valor
@@ -541,10 +547,12 @@ class Orden < ApplicationRecord
         end
       end
       doc = 1
-      if orden[0]["concepto_id"] == 11
+      if orden[0]["concepto_id"] == 10
+        plantilla_orden = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = 3")
         plantillas = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id <> 4")
       else
-        plantillas = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = 4")
+        plantilla_orden = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = 4")
+        plantillas = plantilla_orden
       end
       if ban == 1
         if senal.tipo_facturacion_id == tipo_fact_ant
@@ -552,6 +560,7 @@ class Orden < ApplicationRecord
             byebug
             ban = 0
             tarifa = plantilla.tarifa.valor
+            fecha_plantilla = Date.parse plantilla.fechaini
             concepto = Concepto.find(plantilla.concepto_id)
             iva = concepto.porcentajeIva
             observacion_d = concepto.nombre
@@ -588,7 +597,11 @@ class Orden < ApplicationRecord
               end
             end
             if detallefact.blank? || fact_tv != 1
-              dias = (fecha - fechaini).to_i + 1
+              if fecha_plantilla.month == fechafin.month && fecha_plantilla.year == fechafin.year
+                dias = (fechafin - fecha_plantilla).to_i + 1
+              else
+                dias = 30
+              end
               if dias < 30
                 if fecha.month == 2
                   valor_mens = tarifa
@@ -686,7 +699,7 @@ class Orden < ApplicationRecord
               end
             else
               fecha3 = Date.parse factura[i]["fechaven"].to_s
-              dias_fact = (fecha - fecha3).to_i
+              dias_fact = (fechafin - fecha3).to_i
               if dias_fact > 0
                 valor_dia = tarifa / 30
                 valor_mens_detalle = valor_dia * dias_fact
@@ -725,20 +738,18 @@ class Orden < ApplicationRecord
           end
         end
       end
-      plantillas.each do |plantilla|
-        unless plantilla.update(estado_id: estado_corte)
-          return false
-        end
+      unless plantilla_orden.update(estado_id: estado_act)
+        return false
       end
       return true
-    when 13, 14
+    when 12, 13
       traslado = Traslado.find_by(orden_id: orden[0]["id"])
       if senal.update(direccion: traslado.direccionNue, zona_id: traslado.zonaNue_id, barrio_id: traslado.barrioNue_id)
         return true
       else
         return false
       end
-    when 15, 16
+    when 14, 15
       byebug
       ban = 0
       pregunta = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar reconexion').valor
@@ -760,9 +771,11 @@ class Orden < ApplicationRecord
       end
       doc = 1
       if orden[0]["concepto_id"] == 15
+        plantilla_orden = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = 3")
         plantillas = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id <> 4")
       else
-        plantillas = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = 4")
+        plantilla_orden = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = 4")
+        plantillas = plantilla_orden
       end
       if ban == 1
         if senal.tipo_facturacion_id == tipo_fact_ant
@@ -806,7 +819,7 @@ class Orden < ApplicationRecord
               end
             end
             if detallefact.blank? || fact_tv != 1
-              dias = (fecha - fechaini).to_i + 1
+              dias = (fechafin - fecha).to_i + 1
               if dias < 30
                 if fecha.month == 2
                   valor_mens = tarifa
@@ -904,7 +917,7 @@ class Orden < ApplicationRecord
               end
             else
               fecha3 = Date.parse factura[i]["fechaven"].to_s
-              dias_fact = (fecha - fecha3).to_i
+              dias_fact = (fechafin - fecha3).to_i
               if dias_fact > 0
                 valor_dia = tarifa / 30
                 valor_mens_detalle = valor_dia * dias_fact
@@ -943,13 +956,11 @@ class Orden < ApplicationRecord
           end
         end
       end
-      plantillas.each do |plantilla|
-        unless plantilla.update(estado_id: estado_corte)
-          return false
-        end
+      unless plantilla_orden.update(estado_id: estado_act)
+        return false
       end
       return true
-    when 17, 18
+    when 16, 17
       pagado = false
       fact_vent_id = 0
       fact_vent_valor = 0
@@ -974,9 +985,11 @@ class Orden < ApplicationRecord
       end
       doc = 1
       if orden[0]["concepto_id"] == 17
+        plantilla_orden = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = 3")
         plantillas = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id <> 4")
       else
-        plantillas = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = 4")
+        plantilla_orden = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = 4")
+        plantillas = plantilla_orden
       end
       if ban == 1
         if senal.tipo_facturacion_id == tipo_fact_ven
@@ -984,6 +997,7 @@ class Orden < ApplicationRecord
             byebug
             ban = 0
             tarifa = plantilla.tarifa.valor
+            fecha_plantilla = Date.parse plantilla.fechaini
             concepto = Concepto.find(plantilla.concepto_id)
             iva = concepto.porcentajeIva
             observacion_d = concepto.nombre
@@ -1020,7 +1034,12 @@ class Orden < ApplicationRecord
               end
             end
             if detallefact.blank? || fact_tv != 1
-              dias = (fecha - fechaini).to_i + 1
+              dias_afi = (fechaini - fecha_plantilla).to_i
+              if dias_afi > 0
+                dias = (fecha - fechaini).to_i + 1
+              else
+                dias = (fecha - fecha_plantilla).to_i + 1
+              end
               if dias < 30
                 if fecha.month == 2
                   valor_mens = tarifa
@@ -1223,10 +1242,8 @@ class Orden < ApplicationRecord
         SQL
         Facturacion.connection.select_all(query)
       end
-      plantillas.each do |plantilla|
-        unless plantilla.update(estado_id: estado_corte)
-          return false
-        end
+      unless plantilla_orden.update(estado_id: estado)
+        return false
       end
       return true
     end
@@ -1260,7 +1277,7 @@ class Orden < ApplicationRecord
         end
       end
       case orden[0]["concepto_id"]
-      when 5, 6, 9, 10, 19, 20
+      when 5, 8, 9, 18, 19
         if ban == 1
           return resp = 4
         elsif ban == 2
@@ -1276,13 +1293,13 @@ class Orden < ApplicationRecord
         end
         Orden.connection.select_all(query)
         return resp = 1
-      when 7, 8
+      when 6, 7
         query = <<-SQL 
         UPDATE ordenes set estado_id = #{estado_anular}, observacion = 'ANULADA' WHERE id = #{orden[0]["id"]};
         SQL
         Orden.connection.select_all(query)
         return resp = 1
-      when 11, 12
+      when 10, 11
         estado = Estado.find_by(abreviatura: 'N').id
         query = <<-SQL 
         UPDATE ordenes set estado_id = #{estado_anular}, observacion = 'ANULADA' WHERE id = #{orden[0]["id"]};
@@ -1299,7 +1316,7 @@ class Orden < ApplicationRecord
         else
           return resp = 2
         end
-      when 13, 14
+      when 12, 13
         if ban == 1
           return resp = 4
         elsif ban == 2
@@ -1320,7 +1337,7 @@ class Orden < ApplicationRecord
         else
           return resp = 2
         end
-      when 15, 16
+      when 14, 15
         if ban == 1
           return resp = 2
         elsif ban == 2
@@ -1336,14 +1353,12 @@ class Orden < ApplicationRecord
         end
         Orden.connection.select_all(query)
         return resp = 1
-      when 17, 18
+      when 16, 17
         query = <<-SQL 
         UPDATE ordenes set estado_id = #{estado_anular}, observacion = 'ANULADA' WHERE id = #{orden[0]["id"]};
         SQL
         Orden.connection.select_all(query)
         return resp = 1
-      when 51
-        return resp = 5
       end
     end
   end

@@ -58,7 +58,6 @@ module Api
 
             # POST /senales
             def create
-                byebug
                 result = 0
                 result1 = 0
                 message1 = ''
@@ -225,7 +224,7 @@ module Api
                 if @funcion == 1
                     if @senal
                         if Senal.eliminar_suscriptor(@entidad, @persona, @senal, @info_internet, 
-                            @plantilla_tv, @plantilla_int)
+                            @plantilla_tv, @plantilla_decos, @plantilla_int)
                             render json: { status: :deleted }
                         else
                             render json: { error: "El suscriptor no se puede eliminar" }
@@ -261,6 +260,7 @@ module Api
                 @senal = Senal.find_by(entidad_id: @entidad.id)
                 @info_internet = InfoInternet.find_by(entidad_id: @entidad.id)
                 @plantilla_tv = PlantillaFact.where("entidad_id = ? AND concepto_id = ?", @entidad.id, 3)
+                @plantilla_decos = PlantillaFact.where("entidad_id = ? AND concepto_id = ?", @entidad.id, 27)
                 @plantilla_int = PlantillaFact.where("entidad_id = ? AND concepto_id = ?", @entidad.id, 4)
             end
             

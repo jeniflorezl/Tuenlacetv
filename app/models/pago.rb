@@ -409,7 +409,7 @@ class Pago < ApplicationRecord
     SQL
     facturas = Pago.connection.select_all(query)
     query = <<-SQL 
-    SELECT * FROM pagos WHERE entidad_id = #{entidad_id};
+    SELECT * FROM pagos WHERE entidad_id = #{entidad_id} and estado_id <> #{estado} ORDER BY id;
     SQL
     pagos = Pago.connection.select_all(query)
     if pagos.blank?
@@ -429,7 +429,6 @@ class Pago < ApplicationRecord
       end
     else
       facturas.reverse_each do |f|
-        valor_fact = ((f["valor"].to_f).round + (f["iva"].to_f).round)
         dfactura = DetalleFactura.where(factura_id: f["id"])
         dfactura.reverse_each do |df|
           valor_df = (df["valor"] + df["iva"]).to_i
@@ -437,28 +436,36 @@ class Pago < ApplicationRecord
             abonos = Abono.where(pago_id: p["id"])
             abonos.reverse_each do |a|
               if f["id"] == a["factura_id"] && df["concepto_id"] == a["concepto_id"]
-                valor_fact = valor_fact - a["abono"].to_i
                 valor_df = valor_df - a["abono"].to_i
               end
             end
+            anticipos = Anticipo.where(pago_id: p["id"])
+            anticipos.reverse_each do |ant|
+              if ant["servicio_id"] == 1
+                concepto = 3
+              else
+                concepto = 4
+              end
+              if f["id"] == ant["factura_id"] && df["concepto_id"] == concepto
+                valor_df = valor_df - ant["valor"].to_i
+              end
+            end
           end
-          if valor_fact != 0 
+          if valor_df != 0
             concepto_id = df["concepto_id"]
             concepto = Concepto.find(concepto_id)
             servicio_id = concepto.servicio_id
             if  servicio_id == 1
-              saldo_tv = saldo_tv - valor_fact
+              saldo_tv = saldo_tv - valor_df
             else
-              saldo_int = saldo_int - valor_fact
+              saldo_int = saldo_int - valor_df
             end
-          end
-          if valor_df != 0
             fecha1 = Pago.formato_fecha(f["fechatrn"])
             fecha2 = Pago.formato_fecha(f["fechaven"])
             detalle_facts[i] = { 'concepto_id' => concepto.id, 'concepto' => concepto.codigo, 
               'desc' => concepto.nombre, 'nrodcto' => f["nrofact"], 'fechatrn' => fecha1, 
               'fechaven' => fecha2, 'valor' => (df["valor"].to_f).round, 'iva' => (df["iva"].to_f).round, 
-              'saldo' => valor_fact, 'abono' => 0, 'total' => 0 }
+              'saldo' => valor_df, 'abono' => 0, 'total' => 0 }
           i += 1
           end
         end

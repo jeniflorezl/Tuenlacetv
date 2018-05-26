@@ -7,9 +7,7 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 =begin
 Estado.create(nombre: 'ACTIVO', abreviatura: 'A', tipo: 1, usuario: 'admin')
-=end
 Estado.create(nombre: 'INACTIVO', abreviatura: 'IN', tipo: 1, usuario: 'admin')
-=begin
 Estado.create(nombre: 'CORTADO', abreviatura: 'C', tipo: 1, usuario: 'admin')
 Estado.create(nombre: 'EXENTOS', abreviatura: 'E', tipo: 1, usuario: 'admin')
 Estado.create(nombre: 'PENDIENTE',  abreviatura: 'P', tipo: 1, usuario: 'admin')
@@ -50,6 +48,7 @@ Documento.create(nombre: 'NOTA DEBITO', abreviatura: 'DBT', clase: 'P', usuario_
 Documento.create(nombre: 'DESCUENTOS', abreviatura: 'DST', clase: 'P', usuario_id: 1)
 Documento.create(nombre: 'CAUSACIONES', abreviatura: 'CAU', usuario_id: 1)
 Documento.create(nombre: 'ORDENES', abreviatura: 'ORD', usuario_id: 1)
+=end
 Concepto.create(servicio_id: 1, codigo: '001', nombre: 'SUSCRIPCION TELEVISION', abreviatura: 'AFT',
 porcentajeIva: '19', operacion: '+', clase: '', usuario_id: 1)
 Concepto.create(servicio_id: 2, codigo: '002', nombre: 'SUSCRIPCION INTERNET', abreviatura: 'AFI',
@@ -60,54 +59,53 @@ Concepto.create(servicio_id: 2, codigo: '004', nombre: 'MENSUALIDAD INTERNET', a
 porcentajeIva: '19', operacion: '+', clase: '', usuario_id: 1)
 Concepto.create(servicio_id: 1, codigo: '005', nombre: 'PUNTO ADICIONAL TELEVISION', abreviatura: 'ETT',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '006', nombre: 'PUNTO ADICIONAL INTERNET', abreviatura: 'ETI',
+Concepto.create(servicio_id: 1, codigo: '006', nombre: 'CORTE TELEVISION', abreviatura: 'COT',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '007', nombre: 'CORTE TELEVISION', abreviatura: 'COT',
+Concepto.create(servicio_id: 2, codigo: '007', nombre: 'CORTE INTERNET', abreviatura: 'COI',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '008', nombre: 'CORTE INTERNET', abreviatura: 'COI',
+Concepto.create(servicio_id: 1, codigo: '008', nombre: 'REVISION SEÑAL TELEVISION', abreviatura: 'MAN',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '009', nombre: 'REVISION SEÑAL TELEVISION', abreviatura: 'MAN',
+Concepto.create(servicio_id: 2, codigo: '009', nombre: 'REVISION SEÑAL INTERNET', abreviatura: 'REI',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '010', nombre: 'REVISION SEÑAL INTERNET', abreviatura: 'REI',
-porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '011', nombre: 'INSTALACION TELEVISION', abreviatura: 'INT',
+Concepto.create(servicio_id: 1, codigo: '010', nombre: 'INSTALACION TELEVISION', abreviatura: 'INT',
 porcentajeIva: '19', operacion: '+', clase: '', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '012', nombre: 'INSTALACION INTERNET', abreviatura: 'INI',
+Concepto.create(servicio_id: 2, codigo: '011', nombre: 'INSTALACION INTERNET', abreviatura: 'INI',
 porcentajeIva: '19', operacion: '+', clase: '', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '013', nombre: 'TRASLADO TELEVISION', abreviatura: 'TRT',
+Concepto.create(servicio_id: 1, codigo: '012', nombre: 'TRASLADO TELEVISION', abreviatura: 'TRT',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '014', nombre: 'TRASLADO INTERNET', abreviatura: 'TRI',
+Concepto.create(servicio_id: 2, codigo: '013', nombre: 'TRASLADO INTERNET', abreviatura: 'TRI',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '015', nombre: 'RECONEXIÓN TELEVISION', abreviatura: 'RCT',
+Concepto.create(servicio_id: 1, codigo: '014', nombre: 'RECONEXIÓN TELEVISION', abreviatura: 'RCT',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '016', nombre: 'RECONEXIÓN INTERNET', abreviatura: 'RCI',
+Concepto.create(servicio_id: 2, codigo: '015', nombre: 'RECONEXIÓN INTERNET', abreviatura: 'RCI',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '017', nombre: 'RETIRO DEFINITIVO TELEVISION', abreviatura: 'RET',
+Concepto.create(servicio_id: 1, codigo: '016', nombre: 'RETIRO DEFINITIVO TELEVISION', abreviatura: 'RET',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '018', nombre: 'RETIRO DEFINITIVO INTERNET', abreviatura: 'RTI',
+Concepto.create(servicio_id: 2, codigo: '017', nombre: 'RETIRO DEFINITIVO INTERNET', abreviatura: 'RTI',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '019', nombre: 'MULTA TELEVISION', abreviatura: 'MUT',
+Concepto.create(servicio_id: 1, codigo: '018', nombre: 'MULTA TELEVISION', abreviatura: 'MUT',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '020', nombre: 'MULTA INTERNET', abreviatura: 'MUI',
+Concepto.create(servicio_id: 2, codigo: '019', nombre: 'MULTA INTERNET', abreviatura: 'MUI',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '021', nombre: 'RECIBO DE CAJA', abreviatura: 'REC',
+Concepto.create(servicio_id: 1, codigo: '020', nombre: 'RECIBO DE CAJA', abreviatura: 'REC',
 porcentajeIva: '19', operacion: '+', clase: 'P', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '022', nombre: 'NOTA CREDITO TELEVISION', abreviatura: 'CDT',
+Concepto.create(servicio_id: 1, codigo: '021', nombre: 'NOTA CREDITO TELEVISION', abreviatura: 'CDT',
 porcentajeIva: '19', operacion: '-', clase: 'P', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '023', nombre: 'NOTA CREDITO INTERNET', abreviatura: 'CDI',
+Concepto.create(servicio_id: 2, codigo: '022', nombre: 'NOTA CREDITO INTERNET', abreviatura: 'CDI',
 porcentajeIva: '19', operacion: '-', clase: 'P', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '024', nombre: 'NOTA DEBITO TELEVISION', abreviatura: 'DBT',
+Concepto.create(servicio_id: 1, codigo: '023', nombre: 'NOTA DEBITO TELEVISION', abreviatura: 'DBT',
 porcentajeIva: '19', operacion: '+', clase: 'P', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '025', nombre: 'NOTA DEBITO INTERNET', abreviatura: 'DBI',
+Concepto.create(servicio_id: 2, codigo: '024', nombre: 'NOTA DEBITO INTERNET', abreviatura: 'DBI',
 porcentajeIva: '19', operacion: '+', clase: 'P', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '026', nombre: 'DESCUENTOS TELEVISION', abreviatura: 'DCT',
+Concepto.create(servicio_id: 1, codigo: '025', nombre: 'DESCUENTOS TELEVISION', abreviatura: 'DCT',
 porcentajeIva: '19', operacion: '-', clase: 'P', usuario_id: 1)
-Concepto.create(servicio_id: 2, codigo: '027', nombre: 'DESCUENTOS INTERNET', abreviatura: 'DCI',
+Concepto.create(servicio_id: 2, codigo: '026', nombre: 'DESCUENTOS INTERNET', abreviatura: 'DCI',
 porcentajeIva: '19', operacion: '-', clase: 'P', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '028', nombre: 'ADICIONAR DECODIFICADORES', abreviatura: 'DCO',
+Concepto.create(servicio_id: 1, codigo: '027', nombre: 'ADICIONAR DECODIFICADORES', abreviatura: 'DCO',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
-Concepto.create(servicio_id: 1, codigo: '029', nombre: 'RETIRAR DECODIFICADORES', abreviatura: 'RDC',
+Concepto.create(servicio_id: 1, codigo: '028', nombre: 'RETIRAR DECODIFICADORES', abreviatura: 'RDC',
 porcentajeIva: '19', operacion: '+', clase: 'O', usuario_id: 1)
+=begin
 Parametro.create(descripcion: 'Permite anular recibos', valor: 'N')
 Parametro.create(descripcion: 'Genera factura de venta', valor: 'S')
 Parametro.create(descripcion: 'formato impresion cta cobro', valor: 'ImprimeProvisional')
@@ -268,6 +266,7 @@ Entidad.create(funcion_id: 5, persona_id: 7, usuario_id: 1)
 Empresa.create(tipo: '01', nit: '900353347', razonsocial: 'enlace informatico s.a.s', direccion: 'cra 47 #53-41', 
 telefono1: '4540312', telefono2: '', ciudad_id: 2, entidad_id: 50003, logo: '', correo: 'gerencia@enlaceinformatico.com',
 regimen: 's', contribuyente: 's', centrocosto: '0001', usuario_id: 1)
+
 Resolucion.create(empresa_id: 1, nroResolucion: '18762002425502', tipo: 'AUTORIZADO', prefijo: 'AR',
 rangoRI: '0', rangoRF: '0', rangoI: '0', rangoF: '0', fechainicio: '28/02/2018', 
 fechavence: '28/02/2018', usuario_id: 1)
@@ -357,7 +356,6 @@ RegistroOrden.create(nombre: 'fecha anulacion', usuario_id: 1)
 RegistroOrden.create(nombre: 'usuario anula orden', usuario_id: 1)
 RegistroOrden.create(nombre: 'motivo anulacion', usuario_id: 1)
 RegistroOrden.create(nombre: 'solicitado por', usuario_id: 1)
-
 Grupo.create(descripcion: 'INVENTARIOS', usuario_id: 1)
 =end
 

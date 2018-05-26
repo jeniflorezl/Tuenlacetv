@@ -88,7 +88,7 @@ class Facturacion < ApplicationRecord
       documentos = Parametro.find_by(descripcion: 'Maneja internet en documentos separado')
       concepto_tv = Concepto.find(3)
       concepto_int = Concepto.find(4)
-      concepto_decos = Concepto.find(51)
+      concepto_decos = Concepto.find(27)
       iva_int = concepto_int.porcentajeIva
       iva = 0
       estado = Estado.find_by(abreviatura: 'A').id
@@ -1366,7 +1366,7 @@ class Facturacion < ApplicationRecord
         end
         return respuesta = 1
       else
-        cpto_dco = Concepto.find_by(abreviatura: 'DCO')
+        cpto_dco = Concepto.find(27)
         iva_cpto_dco = cpto_dco.porcentajeIva
         plantilla = PlantillaFact.find_by(entidad_id: entidad_id, concepto_id: cpto_dco.id)
         tarifa = plantilla.tarifa.valor
@@ -1548,7 +1548,7 @@ class Facturacion < ApplicationRecord
       INNER JOIN plantilla_fact plantilla ON fact.entidad_id = plantilla.entidad_id
       LEFT OUTER JOIN abonos ab ON fact.id = ab.factura_id and ab.doc_pagos_id = 6
       INNER JOIN senales s ON fact.entidad_id = s.entidad_id
-      WHERE fact.nrofact >= #{fact_inicial} and fact.nrofact <= #{fact_final} and plantilla.estado_id = 1 and fact.estado_id <> 8 and fact.documento_id = 1 and month(fact.fechatrn) = #{f_inicio_mes} and year(fact.fechatrn) = #{f_inicio_ano} and s.tipo_facturacion_id = #{tipo_fact}; 
+      WHERE fact.nrofact >= #{fact_inicial} and fact.nrofact <= #{fact_final} and plantilla.estado_id = 1 and fact.estado_id <> 9 and fact.documento_id = 1 and month(fact.fechatrn) = #{f_inicio_mes} and year(fact.fechatrn) = #{f_inicio_ano} and s.tipo_facturacion_id = #{tipo_fact}; 
       SQL
     else
       query = <<-SQL
@@ -1559,7 +1559,7 @@ class Facturacion < ApplicationRecord
       INNER JOIN plantilla_fact plantilla ON fact.entidad_id = plantilla.entidad_id
       LEFT OUTER JOIN abonos ab ON fact.id = ab.factura_id and ab.doc_pagos_id = 6
       INNER JOIN senales s ON fact.entidad_id = s.entidad_id
-      WHERE fact.nrofact >= #{fact_inicial} and fact.nrofact <= #{fact_final} and plantilla.estado_id = 1 and fact.estado_id <> 8 and fact.documento_id = 1 and month(fact.fechatrn) = #{f_inicio_mes} and year(fact.fechatrn) = #{f_inicio_ano} and s.zona_id = #{zona} and s.tipo_facturacion_id = #{tipo_fact}; 
+      WHERE fact.nrofact >= #{fact_inicial} and fact.nrofact <= #{fact_final} and plantilla.estado_id = 1 and fact.estado_id <> 9 and fact.documento_id = 1 and month(fact.fechatrn) = #{f_inicio_mes} and year(fact.fechatrn) = #{f_inicio_ano} and s.zona_id = #{zona} and s.tipo_facturacion_id = #{tipo_fact}; 
       SQL
     end
     facturacion = Facturacion.connection.select_all(query)

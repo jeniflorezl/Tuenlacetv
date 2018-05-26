@@ -38,23 +38,14 @@ class Senal < ApplicationRecord
   def self.afiliacion_tv(senal, entidad, valorAfiTv, valorDcto, tarifaTv, tecnico)
     byebug
     ultimo = 0
-    conceptord = Concepto.find(11)
+    conceptord = Concepto.find(10)
     conceptoplant = Concepto.find(3)
     conceptofact = Concepto.find(1)
     doc = Documento.find_by(nombre: 'FACTURA DE VENTA').id
+    estado_pag = Estado.find_by(abreviatura: 'PA').id
     plantilla = PlantillaFact.new(entidad_id: entidad.id, concepto_id: conceptoplant.id, estado_id: @estadoU, tarifa_id: tarifaTv, 
       fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: senal.usuario_id)
     if plantilla.save
-      if senal.decos > 0
-        concepto_decos = Concepto.find_by(nombre: 'ADICCIONAR DECODIFICADORES').id
-        plan_tv = Plan.find_by(nombre: 'TELEVISION').id
-        tarifa_decos = Tarifa.where("zona_id = #{senal.zona_id} and concepto_id = #{concepto_decos} and plan_id = #{plan_tv}")
-        plantilla_decos = PlantillaFact.new(entidad_id: entidad.id, concepto_id: concepto_decos, estado_id: @estadoU, tarifa_id: tarifa_decos[0]["id"], 
-          fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: senal.usuario_id)
-        unless plantilla_decos.save
-          return false
-        end
-      end
       if @consecutivos == 'S'
         query = <<-SQL 
         SELECT MAX(nrorden) as ultimo FROM ordenes WHERE concepto_id = #{conceptord.id};
@@ -72,7 +63,7 @@ class Senal < ApplicationRecord
         ultimo = (ultimo[0]["ultimo"]).to_i + 1
       end
       orden = Orden.new(entidad_id: entidad.id, concepto_id: conceptord.id, fechatrn: senal.fechacontrato,
-        fechaven: senal.fechacontrato, nrorden: ultimo, estado_id: @estadoD, observacion: 'Registro creado en proceso de afiliación',
+        fechaven: senal.fechacontrato, nrorden: ultimo, estado_id: @estadoD, observacion: 'REGISTRO CREADO EN PROCESO DE AFILIACIÓN',
         tecnico_id: tecnico, usuario_id: senal.usuario_id)
       if orden.save
         query = <<-SQL 
@@ -87,6 +78,57 @@ class Senal < ApplicationRecord
           nrorden: orden.nrorden, valor: senal.usuario_id, usuario_id: senal.usuario_id)
         MvtoRorden.create(registro_orden_id: 3, orden_id: orden_id, concepto_id: orden.concepto_id,
           nrorden: orden.nrorden, valor: tecnico, usuario_id: senal.usuario_id)
+        MvtoRorden.create(registro_orden_id: 11, orden_id: orden_id, concepto_id: orden.concepto_id,
+          nrorden: orden.nrorden, valor: 'OFICINA', usuario_id: senal.usuario_id)
+        if senal.decos > 0
+          estado_aplicado = Estado.find_by(abreviatura: 'AP').id
+          estado_activo = Estado.find_by(abreviatura: 'A').id
+          concepto_decos = Concepto.find(27)
+          plan_tv = Plan.find_by(nombre: 'TELEVISION').id
+          tarifa_decos = Tarifa.where("zona_id = #{senal.zona_id} and concepto_id = #{concepto_decos.id} and plan_id = #{plan_tv}")
+          if @consecutivos == 'S'
+            query = <<-SQL 
+            SELECT MAX(nrorden) as ultimo FROM ordenes WHERE concepto_id = #{concepto_decos.id};
+            SQL
+          else
+            query = <<-SQL 
+            SELECT MAX(nrorden) as ultimo FROM ordenes;
+            SQL
+          end
+          Senal.connection.clear_query_cache
+          ultimo = Senal.connection.select_all(query)
+          if ultimo[0]["ultimo"] == nil
+            ultimo = 1
+          else
+            ultimo = (ultimo[0]["ultimo"]).to_i + 1
+          end
+          orden_decos = Orden.new(entidad_id: entidad.id, concepto_id: concepto_decos.id, fechatrn: senal.fechacontrato,
+            fechaven: senal.fechacontrato, nrorden: ultimo, estado_id: estado_aplicado, observacion: concepto_decos.nombre,
+            tecnico_id: tecnico, usuario_id: senal.usuario_id)
+          if orden_decos.save
+            query = <<-SQL 
+            SELECT id FROM ordenes WHERE nrorden = #{orden_decos.nrorden} and concepto_id = #{concepto_decos.id};
+            SQL
+            Senal.connection.clear_query_cache
+            orden_decos_id = Senal.connection.select_all(query)
+            orden_decos_id = (orden_decos_id[0]["id"]).to_i
+            MvtoRorden.create(registro_orden_id: 1, orden_id: orden_decos_id, concepto_id: orden_decos.concepto_id,
+              nrorden: orden_decos.nrorden, valor: senal.fechacontrato, usuario_id: senal.usuario_id)
+            MvtoRorden.create(registro_orden_id: 2, orden_id: orden_decos_id, concepto_id: orden_decos.concepto_id,
+              nrorden: orden_decos.nrorden, valor: senal.usuario_id, usuario_id: senal.usuario_id)
+            MvtoRorden.create(registro_orden_id: 3, orden_id: orden_decos_id, concepto_id: orden_decos.concepto_id,
+              nrorden: orden_decos.nrorden, valor: tecnico, usuario_id: senal.usuario_id)
+            MvtoRorden.create(registro_orden_id: 11, orden_id: orden_decos_id, concepto_id: orden_decos.concepto_id,
+              nrorden: orden_decos.nrorden, valor: 'OFICINA', usuario_id: senal.usuario_id)
+            plantilla_decos = PlantillaFact.new(entidad_id: entidad.id, concepto_id: concepto_decos.id, estado_id: estado_activo, tarifa_id: tarifa_decos[0]["id"], 
+              fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: senal.usuario_id)
+            unless plantilla_decos.save
+              return false
+            end
+          else
+            return false
+          end
+        end
         if valorAfiTv > 0
           pref = Resolucion.last.prefijo
           query = <<-SQL 
@@ -99,15 +141,10 @@ class Senal < ApplicationRecord
           else
             ultimo = (ultimo[0]["ultimo"]).to_i + 1
           end
-          if valorDcto > 0
-            valor = valorAfiTv - valorDcto
-          else
-            valor = valorAfiTv
-          end
           iva_cpto = conceptofact.porcentajeIva
           if iva_cpto > 0
-            valor_sin_iva = valor / (iva_cpto / 100 + 1)
-            iva = valor - valor_sin_iva
+            valor_sin_iva = valorAfiTv / (iva_cpto / 100 + 1)
+            iva = valorAfiTv - valor_sin_iva
             valor = valor_sin_iva
           end
           factura = Facturacion.new(entidad_id: entidad.id, documento_id: doc, fechatrn: senal.fechacontrato,
@@ -125,6 +162,40 @@ class Senal < ApplicationRecord
               valor: factura.valor, porcentajeIva: iva_cpto, iva: iva, observacion: 'SUSCRIPCIÓN SERVICIO DE TELEVISIÓN' + ' ' + @mes,
               operacion: '+', usuario_id: factura.usuario_id)
             if detallef.save
+              if valorDcto > 0
+                valor_total_fact = factura.valor + iva
+                doc_pago = Documento.find_by(nombre: 'DESCUENTOS').id
+                query = <<-SQL 
+                SELECT MAX(nropago) as ultimo FROM pagos WHERE documento_id = #{doc_pago};
+                SQL
+                Senal.connection.clear_query_cache
+                ultimo = Senal.connection.select_all(query)
+                if ultimo[0]["ultimo"] == nil
+                  ultimo = 1
+                else
+                  ultimo = (ultimo[0]["ultimo"]).to_i + 1
+                end
+                pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: senal.fechacontrato,
+                  valor: valorDcto, estado_id: estado_pag, observacion: 'DESCUENTO SUSCRIPCION', forma_pago_id: 1,
+                  banco_id: 1, usuario_id: senal.usuario_id)
+                if pago.save
+                  query = <<-SQL 
+                  SELECT id FROM pagos WHERE nropago = #{pago.nropago} and documento_id = #{doc_pago};
+                  SQL
+                  Senal.connection.clear_query_cache
+                  pago_id = Senal.connection.select_all(query)
+                  pago_id = (pago_id[0]["id"]).to_i
+                  abono = Abono.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
+                    factura_id: factura_id, doc_factura_id: factura.documento_id, prefijo: factura.prefijo, 
+                    nrofact: factura.nrofact, concepto_id: detallef.concepto_id, fechabono: senal.fechacontrato, 
+                    saldo: valor_total_fact, abono: pago.valor, usuario_id: pago.usuario_id)
+                  unless abono.save
+                    return false
+                  end
+                else
+                  return false
+                end
+              end
               return true
             else
               return false
@@ -146,10 +217,11 @@ class Senal < ApplicationRecord
 
   def self.afiliacion_int(senal, entidad, valorAfiInt, valorDcto, tarifaInt, tecnico)
     ultimo = 0
-    conceptord = Concepto.find(12)
+    conceptord = Concepto.find(11)
     conceptoplant = Concepto.find(4)
     conceptofact = Concepto.find(2)
     doc = Documento.find_by(nombre: 'FACTURA DE VENTA').id
+    estado_pag = Estado.find_by(abreviatura: 'PA').id
     plantillaint = PlantillaFact.new(entidad_id: entidad.id, concepto_id: conceptoplant.id, estado_id: @estadoU, tarifa_id: tarifaInt, 
       fechaini: senal.fechacontrato, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: senal.usuario_id)
     if plantillaint.save
@@ -169,8 +241,8 @@ class Senal < ApplicationRecord
       else
         ultimo = (ultimo[0]["ultimo"]).to_i + 1
       end
-      ordenin = Orden.new(entidad_id: entidad.id, concepto_id: conceptord.id, fechatrn: @t.strftime("%d/%m/%Y %H:%M:%S"),
-      fechaven: @t.strftime("%d/%m/%Y %H:%M:%S"), nrorden: ultimo, estado_id: @estadoD, observacion: 'Registro creado en proceso de afiliación',
+      ordenin = Orden.new(entidad_id: entidad.id, concepto_id: conceptord.id, fechatrn: senal.fechacontrato,
+      fechaven: senal.fechacontrato, nrorden: ultimo, estado_id: @estadoD, observacion: 'REGISTRO CREADO EN PROCESO DE AFILIACIÓN',
       tecnico_id: tecnico, usuario_id: senal.usuario_id)
       if ordenin.save
         query = <<-SQL 
@@ -185,6 +257,8 @@ class Senal < ApplicationRecord
           nrorden: ordenin.nrorden, valor: senal.usuario_id, usuario_id: senal.usuario_id)
         MvtoRorden.create(registro_orden_id: 3, orden_id: ordenin_id, concepto_id: ordenin.concepto_id,
           nrorden: ordenin.nrorden, valor: tecnico, usuario_id: senal.usuario_id)
+        MvtoRorden.create(registro_orden_id: 11, orden_id: ordenin_id, concepto_id: ordenin.concepto_id,
+          nrorden: ordenin.nrorden, valor: 'OFICINA', usuario_id: senal.usuario_id)
         if valorAfiInt > 0
           pref = Resolucion.last.prefijo
           query = <<-SQL 
@@ -197,15 +271,10 @@ class Senal < ApplicationRecord
           else
             ultimo = (ultimo[0]["ultimo"]).to_i + 1
           end
-          if valorDcto > 0
-            valor = valorAfiInt - valorDcto
-          else
-            valor = valorAfiInt
-          end
           iva_cpto = conceptofact.porcentajeIva
           if iva_cpto > 0
-            valor_sin_iva = valor / (iva_cpto / 100 + 1)
-            iva = valor - valor_sin_iva
+            valor_sin_iva = valorAfiInt / (iva_cpto / 100 + 1)
+            iva = valorAfiInt - valor_sin_iva
             valor = valor_sin_iva
           end
           facturain = Facturacion.new(entidad_id: entidad.id, documento_id: doc, fechatrn: senal.fechacontrato,
@@ -223,6 +292,40 @@ class Senal < ApplicationRecord
               valor: facturain.valor, porcentajeIva: iva_cpto, iva: iva, observacion: 'SUSCRIPCIÓN SERVICIO DE INTERNET' + ' ' + @mes,
               operacion: '+', usuario_id: facturain.usuario_id)
             if detallefin.save
+              if valorDcto > 0
+                valor_total_fact = facturain.valor + iva
+                doc_pago = Documento.find_by(nombre: 'DESCUENTOS').id
+                query = <<-SQL 
+                SELECT MAX(nropago) as ultimo FROM pagos WHERE documento_id = #{doc_pago};
+                SQL
+                Senal.connection.clear_query_cache
+                ultimo = Senal.connection.select_all(query)
+                if ultimo[0]["ultimo"] == nil
+                  ultimo = 1
+                else
+                  ultimo = (ultimo[0]["ultimo"]).to_i + 1
+                end
+                pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: senal.fechacontrato,
+                  valor: valorDcto, estado_id: estado_pag, observacion: 'DESCUENTO SUSCRIPCION', forma_pago_id: 1,
+                  banco_id: 1, usuario_id: senal.usuario_id)
+                if pago.save
+                  query = <<-SQL 
+                  SELECT id FROM pagos WHERE nropago = #{pago.nropago} and documento_id = #{doc_pago};
+                  SQL
+                  Senal.connection.clear_query_cache
+                  pago_id = Senal.connection.select_all(query)
+                  pago_id = (pago_id[0]["id"]).to_i
+                  abono = Abono.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
+                    factura_id: facturain_id, doc_factura_id: facturain.documento_id, prefijo: facturain.prefijo, 
+                    nrofact: facturain.nrofact, concepto_id: detallefin.concepto_id, fechabono: senal.fechacontrato, 
+                    saldo: valor_total_fact, abono: pago.valor, usuario_id: pago.usuario_id)
+                  unless abono.save
+                    return false
+                  end
+                else
+                  return false
+                end
+              end
               return true
             else
               return false
@@ -241,7 +344,7 @@ class Senal < ApplicationRecord
     end
   end
 
-  def self.eliminar_suscriptor(entidad, persona, senal, info_internet, plantilla_tv, plantilla_int)
+  def self.eliminar_suscriptor(entidad, persona, senal, info_internet, plantilla_tv, plantilla_decos, plantilla_int)
     query = <<-SQL 
     SELECT TOP 1 * FROM pagos WHERE entidad_id = #{entidad.id};
     SQL
@@ -255,6 +358,9 @@ class Senal < ApplicationRecord
     if pago.blank? && factura.blank?
       if plantilla_tv
           plantilla_tv.destroy_all()
+      end
+      if plantilla_decos
+        plantilla_decos.destroy_all()
       end
       query = <<-SQL
       SELECT id FROM ordenes WHERE entidad_id = #{entidad.id}; 
@@ -302,22 +408,22 @@ class Senal < ApplicationRecord
     Senal.connection.clear_query_cache
     senal = Senal.connection.select_all(query)
     query = <<-SQL 
-    SELECT * FROM VwOrdenes WHERE concepto_id = 11 or concepto_id = 12;
+    SELECT * FROM VwOrdenes WHERE concepto_id = 10 or concepto_id = 11;
     SQL
     Senal.connection.clear_query_cache
     instalaciones = Senal.connection.select_all(query)
     query = <<-SQL 
-    SELECT * FROM VwOrdenes WHERE concepto_id = 7 or concepto_id = 8;
+    SELECT * FROM VwOrdenes WHERE concepto_id = 6 or concepto_id = 7;
     SQL
     Senal.connection.clear_query_cache
     cortes = Senal.connection.select_all(query)
     query = <<-SQL 
-    SELECT * FROM VwOrdenes WHERE concepto_id = 13 or concepto_id = 14;
+    SELECT * FROM VwOrdenes WHERE concepto_id = 12 or concepto_id = 13;
     SQL
     Senal.connection.clear_query_cache
     traslados = Senal.connection.select_all(query)
     query = <<-SQL 
-    SELECT * FROM VwOrdenes WHERE concepto_id = 15 or concepto_id = 16;
+    SELECT * FROM VwOrdenes WHERE concepto_id = 14 or concepto_id = 15;
     SQL
     Senal.connection.clear_query_cache
     reconexiones = Senal.connection.select_all(query)
@@ -340,22 +446,22 @@ class Senal < ApplicationRecord
             traslado = ''
             reconexion = ''
             instalaciones.each do |inst|
-                if inst["concepto_id"] == 11 && inst["entidad_id"] == s["id"]
+                if inst["concepto_id"] == 10 && inst["entidad_id"] == s["id"]
                     instalacion = inst["fechaven"]
                 end
             end
             cortes.each do |c|
-                if c["concepto_id"] == 7 && c["entidad_id"] == s["id"]
+                if c["concepto_id"] == 6 && c["entidad_id"] == s["id"]
                     corte = c["fechaven"]
                 end
             end
             traslados.each do |t|
-                if t["concepto_id"] == 13 && t["entidad_id"] == s["id"]
+                if t["concepto_id"] == 12 && t["entidad_id"] == s["id"]
                     traslado = t["fechaven"]
                 end
             end
             reconexiones.each do |rco|
-                if rco["concepto_id"] == 15 && rco["entidad_id"] == s["id"]
+                if rco["concepto_id"] == 14 && rco["entidad_id"] == s["id"]
                     reconexion = rco["fechaven"]
                 end
             end
@@ -366,22 +472,22 @@ class Senal < ApplicationRecord
             traslado_int = ''
             reconexion_int = ''
             instalaciones.each do |inst|
-              if inst["concepto_id"] == 12 && inst["entidad_id"] == s["id"]
+              if inst["concepto_id"] == 11 && inst["entidad_id"] == s["id"]
                 instalacion_int = inst["fechaven"]
               end
             end
             cortes.each do |c|
-              if c["concepto_id"] == 8 && c["entidad_id"] == s["id"]
+              if c["concepto_id"] == 7 && c["entidad_id"] == s["id"]
                 corte_int = c["fechaven"]
               end
             end
             traslados.each do |t|
-              if t["concepto_id"] == 14 && t["entidad_id"] == s["id"]
+              if t["concepto_id"] == 13 && t["entidad_id"] == s["id"]
                 traslado_int = t["fechaven"]
               end
             end
             reconexiones.each do |rco|
-              if rco["concepto_id"] == 16 && rco["entidad_id"] == s["id"]
+              if rco["concepto_id"] == 15 && rco["entidad_id"] == s["id"]
                 reconexion_int = rco["fechaven"]
               end
             end
@@ -421,22 +527,22 @@ class Senal < ApplicationRecord
     Senal.connection.clear_query_cache
     senal = Senal.connection.select_all(query)
     query = <<-SQL 
-    SELECT * FROM VwOrdenes WHERE concepto_id = 11;
+    SELECT * FROM VwOrdenes WHERE concepto_id = 10;
     SQL
     Senal.connection.clear_query_cache
     instalaciones = Senal.connection.select_all(query)
     query = <<-SQL 
-    SELECT * FROM VwOrdenes WHERE concepto_id = 7;
+    SELECT * FROM VwOrdenes WHERE concepto_id = 6;
     SQL
     Senal.connection.clear_query_cache
     cortes = Senal.connection.select_all(query)
     query = <<-SQL 
-    SELECT * FROM VwOrdenes WHERE concepto_id = 13;
+    SELECT * FROM VwOrdenes WHERE concepto_id = 12;
     SQL
     Senal.connection.clear_query_cache
     traslados = Senal.connection.select_all(query)
     query = <<-SQL 
-    SELECT * FROM VwOrdenes WHERE concepto_id = 15;
+    SELECT * FROM VwOrdenes WHERE concepto_id = 14;
     SQL
     Senal.connection.clear_query_cache
     reconexiones = Senal.connection.select_all(query)
@@ -445,22 +551,22 @@ class Senal < ApplicationRecord
       senales.each do |sen|
         if s["id"] == sen.entidad_id
           instalaciones.each do |inst|
-              if inst["concepto_id"] == 11 && inst["entidad_id"] == s["id"]
+              if inst["concepto_id"] == 10 && inst["entidad_id"] == s["id"]
                   instalacion = inst["fechaven"]
               end
           end
           cortes.each do |c|
-              if c["concepto_id"] == 7 && c["entidad_id"] == s["id"]
+              if c["concepto_id"] == 6 && c["entidad_id"] == s["id"]
                   corte = c["fechaven"]
               end
           end
           traslados.each do |t|
-              if t["concepto_id"] == 13 && t["entidad_id"] == s["id"]
+              if t["concepto_id"] == 12 && t["entidad_id"] == s["id"]
                   traslado = t["fechaven"]
               end
           end
           reconexiones.each do |rco|
-              if rco["concepto_id"] == 15 && rco["entidad_id"] == s["id"]
+              if rco["concepto_id"] == 14 && rco["entidad_id"] == s["id"]
                   reconexion = rco["fechaven"]
               end
           end
@@ -498,22 +604,22 @@ class Senal < ApplicationRecord
     Senal.connection.clear_query_cache
     senal = Senal.connection.select_all(query)
     query = <<-SQL 
-    SELECT * FROM VwOrdenes WHERE concepto_id = 12;
+    SELECT * FROM VwOrdenes WHERE concepto_id = 11;
     SQL
     Senal.connection.clear_query_cache
     instalaciones = Senal.connection.select_all(query)
     query = <<-SQL 
-    SELECT * FROM VwOrdenes WHERE concepto_id = 8;
+    SELECT * FROM VwOrdenes WHERE concepto_id = 7;
     SQL
     Senal.connection.clear_query_cache
     cortes = Senal.connection.select_all(query)
     query = <<-SQL 
-    SELECT * FROM VwOrdenes WHERE concepto_id = 14;
+    SELECT * FROM VwOrdenes WHERE concepto_id = 13;
     SQL
     Senal.connection.clear_query_cache
     traslados = Senal.connection.select_all(query)
     query = <<-SQL 
-    SELECT * FROM VwOrdenes WHERE concepto_id = 16;
+    SELECT * FROM VwOrdenes WHERE concepto_id = 15;
     SQL
     Senal.connection.clear_query_cache
     reconexiones = Senal.connection.select_all(query)
@@ -522,22 +628,22 @@ class Senal < ApplicationRecord
       senales.each do |sen|
         if s["id"] == sen.entidad_id
           instalaciones.each do |inst|
-            if inst["concepto_id"] == 12 && inst["entidad_id"] == s["id"]
+            if inst["concepto_id"] == 11 && inst["entidad_id"] == s["id"]
               instalacion_int = inst["fechaven"]
             end
           end
           cortes.each do |c|
-            if c["concepto_id"] == 8 && c["entidad_id"] == s["id"]
+            if c["concepto_id"] == 7 && c["entidad_id"] == s["id"]
               corte_int = c["fechaven"]
             end
           end
           traslados.each do |t|
-            if t["concepto_id"] == 14 && t["entidad_id"] == s["id"]
+            if t["concepto_id"] == 13 && t["entidad_id"] == s["id"]
               traslado_int = t["fechaven"]
             end
           end
           reconexiones.each do |rco|
-            if rco["concepto_id"] == 16 && rco["entidad_id"] == s["id"]
+            if rco["concepto_id"] == 15 && rco["entidad_id"] == s["id"]
               reconexion_int = rco["fechaven"]
             end
           end
