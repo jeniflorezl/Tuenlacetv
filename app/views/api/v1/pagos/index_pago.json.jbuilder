@@ -18,10 +18,17 @@ json.observacion @observacion
 json.valor_total @valor_total
 json.param_cobradores @param_cobradores
 
+json.conceptos_pagos do
+    json.array! @conceptos_pagos do |concepto|
+        json.id concepto.id
+        json.abreviatura concepto.abreviatura
+    end
+end
+
 json.conceptos do
     json.array! @conceptos do |concepto|
         json.id concepto.id
-        json.abreviatura concepto.abreviatura
+        json.servicio_id concepto.servicio_id
     end
 end
 

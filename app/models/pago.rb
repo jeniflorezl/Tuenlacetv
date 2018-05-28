@@ -27,13 +27,13 @@ class Pago < ApplicationRecord
     observacion = observacion.upcase! unless observacion == observacion.upcase
     estado = Estado.find_by(abreviatura: 'PA').id
     case concepto_id
-    when "34"
+    when "20"
       documento_id = 2
-    when "37", "38"
+    when "21", "22"
       documento_id = 4
-    when "39", "40"
+    when "23", "24"
       documento_id = 5
-    when "41", "42"
+    when "25", "26"
       documento_id = 6
     end
     query = <<-SQL 
@@ -63,7 +63,7 @@ class Pago < ApplicationRecord
           detalle.each do |d|
             ban = 0
             ban1 = 0
-            query = <<-SQL 
+            query = <<-SQL
             SELECT factura_id FROM detalle_factura WHERE nrofact = #{d["nrodcto"]};
             SQL
             Pago.connection.clear_query_cache
