@@ -54,7 +54,7 @@ json.articulos do
         json.id articulo.id
         json.grupo_id articulo.grupo_id
         json.nombre articulo.nombre
-        json.costo articulo.costo
+        json.costo articulo.preciodetal
         json.porcentajeIva articulo.porcentajeIva
     end
 end

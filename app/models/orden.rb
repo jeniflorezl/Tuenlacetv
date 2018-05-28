@@ -271,9 +271,10 @@ class Orden < ApplicationRecord
     byebug
     senal = Senal.find_by(entidad_id: orden[0]["entidad_id"])
     concepto_fact = 0
-    fecha = Date.parse fechaven
-    mes = fecha.month
-    ano = fecha.year
+    concepto_decos = Concepto.find(27)
+    fecha_ven = Date.parse fechaven
+    mes = fecha_ven.month
+    ano = fecha_ven.year
     fechaini = '01/#{mes}/#{ano}'
     fechaini = Date.parse fechaini
     fechafin = '30/#{mes}/#{ano}'
@@ -305,7 +306,6 @@ class Orden < ApplicationRecord
       MvtoRorden.create(registro_orden_id: 11, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
         nrorden: orden[0]["nrorden"], valor: solicita, usuario_id: usuario_id)
     end
-    fecha_ven = Date.parse fechaven
     fecha_t = Date.parse t.to_s
     query = <<-SQL 
     UPDATE ordenes set fechaven = '#{fecha_ven.to_s}', estado_id = #{estado_ord}, tecnico_id = #{tecnico_id}, observacion = '#{observacion}', fechacam = '#{fecha_t}' WHERE id = #{orden[0]["id"]};
@@ -323,6 +323,7 @@ class Orden < ApplicationRecord
     when 6, 7
       byebug
       facturacion = ''
+      facturacion_id = 0
       ban = 0
       pregunta = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar corte').valor
       if pregunta == 'S'
@@ -349,13 +350,13 @@ class Orden < ApplicationRecord
             byebug
             ban = 0
             tarifa = plantilla.tarifa.valor
-            fecha_plantilla = Date.parse plantilla.fechaini
+            fecha_plantilla = Date.parse plantilla.fechaini.to_s
             concepto = Concepto.find(plantilla.concepto_id)
             iva = concepto.porcentajeIva
             observacion_d = concepto.nombre
             if concepto.id == 3
               observacion_d = 'TELEVISION'
-            else
+            elsif concepto.id == 4
               observacion_d = 'INTERNET'
             end
             query = <<-SQL 
@@ -388,17 +389,23 @@ class Orden < ApplicationRecord
             if detallefact.blank? || fact_tv != 1
               dias_afi = (fechaini - fecha_plantilla).to_i
               if dias_afi > 0
-                dias = (fecha - fechaini).to_i + 1
+                dias = (fecha_ven - fechaini).to_i + 1
               else
-                dias = (fecha - fecha_plantilla).to_i + 1
+                dias = (fecha_ven - fecha_plantilla).to_i + 1
               end
               if dias < 30
-                if fecha.month == 2
+                if fecha_ven.month == 2
                   valor_mens = tarifa
                 else
                   valor_dia = tarifa / 30
                   valor_mens = valor_dia * dias
                 end
+              else
+                valor_mens = tarifa
+              end
+              if concepto.id == concepto_decos.id
+                decos = senal.decos
+                valor_mens = valor_mens * decos
               end
               if iva > 0
                 valor_sin_iva = valor_mens / (iva / 100 + 1)
@@ -416,8 +423,8 @@ class Orden < ApplicationRecord
                 ultimo = (ultimo[0]["ultimo"]).to_i + 1
               end
               if facturacion.blank?
-                facturacion = Facturacion.new(entidad_id: orden[0]["entidad_id"], documento_id: doc, fechatrn: fecha.to_s,
-                  fechaven: fecha.to_s, valor: valor_mens, iva: iva_fact, dias: dias, prefijo: pref, nrofact: ultimo,
+                facturacion = Facturacion.new(entidad_id: orden[0]["entidad_id"], documento_id: doc, fechatrn: fecha_ven.to_s,
+                  fechaven: fecha_ven.to_s, valor: valor_mens, iva: iva_fact, dias: dias, prefijo: pref, nrofact: ultimo,
                   estado_id: estado_pend, observacion: 'MENSUALIDAD' + ' ' + nombre_mes, reporta: '1', usuario_id: usuario_id)
                 if facturacion.save
                   query = <<-SQL 
@@ -464,7 +471,7 @@ class Orden < ApplicationRecord
                   else
                     ultimo = (ultimo[0]["ultimo"]).to_i + 1
                   end
-                  pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: fecha.to_s,
+                  pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: fecha_ven.to_s,
                     valor: descuento, estado_id: estado_pag, observacion: 'DESCUENTO DISCAPACITADOS', forma_pago_id: 1,
                     banco_id: 1, usuario_id: usuario_id)
                   if pago.save
@@ -477,7 +484,7 @@ class Orden < ApplicationRecord
                     saldo_ab = facturacion.valor + facturacion.iva
                     abono = Abono.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
                       factura_id: facturacion_id, doc_factura_id: facturacion.documento_id, prefijo: facturacion.prefijo, 
-                      nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id, fechabono: fecha.to_s, 
+                      nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id, fechabono: fecha_ven.to_s, 
                       saldo: saldo_ab, abono: pago.valor, usuario_id: pago.usuario_id)
                     unless abono.save
                       return false
@@ -489,7 +496,7 @@ class Orden < ApplicationRecord
               end
             else
               fecha3 = Date.parse factura[i]["fechaven"].to_s
-              dias_fact = (fecha - fecha3).to_i
+              dias_fact = (fecha_ven - fecha3).to_i
               if dias_fact > 0
                 valor_dia = tarifa / 30
                 valor_mens_detalle = valor_dia * dias_fact
@@ -535,6 +542,8 @@ class Orden < ApplicationRecord
     when 10, 11
       byebug
       ban = 0
+      facturacion = ''
+      facturacion_id = 0
       pregunta = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar instalacion').valor
       if pregunta == 'S'
         if respuesta == 'S'
@@ -560,13 +569,13 @@ class Orden < ApplicationRecord
             byebug
             ban = 0
             tarifa = plantilla.tarifa.valor
-            fecha_plantilla = Date.parse plantilla.fechaini
+            fecha_plantilla = Date.parse plantilla.fechaini.to_s
             concepto = Concepto.find(plantilla.concepto_id)
             iva = concepto.porcentajeIva
             observacion_d = concepto.nombre
             if concepto.id == 3
               observacion_d = 'TELEVISION'
-            else
+            elsif concepto.id == 4
               observacion_d = 'INTERNET'
             end
             query = <<-SQL 
@@ -603,12 +612,18 @@ class Orden < ApplicationRecord
                 dias = 30
               end
               if dias < 30
-                if fecha.month == 2
+                if fecha_ven.month == 2
                   valor_mens = tarifa
                 else
                   valor_dia = tarifa / 30
                   valor_mens = valor_dia * dias
                 end
+              else
+                valor_mens = tarifa
+              end
+              if concepto.id == concepto_decos.id
+                decos = senal.decos
+                valor_mens = valor_mens * decos
               end
               if iva > 0
                 valor_sin_iva = valor_mens / (iva / 100 + 1)
@@ -626,8 +641,8 @@ class Orden < ApplicationRecord
                 ultimo = (ultimo[0]["ultimo"]).to_i + 1
               end
               if facturacion.blank?
-                facturacion = Facturacion.new(entidad_id: orden[0]["entidad_id"], documento_id: doc, fechatrn: fecha.to_s,
-                  fechaven: fecha.to_s, valor: valor_mens, iva: iva_fact, dias: dias, prefijo: pref, nrofact: ultimo,
+                facturacion = Facturacion.new(entidad_id: orden[0]["entidad_id"], documento_id: doc, fechatrn: fecha_ven.to_s,
+                  fechaven: fecha_ven.to_s, valor: valor_mens, iva: iva_fact, dias: dias, prefijo: pref, nrofact: ultimo,
                   estado_id: estado_pend, observacion: 'MENSUALIDAD' + ' ' + nombre_mes, reporta: '1', usuario_id: usuario_id)
                 if facturacion.save
                   query = <<-SQL 
@@ -674,7 +689,7 @@ class Orden < ApplicationRecord
                   else
                     ultimo = (ultimo[0]["ultimo"]).to_i + 1
                   end
-                  pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: fecha.to_s,
+                  pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: fecha_ven.to_s,
                     valor: descuento, estado_id: estado_pag, observacion: 'DESCUENTO DISCAPACITADOS', forma_pago_id: 1,
                     banco_id: 1, usuario_id: usuario_id)
                   if pago.save
@@ -687,7 +702,7 @@ class Orden < ApplicationRecord
                     saldo_ab = facturacion.valor + facturacion.iva
                     abono = Abono.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
                       factura_id: facturacion_id, doc_factura_id: facturacion.documento_id, prefijo: facturacion.prefijo, 
-                      nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id, fechabono: fecha.to_s, 
+                      nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id, fechabono: fecha_ven.to_s, 
                       saldo: saldo_ab, abono: pago.valor, usuario_id: pago.usuario_id)
                     unless abono.save
                       return false
@@ -752,6 +767,8 @@ class Orden < ApplicationRecord
     when 14, 15
       byebug
       ban = 0
+      facturacion = ''
+      facturacion_id = 0
       pregunta = Parametro.find_by(descripcion: 'Pregunta si desea cobrar dias al editar reconexion').valor
       if pregunta == 'S'
         if respuesta == 'S'
@@ -788,7 +805,7 @@ class Orden < ApplicationRecord
             observacion_d = concepto.nombre
             if concepto.id == 3
               observacion_d = 'TELEVISION'
-            else
+            elsif concepto.id == 4
               observacion_d = 'INTERNET'
             end
             query = <<-SQL 
@@ -819,14 +836,20 @@ class Orden < ApplicationRecord
               end
             end
             if detallefact.blank? || fact_tv != 1
-              dias = (fechafin - fecha).to_i + 1
+              dias = (fechafin - fecha_ven).to_i + 1
               if dias < 30
-                if fecha.month == 2
+                if fecha_ven.month == 2
                   valor_mens = tarifa
                 else
                   valor_dia = tarifa / 30
                   valor_mens = valor_dia * dias
                 end
+              else
+                valor_mens = tarifa
+              end
+              if concepto.id == concepto_decos.id
+                decos = senal.decos
+                valor_mens = valor_mens * decos
               end
               if iva > 0
                 valor_sin_iva = valor_mens / (iva / 100 + 1)
@@ -844,8 +867,8 @@ class Orden < ApplicationRecord
                 ultimo = (ultimo[0]["ultimo"]).to_i + 1
               end
               if facturacion.blank?
-                facturacion = Facturacion.new(entidad_id: orden[0]["entidad_id"], documento_id: doc, fechatrn: fecha.to_s,
-                  fechaven: fecha.to_s, valor: valor_mens, iva: iva_fact, dias: dias, prefijo: pref, nrofact: ultimo,
+                facturacion = Facturacion.new(entidad_id: orden[0]["entidad_id"], documento_id: doc, fechatrn: fecha_ven.to_s,
+                  fechaven: fecha_ven.to_s, valor: valor_mens, iva: iva_fact, dias: dias, prefijo: pref, nrofact: ultimo,
                   estado_id: estado_pend, observacion: 'MENSUALIDAD' + ' ' + nombre_mes, reporta: '1', usuario_id: usuario_id)
                 if facturacion.save
                   query = <<-SQL 
@@ -892,7 +915,7 @@ class Orden < ApplicationRecord
                   else
                     ultimo = (ultimo[0]["ultimo"]).to_i + 1
                   end
-                  pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: fecha.to_s,
+                  pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: fecha_ven.to_s,
                     valor: descuento, estado_id: estado_pag, observacion: 'DESCUENTO DISCAPACITADOS', forma_pago_id: 1,
                     banco_id: 1, usuario_id: usuario_id)
                   if pago.save
@@ -905,7 +928,7 @@ class Orden < ApplicationRecord
                     saldo_ab = facturacion.valor + facturacion.iva
                     abono = Abono.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
                       factura_id: facturacion_id, doc_factura_id: facturacion.documento_id, prefijo: facturacion.prefijo, 
-                      nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id, fechabono: fecha.to_s, 
+                      nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id, fechabono: fecha_ven.to_s, 
                       saldo: saldo_ab, abono: pago.valor, usuario_id: pago.usuario_id)
                     unless abono.save
                       return false
@@ -997,13 +1020,13 @@ class Orden < ApplicationRecord
             byebug
             ban = 0
             tarifa = plantilla.tarifa.valor
-            fecha_plantilla = Date.parse plantilla.fechaini
+            fecha_plantilla = Date.parse plantilla.fechaini.to_s
             concepto = Concepto.find(plantilla.concepto_id)
             iva = concepto.porcentajeIva
             observacion_d = concepto.nombre
             if concepto.id == 3
               observacion_d = 'TELEVISION'
-            else
+            elsif concepto.id == 4
               observacion_d = 'INTERNET'
             end
             query = <<-SQL 
@@ -1036,17 +1059,23 @@ class Orden < ApplicationRecord
             if detallefact.blank? || fact_tv != 1
               dias_afi = (fechaini - fecha_plantilla).to_i
               if dias_afi > 0
-                dias = (fecha - fechaini).to_i + 1
+                dias = (fecha_ven - fechaini).to_i + 1
               else
-                dias = (fecha - fecha_plantilla).to_i + 1
+                dias = (fecha_ven - fecha_plantilla).to_i + 1
               end
               if dias < 30
-                if fecha.month == 2
+                if fecha_ven.month == 2
                   valor_mens = tarifa
                 else
                   valor_dia = tarifa / 30
                   valor_mens = valor_dia * dias
                 end
+              else
+                valor_mens = tarifa
+              end
+              if concepto.id == concepto_decos.id
+                decos = senal.decos
+                valor_mens = valor_mens * decos
               end
               if iva > 0
                 valor_sin_iva = valor_mens / (iva / 100 + 1)
@@ -1064,8 +1093,8 @@ class Orden < ApplicationRecord
                 ultimo = (ultimo[0]["ultimo"]).to_i + 1
               end
               if facturacion.blank?
-                facturacion = Facturacion.new(entidad_id: orden[0]["entidad_id"], documento_id: doc, fechatrn: fecha.to_s,
-                  fechaven: fecha.to_s, valor: valor_mens, iva: iva_fact, dias: dias, prefijo: pref, nrofact: ultimo,
+                facturacion = Facturacion.new(entidad_id: orden[0]["entidad_id"], documento_id: doc, fechatrn: fecha_ven.to_s,
+                  fechaven: fecha_ven.to_s, valor: valor_mens, iva: iva_fact, dias: dias, prefijo: pref, nrofact: ultimo,
                   estado_id: estado_pend, observacion: 'MENSUALIDAD' + ' ' + nombre_mes, reporta: '1', usuario_id: usuario_id)
                 if facturacion.save
                   query = <<-SQL 
@@ -1120,7 +1149,7 @@ class Orden < ApplicationRecord
                   else
                     ultimo = (ultimo[0]["ultimo"]).to_i + 1
                   end
-                  pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: fecha.to_s,
+                  pago = Pago.new(entidad_id: senal.entidad_id, documento_id: doc_pago, nropago: ultimo, fechatrn: fecha_ven.to_s,
                     valor: descuento, estado_id: estado_pag, observacion: 'DESCUENTO DISCAPACITADOS', forma_pago_id: 1,
                     banco_id: 1, usuario_id: usuario_id)
                   if pago.save
@@ -1133,7 +1162,7 @@ class Orden < ApplicationRecord
                     saldo_ab = facturacion.valor + facturacion.iva
                     abono = Abono.new(pago_id: pago_id, doc_pagos_id: pago.documento_id, nropago: pago.nropago, 
                       factura_id: facturacion_id, doc_factura_id: facturacion.documento_id, prefijo: facturacion.prefijo, 
-                      nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id, fechabono: fecha.to_s, 
+                      nrofact: facturacion.nrofact, concepto_id: detallef.concepto_id, fechabono: fecha_ven.to_s, 
                       saldo: saldo_ab, abono: pago.valor, usuario_id: pago.usuario_id)
                     unless abono.save
                       return false
@@ -1145,7 +1174,7 @@ class Orden < ApplicationRecord
               end
             else
               fecha3 = Date.parse factura[i]["fechaven"].to_s
-              dias_fact = (fecha - fecha3).to_i
+              dias_fact = (fecha_ven - fecha3).to_i
               if dias_fact > 0
                 valor_dia = tarifa / 30
                 valor_mens_detalle = valor_dia * dias_fact

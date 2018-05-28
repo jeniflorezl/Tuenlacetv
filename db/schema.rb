@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180314162109) do
+ActiveRecord::Schema.define(version: 20180527180839) do
 
   create_table "abonos", force: :cascade do |t|
     t.integer "pago_id", null: false
@@ -453,6 +453,8 @@ ActiveRecord::Schema.define(version: 20180314162109) do
     t.datetime "fechacre", default: -> { "getdate()" }, null: false
     t.datetime "fechacam", default: -> { "getdate()" }, null: false
     t.bigint "usuario_id", null: false
+    t.bigint "tipo_facturacion_id"
+    t.index ["tipo_facturacion_id"], name: "index_notas_fact_on_tipo_facturacion_id"
     t.index ["usuario_id"], name: "index_notas_fact_on_usuario_id"
     t.index ["zona_id"], name: "index_notas_fact_on_zona_id"
   end
@@ -871,6 +873,7 @@ ActiveRecord::Schema.define(version: 20180314162109) do
   add_foreign_key "nomenclaturas", "usuarios"
   add_foreign_key "notas", "entidades"
   add_foreign_key "notas", "usuarios"
+  add_foreign_key "notas_fact", "tipo_facturacion"
   add_foreign_key "notas_fact", "usuarios"
   add_foreign_key "notas_fact", "zonas"
   add_foreign_key "ordenes", "conceptos"

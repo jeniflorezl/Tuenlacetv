@@ -15,6 +15,7 @@ class Pago < ApplicationRecord
 
   def self.generar_pago(entidad_id, concepto_id, fechatrn, valor, descuento, observacion, forma_pago_id,
     banco_id, cobrador_id, detalle, usuario_id)
+    byebug
     ban = 0
     ban1 = 0
     abono_fact = 0

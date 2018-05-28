@@ -62,9 +62,9 @@ class Facturacion < ApplicationRecord
     respuesta = 0
     notasfact = NotaFact.where("year(fechaElaboracion) = #{fech_e[2]} and month(fechaElaboracion) = #{fech_e[1]}")
     unless notasfact.blank?
-      if notasfact[0]["zona_id"] == nil && zona == 'Todos'
+      if notasfact[0]["zona_id"] == nil && zona == 'Todos' && notasfact[0]["tipo_facturacion_id"] == tipo_fact
         return respuesta = 3
-      elsif notasfact[0]["zona_id"] == zona.to_i
+      elsif notasfact[0]["zona_id"] == zona.to_i && notasfact[0]["tipo_facturacion_id"] == tipo_fact
         return respuesta = 4
       else
         zonas = Zona.all
@@ -75,7 +75,7 @@ class Facturacion < ApplicationRecord
             end
           end
           if resp == 1
-            if zona == z.id
+            if zona == z.id && notasfact[0]["tipo_facturacion_id"] == tipo_fact
               resp1 = 1
             end
           end
@@ -111,10 +111,13 @@ class Facturacion < ApplicationRecord
       fact_vent_prefijo = 0
       fact_vent_nrofact = 0
       facturacion_id = 0
+      valor_mens_detalle = 0
+      iva_fact = 0
       if zona == 'Todos'
         senales = Senal.where(tipo_facturacion_id: tipo_fact)
         nota_f = NotaFact.new(fechaElaboracion: f_elaboracion, fechaInicio: f_inicio, fechaFin: f_fin,
-          fechaVencimiento: f_vence, fechaCorte: f_corte, fechaPagosVen: f_vencidos, usuario_id: usuario_id)
+          fechaVencimiento: f_vence, fechaCorte: f_corte, fechaPagosVen: f_vencidos, 
+          usuario_id: usuario_id, tipo_facturacion_id: tipo_fact)
         unless nota_f.save
           return respuesta = 2
         end
@@ -241,8 +244,8 @@ class Facturacion < ApplicationRecord
                   unless detallef.save
                     return respuesta = 2
                   end
-                  if senal.entidad.persona.condicionfisica == 'D'
-                    valor_total_fact = valor_mens + iva
+                  if senal.entidad.persona.condicionfisica == 'D' && concepto.id == concepto_tv.id
+                    valor_total_fact = valor_mens + iva_fact
                     porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
                     descuento = valor_total_fact * (porcentaje.to_f / 100)
                     doc_pago = Documento.find_by(nombre: 'DESCUENTOS').id
@@ -279,48 +282,50 @@ class Facturacion < ApplicationRecord
                     end
                   end
                 else
-                  fecha3 = Date.parse factura[i]["fechaven"].to_s
-                  dias_fact = (fecha1 - fecha3).to_i
-                  if dias_fact > 0
-                    valor_dia = tarifa / 30
-                    valor_mens_detalle = valor_dia * dias_fact
-                    dias_fact = factura[i]["dias"] + dias_fact
-                    valor_fact = (detallefact[j]["valor"] + detallefact[j]["iva"]) + valor_mens_detalle
-                    valor_fact = (valor_fact.to_f).round
-                    if dias_fact > 30 
-                      dias_fact = 30
+                  if factura[i]["dias"] < 30
+                    fecha3 = Date.parse factura[i]["fechaven"].to_s
+                    dias_fact = (fecha1 - fecha3).to_i
+                    if dias_fact > 0
+                      valor_dia = tarifa / 30
+                      valor_mens_detalle = valor_dia * dias_fact
+                      dias_fact = factura[i]["dias"] + dias_fact
+                      valor_fact = (detallefact[j]["valor"] + detallefact[j]["iva"]) + valor_mens_detalle
+                      valor_fact = (valor_fact.to_f).round
+                      if dias_fact > 30 
+                        dias_fact = 30
+                      end
+                      if valor_fact > tarifa
+                        valor_mens_detalle = valor_fact - tarifa
+                      end
+                      if iva > 0
+                        valor_sin_iva = valor_mens_detalle / (iva / 100 + 1)
+                        iva_fact = valor_mens_detalle - valor_sin_iva
+                        valor_mens_detalle = valor_sin_iva
+                      end
+                      valor_mens_detalle = (valor_mens_detalle.to_f).round
+                      iva_fact = (iva_fact.to_f).round
+                      if factura[i]["estado_id"] == estado_pag
+                        saldo = (factura[i]["valor"] + valor_mens_detalle) + (factura[i]["iva"] + iva_fact)
+                        query = <<-SQL 
+                        UPDATE facturacion set valor = valor + #{valor_mens_detalle}, iva = iva + #{iva_fact}, dias = #{dias_fact}, estado_id = #{estado_pend}, observacion = '#{observa}' WHERE id = #{factura[i]["id"]};
+                        UPDATE detalle_factura set valor = valor + #{valor_mens_detalle}, porcentajeIva = #{iva}, iva = iva + #{iva_fact}, observacion = '#{observacion_d}' + ' ' + '#{nombre_mes}' WHERE factura_id = #{factura[i]["id"]} and concepto_id = #{concepto.id};
+                        UPDATE abonos set saldo = #{saldo} WHERE factura_id = #{factura[i]["id"]};
+                        SQL
+                      else
+                        query = <<-SQL 
+                        UPDATE facturacion set valor = valor + #{valor_mens_detalle}, iva = iva + #{iva_fact}, dias = #{dias_fact}, estado_id = #{estado_pend}, observacion = '#{observa}' WHERE id = #{factura[i]["id"]};
+                        UPDATE detalle_factura set valor = valor + #{valor_mens_detalle}, porcentajeIva = #{iva}, iva = iva + #{iva_fact}, observacion = '#{observacion_d}' + ' ' + '#{nombre_mes}' WHERE factura_id = #{factura[i]["id"]} and concepto_id = #{concepto.id};
+                        SQL
+                      end
+                      Facturacion.connection.select_all(query)
                     end
-                    if valor_fact > tarifa
-                      valor_mens_detalle = valor_fact - tarifa
-                    end
-                    if iva > 0
-                      valor_sin_iva = valor_mens_detalle / (iva / 100 + 1)
-                      iva_fact = valor_mens_detalle - valor_sin_iva
-                      valor_mens_detalle = valor_sin_iva
-                    end
-                    valor_mens_detalle = (valor_mens_detalle.to_f).round
-                    iva_fact = (iva_fact.to_f).round
-                    if factura[i]["estado_id"] == estado_pag
-                      saldo = (factura[i]["valor"] + valor_mens_detalle) + (factura[i]["iva"] + iva_fact)
-                      query = <<-SQL 
-                      UPDATE facturacion set valor = valor + #{valor_mens_detalle}, iva = iva + #{iva_fact}, dias = #{dias_fact}, estado_id = #{estado_pend}, observacion = '#{observa}' WHERE id = #{factura[i]["id"]};
-                      UPDATE detalle_factura set valor = valor + #{valor_mens_detalle}, porcentajeIva = #{iva}, iva = iva + #{iva_fact}, observacion = '#{observacion_d}' + ' ' + '#{nombre_mes}' WHERE factura_id = #{factura[i]["id"]} and concepto_id = #{concepto.id};
-                      UPDATE abonos set saldo = #{saldo} WHERE factura_id = #{factura[i]["id"]};
-                      SQL
-                    else
-                      query = <<-SQL 
-                      UPDATE facturacion set valor = valor + #{valor_mens_detalle}, iva = iva + #{iva_fact}, dias = #{dias_fact}, estado_id = #{estado_pend}, observacion = '#{observa}' WHERE id = #{factura[i]["id"]};
-                      UPDATE detalle_factura set valor = valor + #{valor_mens_detalle}, porcentajeIva = #{iva}, iva = iva + #{iva_fact}, observacion = '#{observacion_d}' + ' ' + '#{nombre_mes}' WHERE factura_id = #{factura[i]["id"]} and concepto_id = #{concepto.id};
-                      SQL
-                    end
-                    Facturacion.connection.select_all(query)
-                    fact_vent_id = factura[i]["id"]
-                    fact_vent_valor = factura[i]["valor"] + valor_mens_detalle
-                    fact_vent_iva = factura[i]["iva"] + iva_fact
-                    fact_vent_documento_id = factura[i]["documento_id"]
-                    fact_vent_prefijo = factura[i]["prefijo"]
-                    fact_vent_nrofact = factura[i]["nrofact"]
                   end
+                  fact_vent_id = factura[i]["id"]
+                  fact_vent_valor = factura[i]["valor"] + valor_mens_detalle
+                  fact_vent_iva = factura[i]["iva"] + iva_fact
+                  fact_vent_documento_id = factura[i]["documento_id"]
+                  fact_vent_prefijo = factura[i]["prefijo"]
+                  fact_vent_nrofact = factura[i]["nrofact"]
                 end
                 if concepto.id == concepto_tv.id
                   query = <<-SQL 
@@ -468,48 +473,50 @@ class Facturacion < ApplicationRecord
                     return respuesta = 2
                   end
                 else
-                  fecha3 = Date.parse factura[i]["fechaven"].to_s
-                  dias_fact = (fecha1 - fecha3).to_i
-                  if dias_fact > 0
-                    valor_dia = tarifa / 30
-                    valor_mens_detalle = valor_dia * dias_fact
-                    dias_fact = factura[i]["dias"] + dias_fact
-                    valor_fact = (detallefact[j]["valor"] + detallefact[j]["iva"]) + valor_mens_detalle
-                    valor_fact = (valor_fact.to_f).round
-                    if dias_fact > 30 
-                      dias_fact = 30
+                  if factura[i]["dias"] < 30
+                    fecha3 = Date.parse factura[i]["fechaven"].to_s
+                    dias_fact = (fecha1 - fecha3).to_i
+                    if dias_fact > 0
+                      valor_dia = tarifa / 30
+                      valor_mens_detalle = valor_dia * dias_fact
+                      dias_fact = factura[i]["dias"] + dias_fact
+                      valor_fact = (detallefact[j]["valor"] + detallefact[j]["iva"]) + valor_mens_detalle
+                      valor_fact = (valor_fact.to_f).round
+                      if dias_fact > 30 
+                        dias_fact = 30
+                      end
+                      if valor_fact > tarifa
+                        valor_mens_detalle = valor_fact - tarifa
+                      end
+                      if iva_int > 0
+                        valor_sin_iva = valor_mens_detalle / (iva_int / 100 + 1)
+                        iva_fact = valor_mens_detalle - valor_sin_iva
+                        valor_mens_detalle = valor_sin_iva
+                      end
+                      valor_mens_detalle = (valor_mens_detalle.to_f).round
+                      iva_fact = (iva_fact.to_f).round
+                      if factura[i]["estado_id"] == estado_pag
+                        saldo = (factura[i]["valor"] + valor_mens_detalle) + (factura[i]["iva"] + iva_fact)
+                        query = <<-SQL 
+                        UPDATE facturacion set valor = valor + #{valor_mens_detalle}, iva = iva + #{iva_fact}, dias = #{dias_fact}, estado_id = #{estado_pend}, observacion = '#{observa}' WHERE id = #{factura[i]["id"]};
+                        UPDATE detalle_factura set valor = valor + #{valor_mens_detalle}, porcentajeIva = #{iva_int}, iva = iva + #{iva_fact}, observacion = 'INTERNET' + ' ' + '#{nombre_mes}' WHERE factura_id = #{factura[i]["id"]} and concepto_id = #{concepto_int.id};
+                        UPDATE abonos set saldo = #{saldo} WHERE factura_id = #{factura[i]["id"]};
+                        SQL
+                      else
+                        query = <<-SQL 
+                        UPDATE facturacion set valor = valor + #{valor_mens_detalle}, iva = iva + #{iva_fact}, dias = #{dias_fact}, estado_id = #{estado_pend}, observacion = '#{observa}' WHERE id = #{factura[i]["id"]};
+                        UPDATE detalle_factura set valor = valor + #{valor_mens_detalle}, porcentajeIva = #{iva_int}, iva = iva + #{iva_fact}, observacion = 'INTERNET' + ' ' + '#{nombre_mes}' WHERE factura_id = #{factura[i]["id"]} and concepto_id = #{concepto_int.id};
+                        SQL
+                      end
+                      Facturacion.connection.select_all(query)
                     end
-                    if valor_fact > tarifa
-                      valor_mens_detalle = valor_fact - tarifa
-                    end
-                    if iva_int > 0
-                      valor_sin_iva = valor_mens_detalle / (iva_int / 100 + 1)
-                      iva_fact = valor_mens_detalle - valor_sin_iva
-                      valor_mens_detalle = valor_sin_iva
-                    end
-                    valor_mens_detalle = (valor_mens_detalle.to_f).round
-                    iva_fact = (iva_fact.to_f).round
-                    if factura[i]["estado_id"] == estado_pag
-                      saldo = (factura[i]["valor"] + valor_mens_detalle) + (factura[i]["iva"] + iva_fact)
-                      query = <<-SQL 
-                      UPDATE facturacion set valor = valor + #{valor_mens_detalle}, iva = iva + #{iva_fact}, dias = #{dias_fact}, estado_id = #{estado_pend}, observacion = '#{observa}' WHERE id = #{factura[i]["id"]};
-                      UPDATE detalle_factura set valor = valor + #{valor_mens_detalle}, porcentajeIva = #{iva_int}, iva = iva + #{iva_fact}, observacion = 'INTERNET' + ' ' + '#{nombre_mes}' WHERE factura_id = #{factura[i]["id"]} and concepto_id = #{concepto_int.id};
-                      UPDATE abonos set saldo = #{saldo} WHERE factura_id = #{factura[i]["id"]};
-                      SQL
-                    else
-                      query = <<-SQL 
-                      UPDATE facturacion set valor = valor + #{valor_mens_detalle}, iva = iva + #{iva_fact}, dias = #{dias_fact}, estado_id = #{estado_pend}, observacion = '#{observa}' WHERE id = #{factura[i]["id"]};
-                      UPDATE detalle_factura set valor = valor + #{valor_mens_detalle}, porcentajeIva = #{iva_int}, iva = iva + #{iva_fact}, observacion = 'INTERNET' + ' ' + '#{nombre_mes}' WHERE factura_id = #{factura[i]["id"]} and concepto_id = #{concepto_int.id};
-                      SQL
-                    end
-                    Facturacion.connection.select_all(query)
-                    fact_vent_id = factura[i]["id"]
-                    fact_vent_valor = factura[i]["valor"] + valor_mens_detalle
-                    fact_vent_iva = factura[i]["iva"] + iva_fact
-                    fact_vent_documento_id = factura[i]["documento_id"]
-                    fact_vent_prefijo = factura[i]["prefijo"]
-                    fact_vent_nrofact = factura[i]["nrofact"]
                   end
+                  fact_vent_id = factura[i]["id"]
+                  fact_vent_valor = factura[i]["valor"] + valor_mens_detalle
+                  fact_vent_iva = factura[i]["iva"] + iva_fact
+                  fact_vent_documento_id = factura[i]["documento_id"]
+                  fact_vent_prefijo = factura[i]["prefijo"]
+                  fact_vent_nrofact = factura[i]["nrofact"]
                 end
               end
             end
@@ -707,48 +714,50 @@ class Facturacion < ApplicationRecord
                     end
                   end
                 else
-                  fecha3 = Date.parse factura[i]["fechaven"].to_s
-                  dias_fact = (fecha1 - fecha3).to_i
-                  if dias_fact > 0
-                    valor_dia = tarifa / 30
-                    valor_mens_detalle = valor_dia * dias_fact
-                    dias_fact = factura[i]["dias"] + dias_fact
-                    valor_fact = (detallefact[j]["valor"] + detallefact[j]["iva"]) + valor_mens_detalle
-                    valor_fact = (valor_fact.to_f).round
-                    if dias_fact > 30 
-                      dias_fact = 30
+                  if factura[i]["dias"] < 30
+                    fecha3 = Date.parse factura[i]["fechaven"].to_s
+                    dias_fact = (fecha1 - fecha3).to_i
+                    if dias_fact > 0
+                      valor_dia = tarifa / 30
+                      valor_mens_detalle = valor_dia * dias_fact
+                      dias_fact = factura[i]["dias"] + dias_fact
+                      valor_fact = (detallefact[j]["valor"] + detallefact[j]["iva"]) + valor_mens_detalle
+                      valor_fact = (valor_fact.to_f).round
+                      if dias_fact > 30 
+                        dias_fact = 30
+                      end
+                      if valor_fact > tarifa
+                        valor_mens_detalle = valor_fact - tarifa
+                      end
+                      if iva_cpto > 0
+                        valor_sin_iva = valor_mens_detalle / (iva_cpto / 100 + 1)
+                        iva_fact = valor_mens_detalle - valor_sin_iva
+                        valor_mens_detalle = valor_sin_iva
+                      end
+                      valor_mens_detalle = (valor_mens_detalle.to_f).round
+                      iva_fact = (iva_fact.to_f).round
+                      if factura[i]["estado_id"] == estado_pag
+                        saldo = (factura[i]["valor"] + valor_mens_detalle) + (factura[i]["iva"] + iva_fact)
+                        query = <<-SQL 
+                        UPDATE facturacion set valor = valor + #{valor_mens_detalle}, iva = iva + #{iva_fact}, dias = #{dias_fact}, estado_id = #{estado_pend}, observacion = '#{observa}' WHERE id = #{factura[i]["id"]};
+                        UPDATE detalle_factura set valor = valor + #{valor_mens_detalle}, porcentajeIva = #{iva_cpto}, iva = iva + #{iva_fact}, observacion = '#{observacion_d}' + ' ' + '#{nombre_mes}' WHERE factura_id = #{factura[i]["id"]} and concepto_id = #{concepto.id};
+                        UPDATE abonos set saldo = #{saldo} WHERE factura_id = #{factura[i]["id"]};
+                        SQL
+                      else
+                        query = <<-SQL 
+                        UPDATE facturacion set valor = valor + #{valor_mens_detalle}, iva = iva + #{iva_fact}, dias = #{dias_fact}, estado_id = #{estado_pend}, observacion = '#{observa}' WHERE id = #{factura[i]["id"]};
+                        UPDATE detalle_factura set valor = valor + #{valor_mens_detalle}, porcentajeIva = #{iva_cpto}, iva = iva + #{iva_fact}, observacion = '#{observacion_d}' + ' ' + '#{nombre_mes}' WHERE factura_id = #{factura[i]["id"]} and concepto_id = #{concepto.id};
+                        SQL
+                      end
+                      Facturacion.connection.select_all(query)
                     end
-                    if valor_fact > tarifa
-                      valor_mens_detalle = valor_fact - tarifa
-                    end
-                    if iva_cpto > 0
-                      valor_sin_iva = valor_mens_detalle / (iva_cpto / 100 + 1)
-                      iva_fact = valor_mens_detalle - valor_sin_iva
-                      valor_mens_detalle = valor_sin_iva
-                    end
-                    valor_mens_detalle = (valor_mens_detalle.to_f).round
-                    iva_fact = (iva_fact.to_f).round
-                    if factura[i]["estado_id"] == estado_pag
-                      saldo = (factura[i]["valor"] + valor_mens_detalle) + (factura[i]["iva"] + iva_fact)
-                      query = <<-SQL 
-                      UPDATE facturacion set valor = valor + #{valor_mens_detalle}, iva = iva + #{iva_fact}, dias = #{dias_fact}, estado_id = #{estado_pend}, observacion = '#{observa}' WHERE id = #{factura[i]["id"]};
-                      UPDATE detalle_factura set valor = valor + #{valor_mens_detalle}, porcentajeIva = #{iva_cpto}, iva = iva + #{iva_fact}, observacion = '#{observacion_d}' + ' ' + '#{nombre_mes}' WHERE factura_id = #{factura[i]["id"]} and concepto_id = #{concepto.id};
-                      UPDATE abonos set saldo = #{saldo} WHERE factura_id = #{factura[i]["id"]};
-                      SQL
-                    else
-                      query = <<-SQL 
-                      UPDATE facturacion set valor = valor + #{valor_mens_detalle}, iva = iva + #{iva_fact}, dias = #{dias_fact}, estado_id = #{estado_pend}, observacion = '#{observa}' WHERE id = #{factura[i]["id"]};
-                      UPDATE detalle_factura set valor = valor + #{valor_mens_detalle}, porcentajeIva = #{iva_cpto}, iva = iva + #{iva_fact}, observacion = '#{observacion_d}' + ' ' + '#{nombre_mes}' WHERE factura_id = #{factura[i]["id"]} and concepto_id = #{concepto.id};
-                      SQL
-                    end
-                    Facturacion.connection.select_all(query)
-                    fact_vent_id = factura[i]["id"]
-                    fact_vent_valor = factura[i]["valor"] + valor_mens_detalle
-                    fact_vent_iva = factura[i]["iva"] + iva_fact
-                    fact_vent_documento_id = factura[i]["documento_id"]
-                    fact_vent_prefijo = factura[i]["prefijo"]
-                    fact_vent_nrofact = factura[i]["nrofact"]
                   end
+                  fact_vent_id = factura[i]["id"]
+                  fact_vent_valor = factura[i]["valor"] + valor_mens_detalle
+                  fact_vent_iva = factura[i]["iva"] + iva_fact
+                  fact_vent_documento_id = factura[i]["documento_id"]
+                  fact_vent_prefijo = factura[i]["prefijo"]
+                  fact_vent_nrofact = factura[i]["nrofact"]
                 end
                 if concepto.id == concepto_tv.id || concepto.id == concepto_int.id
                   if concepto.id == concepto_tv.id
@@ -1028,7 +1037,7 @@ class Facturacion < ApplicationRecord
           factura.each do |row|
             detallefact = DetalleFactura.where(nrofact: row["nrofact"])
             detallefact.each do |d|
-              if d["concepto_id"] == concepto_tv.id
+              if d["concepto_id"] == concepto_int.id
                 fact = 1
                 break
               end
