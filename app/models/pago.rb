@@ -29,12 +29,18 @@ class Pago < ApplicationRecord
     case concepto_id
     when "20"
       documento_id = 2
-    when "21", "22"
+    when "21" 
       documento_id = 4
-    when "23", "24"
+    when"22"
       documento_id = 5
-    when "25", "26"
+    when "23"
       documento_id = 6
+    when "24"
+      documento_id = 7
+    when "25"
+      documento_id = 8
+    when "26"
+      documento_id = 9
     end
     query = <<-SQL 
     SELECT MAX(nropago) as ultimo FROM pagos WHERE documento_id = #{documento_id};
@@ -47,7 +53,7 @@ class Pago < ApplicationRecord
       ultimo = (ultimo[0]["ultimo"]).to_i + 1
     end
     case documento_id
-    when 2, 4, 6
+    when 2, 4, 5, 8, 9
       valor_pago = valor + descuento
       pago = Pago.new(entidad_id: entidad_id, documento_id: documento_id, nropago: ultimo, fechatrn: fechatrn,
         valor: valor_pago, estado_id: estado, observacion: observacion, forma_pago_id: forma_pago_id,

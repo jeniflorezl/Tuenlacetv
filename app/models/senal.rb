@@ -428,15 +428,6 @@ class Senal < ApplicationRecord
     Senal.connection.clear_query_cache
     reconexiones = Senal.connection.select_all(query)
     i = 0
-    senales_array[i] = { 'id' => 'Código', 'documento' => 'Cédula',
-      'nombres' => 'Nombres y apellidos', 'direccion' => 'Dirección', 'barrio' => 'Barrio',
-      'zona' => 'Zona', 'telefono1' => 'Teléfono', 'fechacontrato' => 'Afiliación',
-      'fecha_ult_pago' => 'Ultimo pago', 'estado_tv' => 'Estado televisión', 'saldo_tv' => 'Saldo televisión',
-      'estado_int' => 'Estado internet', 'saldo_int' => 'Saldo internet', 'instalacion_tv' => 'Instalación televisión',
-      'corte_tv' => 'Corte televisión', 'traslado_tv' => 'Traslado televisión', 'reco_tv' => 'Reconexión televisión', 
-      'instalacion_int' => 'Instalación internet', 'corte_int' => 'Corte internet', 
-      'traslado_int' => 'Traslado internet', 'rco_int' => 'Reconexión internet' }
-    i += 1
     senal.each do |s|
       senales.each do |sen|
         if s["id"] == sen.entidad_id
