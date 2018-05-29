@@ -13,6 +13,7 @@ json.listado_ordenes do
         json.estado l["estado"]
         json.fechacreacion l["fechacreacion"]
         json.usuariocreacion l["usuariocreacion"]
+        json.solicitado l["solicitado"]
         json.tecnico_asignado l["tecnico_asignado"]
         json.fechaejec l["fechaejec"]
         json.tecnico_ejec l["tecnico_ejec"]
@@ -20,6 +21,6 @@ json.listado_ordenes do
         json.solucion l["solucion"]
         json.fecha_anul l["fecha_anul"]
         json.usuarioanula l["usuarioanula"]
-        json.solicitado l["solicitado"]
+        json.motivo_anul l["motivo_anul"]
     end
 end

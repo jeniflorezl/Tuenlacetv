@@ -1403,7 +1403,7 @@ class Orden < ApplicationRecord
     solucion = ''
     f_anulacion = ''
     u_anula = ''
-    motivo_anl = ''
+    motivo_anul = ''
     solicitado = ''
     valor = 0
     fechaini = Date.parse f_ini.to_s
@@ -1424,7 +1424,13 @@ class Orden < ApplicationRecord
       concepto_cod = concepto.codigo
       concepto_nom = concepto.nombre
       if entidad.persona.nombre2.blank?
-        nombres = entidad.persona.nombre1 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
+        if entidad.persona.apellido2.blank?
+          nombres = entidad.persona.nombre1 + ' ' + entidad.persona.apellido1
+        else
+          nombres = entidad.persona.nombre1 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
+        end
+      elsif entidad.persona.apellido2.blank?
+        nombres = entidad.persona.nombre1 + ' ' + entidad.persona.nombre2 + ' ' + entidad.persona.apellido1
       else
         nombres = entidad.persona.nombre1 + ' ' + entidad.persona.nombre2 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
       end
@@ -1469,7 +1475,7 @@ class Orden < ApplicationRecord
           u_anula_id = m["valor"]
           u_anula = Usuario.find(u_anula_id).login
         when 10
-          motivo_anl = m["valor"]
+          motivo_anul = m["valor"]
         when 11
           solicitado = m["valor"]
         end
@@ -1486,10 +1492,10 @@ class Orden < ApplicationRecord
         'entidad_id' => o["entidad_id"], 'nombres' => nombres, 'direccion' => entidad.senales[0]["direccion"],
         'zona' => zona, 'barrio' => barrio, 'nrorden' => o["nrorden"],
         'valor' => valor, 'observacion' => o["observacion"], 'estado' => estado, 
-        'fechacreacion' => f_creacion, 'usuariocreacion' => u_creacion, 
+        'fechacreacion' => f_creacion, 'usuariocreacion' => u_creacion, 'solicitado' => solicitado,
         'tecnico_asignado' => tec_asigando, 'fechaejec' => f_ejecucion,'tecnico_ejec' => tec_ejecucion, 
         'usuariocierra' => u_cierra, 'solucion' => solucion, 'fecha_anul' => f_anulacion, 
-        'usuarioanula' => u_anula, 'solicitado' => solicitado }
+        'usuarioanula' => u_anula, 'motivo_anul' => motivo_anul }
       i += 1
     end
     ordenes_array

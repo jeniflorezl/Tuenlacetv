@@ -1523,7 +1523,13 @@ class Facturacion < ApplicationRecord
       fecha_time = Time.new(fecha1[0], fecha1[1], fecha1[2])
       f_formato = fecha_time.strftime("%d/%m/%Y")
       if entidad.persona.nombre2.blank?
-        nombres = entidad.persona.nombre1 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
+        if entidad.persona.apellido2.blank?
+          nombres = entidad.persona.nombre1 + ' ' + entidad.persona.apellido1
+        else
+          nombres = entidad.persona.nombre1 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
+        end
+      elsif entidad.persona.apellido2.blank?
+        nombres = entidad.persona.nombre1 + ' ' + entidad.persona.nombre2 + ' ' + entidad.persona.apellido1
       else
         nombres = entidad.persona.nombre1 + ' ' + entidad.persona.nombre2 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
       end

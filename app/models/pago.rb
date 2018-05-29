@@ -565,6 +565,7 @@ class Pago < ApplicationRecord
   end
 
   def self.detallle_recibos(f_ini, f_fin)
+    byebug
     recibos = Array.new
     dcto = 0
     fechaini = Date.parse f_ini.to_s
@@ -572,10 +573,11 @@ class Pago < ApplicationRecord
     query = <<-SQL 
     SELECT * FROM pagos WHERE fechatrn >= '#{fechaini}' and fechatrn <= '#{fechafin}' ORDER BY nropago;
     SQL
-    pagos = Facturacion.connection.select_all(query)
+    pagos = Pago.connection.select_all(query)
     entidades = Entidad.all
     i = 0
     pagos.each do |p|
+      byebug
       entidad = Entidad.find(p["entidad_id"])
       fecha = (p["fechatrn"].to_s).split(' ')
       fecha1 = fecha[0].split('-')
@@ -583,12 +585,24 @@ class Pago < ApplicationRecord
       f_mes = fecha_time.strftime("%m")
       f_ano = fecha_time.strftime("%Y")
       if entidad.persona.nombre2.blank?
-        nombres = entidad.persona.nombre1 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
+        if entidad.persona.apellido2.blank?
+          nombres = entidad.persona.nombre1 + ' ' + entidad.persona.apellido1
+        else
+          nombres = entidad.persona.nombre1 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
+        end
+      elsif entidad.persona.apellido2.blank?
+        nombres = entidad.persona.nombre1 + ' ' + entidad.persona.nombre2 + ' ' + entidad.persona.apellido1
       else
         nombres = entidad.persona.nombre1 + ' ' + entidad.persona.nombre2 + ' ' + entidad.persona.apellido1 + ' ' + entidad.persona.apellido2
       end
       descuento = Descuento.find_by(pago_id: p["id"])
-      dcto = (descuento.valor.to_f).round unless descuento.blank?
+      unless descuento.blank?
+        query = <<-SQL 
+        SELECT * FROM pagos WHERE id = #{descuento.dcto_id};
+        SQL
+        descuento_pago = Pago.connection.select_all(query)
+        dcto = (descuento_pago[0]["valor"].to_f).round
+      end
       abonos = Abono.where(pago_id: p["id"])
       if abonos.blank?
         anticipos = Anticipo.where("pago_id = #{p["id"]} and month(fechatrn) = #{f_mes} and year(fechatrn) = #{f_ano}")
