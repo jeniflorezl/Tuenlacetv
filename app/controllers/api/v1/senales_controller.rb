@@ -143,6 +143,7 @@ module Api
 
             # PATCH/PUT /senales/id
             def update
+                byebug
                 result = 0
                 result1 = 0
                 message1 = ''
@@ -150,70 +151,74 @@ module Api
                 t = Time.now
                 @persona.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
                 if @persona.update(persona_params)
-                    @senal.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
-                    if @senal.update(senal_params)
-                        if params[:tv] == 1
-                            if @plantilla_tv.blank?
-                                if Senal.afiliacion_tv(@senal, @entidad, params[:valorafi_tv], 
-                                    params[:valor_dcto_tv], params[:tarifa_id_tv], params[:tecnico_id])
-                                    result = 1
+                    if params[:funcion_id] == 1
+                        @senal.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
+                        if @senal.update(senal_params)
+                            if params[:tv] == 1
+                                if @plantilla_tv.blank?
+                                    if Senal.afiliacion_tv(@senal, @entidad, params[:valorafi_tv], 
+                                        params[:valor_dcto_tv], params[:tarifa_id_tv], params[:tecnico_id])
+                                        result = 1
+                                    else
+                                        result = 2
+                                    end
                                 else
-                                    result = 2
+                                    @plantilla_tv.update(tarifa_id: params[:tarifa_id_tv])
+                                    result = 1
+                                end 
+                            else
+                                result = 1
+                            end
+                            if params[:internet] == 1
+                                if @info_internet
+                                    @info_internet.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
+                                    @info_internet.update(internet_params)
+                                    if @plantilla_int.blank?
+                                        if Senal.afiliacion_int(@senal, @entidad, params[:valorafi_int], 
+                                            params[:valor_dcto_int],params[:tarifa_id_int], params[:tecnico_id])
+                                            result1 = 1
+                                        else
+                                            result1 = 2
+                                        end
+                                    else
+                                        @plantilla_int.update(tarifa_id: params[:tarifa_id_int])
+                                        result1 = 1
+                                    end
+                                else
+                                    @info_internet = InfoInternet.new(internet_params)
+                                    @info_internet.entidad_id = @entidad.id
+                                    if @info_internet.save
+                                        if Senal.afiliacion_int(@senal, @entidad, params[:valorafi_int], 
+                                            params[:valor_dcto_int],params[:tarifa_id_int], params[:tecnico_id])
+                                            result1 = 1
+                                        else
+                                            result1 = 2
+                                        end
+                                    end
                                 end
                             else
-                                @plantilla_tv.update(tarifa_id: params[:tarifa_id_tv])
-                                result = 1
-                            end 
-                        else
-                            result = 1
+                                result1=1
+                            end
+                        end
+                        if params[:tv] == 1
+                            if result == 1
+                                message1 = "actualizado servicio tv"
+                            else
+                                message1 = "error al actualizar servicio tv"
+                            end
                         end
                         if params[:internet] == 1
-                            if @info_internet
-                                @info_internet.fechacam = t.strftime("%d/%m/%Y %H:%M:%S")
-                                @info_internet.update(internet_params)
-                                if @plantilla_int.blank?
-                                    if Senal.afiliacion_int(@senal, @entidad, params[:valorafi_int], 
-                                        params[:valor_dcto_int],params[:tarifa_id_int], params[:tecnico_id])
-                                        result1 = 1
-                                    else
-                                        result1 = 2
-                                    end
-                                else
-                                    @plantilla_int.update(tarifa_id: params[:tarifa_id_int])
-                                    result1 = 1
-                                end
+                            if result1 == 1
+                                message2 = "actualizado servicio internet"
                             else
-                                @info_internet = InfoInternet.new(internet_params)
-                                @info_internet.entidad_id = @entidad.id
-                                if @info_internet.save
-                                    if Senal.afiliacion_int(@senal, @entidad, params[:valorafi_int], 
-                                        params[:valor_dcto_int],params[:tarifa_id_int], params[:tecnico_id])
-                                        result1 = 1
-                                    else
-                                        result1 = 2
-                                    end
-                                end
+                                message2 = "error al actualizar servicio internet"
                             end
-                        else
-                            result1=1
                         end
+                        render :json => { :message1 => message1,
+                        :message2 => message2 }.to_json
+                    else
+                        render json: { message: "Persona acutalizada con exito" }
                     end
-                    if params[:tv] == 1
-                        if result == 1
-                            message1 = "actualizado servicio tv"
-                        else
-                            message1 = @senal.errors
-                        end
-                    end
-                    if params[:internet] == 1
-                        if result1 == 1
-                            message2 = "actualizado servicio internet"
-                        else
-                            message2 = @info_internet.errors
-                        end
-                    end
-                    render :json => {:message1 => message1,
-                    :message2 => message2 }.to_json
                 else
                     render json: { error: "Informacion persona" }
                 end

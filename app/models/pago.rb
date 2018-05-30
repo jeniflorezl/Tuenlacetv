@@ -38,9 +38,9 @@ class Pago < ApplicationRecord
     when "24"
       documento_id = 7
     when "25"
-      documento_id = 8
-    when "26"
       documento_id = 9
+    when "26"
+      documento_id = 10
     end
     query = <<-SQL 
     SELECT MAX(nropago) as ultimo FROM pagos WHERE documento_id = #{documento_id};
@@ -53,7 +53,7 @@ class Pago < ApplicationRecord
       ultimo = (ultimo[0]["ultimo"]).to_i + 1
     end
     case documento_id
-    when 2, 4, 5, 8, 9
+    when 2, 4, 5, 9, 10
       valor_pago = valor + descuento
       pago = Pago.new(entidad_id: entidad_id, documento_id: documento_id, nropago: ultimo, fechatrn: fechatrn,
         valor: valor_pago, estado_id: estado, observacion: observacion, forma_pago_id: forma_pago_id,
@@ -103,7 +103,14 @@ class Pago < ApplicationRecord
                 return false
               end
             elsif ban == 2
-              doc_dcto = Documento.find_by(nombre: 'DESCUENTOS').id
+              case documento_id
+              when 2
+                doc_dcto = Documento.find_by(nombre: 'DESCUENTOS').id
+              when 4, 9
+                doc_dcto = Documento.find_by(nombre: 'DESCUENTOS TELEVISION').id
+              when 5, 10
+                doc_dcto = Documento.find_by(nombre: 'DESCUENTOS INTERNET').id
+              end
               if dcto.blank?
                 ban1 = 1
               else
@@ -565,7 +572,6 @@ class Pago < ApplicationRecord
   end
 
   def self.detallle_recibos(f_ini, f_fin)
-    byebug
     recibos = Array.new
     dcto = 0
     fechaini = Date.parse f_ini.to_s
@@ -574,10 +580,8 @@ class Pago < ApplicationRecord
     SELECT * FROM pagos WHERE fechatrn >= '#{fechaini}' and fechatrn <= '#{fechafin}' ORDER BY nropago;
     SQL
     pagos = Pago.connection.select_all(query)
-    entidades = Entidad.all
     i = 0
     pagos.each do |p|
-      byebug
       entidad = Entidad.find(p["entidad_id"])
       fecha = (p["fechatrn"].to_s).split(' ')
       fecha1 = fecha[0].split('-')

@@ -72,7 +72,7 @@ module Api
             def anular
                 respuesta = 0
                 if @orden
-                    respuesta = Orden.anular_orden(@orden)
+                    respuesta = Orden.anular_orden(@orden, params[:motivo_anul], params[:usuario_id])
                     case respuesta
                     when 1
                         render json: { status: :anulada }

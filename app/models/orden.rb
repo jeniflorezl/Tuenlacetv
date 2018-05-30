@@ -1278,7 +1278,7 @@ class Orden < ApplicationRecord
     end
   end
 
-  def self.anular_orden(orden)
+  def self.anular_orden(orden, motivo_anulacion, usuario_id)
     resp = 0
     ban = 0
     byebug
@@ -1287,6 +1287,7 @@ class Orden < ApplicationRecord
     if orden[0]["estado_id"] == estado
       return resp = 3
     else
+      
       factura_ord = FacturaOrden.find_by(orden_id: orden[0]["id"])
       if factura_ord.blank?
         ban = 2
@@ -1321,12 +1322,20 @@ class Orden < ApplicationRecord
           SQL
         end
         Orden.connection.select_all(query)
+        unless motivo_anulacion.blank?
+          MvtoRorden.create(registro_orden_id: 10, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+            nrorden: orden[0]["nrorden"], valor: motivo_anulacion, usuario_id: usuario_id)
+        end
         return resp = 1
       when 6, 7
         query = <<-SQL 
         UPDATE ordenes set estado_id = #{estado_anular}, observacion = 'ANULADA' WHERE id = #{orden[0]["id"]};
         SQL
         Orden.connection.select_all(query)
+        unless motivo_anulacion.blank?
+          MvtoRorden.create(registro_orden_id: 10, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+            nrorden: orden[0]["nrorden"], valor: motivo_anulacion, usuario_id: usuario_id)
+        end
         return resp = 1
       when 10, 11
         estado = Estado.find_by(abreviatura: 'N').id
@@ -1341,6 +1350,10 @@ class Orden < ApplicationRecord
         end
         plantilla = PlantillaFact.find_by(entidad_id: orden[0]["entidad_id"], concepto_id: concepto_plant)
         if plantilla.update(estado_id: estado)
+          unless motivo_anulacion.blank?
+            MvtoRorden.create(registro_orden_id: 10, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+              nrorden: orden[0]["nrorden"], valor: motivo_anulacion, usuario_id: usuario_id)
+          end
           return resp = 1
         else
           return resp = 2
@@ -1362,6 +1375,10 @@ class Orden < ApplicationRecord
         Orden.connection.select_all(query)
         traslado = Traslado.find_by(orden_id: orden[0]["id"])
         if traslado.update(direccionNue: 'ANULADA')
+          unless motivo_anulacion.blank?
+            MvtoRorden.create(registro_orden_id: 10, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+              nrorden: orden[0]["nrorden"], valor: motivo_anulacion, usuario_id: usuario_id)
+          end
           return resp = 1
         else
           return resp = 2
@@ -1381,12 +1398,20 @@ class Orden < ApplicationRecord
           SQL
         end
         Orden.connection.select_all(query)
+        unless motivo_anulacion.blank?
+          MvtoRorden.create(registro_orden_id: 10, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+            nrorden: orden[0]["nrorden"], valor: motivo_anulacion, usuario_id: usuario_id)
+        end
         return resp = 1
       when 16, 17
         query = <<-SQL 
         UPDATE ordenes set estado_id = #{estado_anular}, observacion = 'ANULADA' WHERE id = #{orden[0]["id"]};
         SQL
         Orden.connection.select_all(query)
+        unless motivo_anulacion.blank?
+          MvtoRorden.create(registro_orden_id: 10, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+            nrorden: orden[0]["nrorden"], valor: motivo_anulacion, usuario_id: usuario_id)
+        end
         return resp = 1
       end
     end
