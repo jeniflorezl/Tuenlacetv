@@ -143,7 +143,6 @@ module Api
 
             # PATCH/PUT /senales/id
             def update
-                byebug
                 result = 0
                 result1 = 0
                 message1 = ''

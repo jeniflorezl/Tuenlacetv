@@ -67,10 +67,11 @@ class Pago < ApplicationRecord
         pago_id = (pago_id[0]["id"]).to_i
         if descuento > 0
           detalle.each do |d|
+            byebug
             ban = 0
             ban1 = 0
             query = <<-SQL
-            SELECT factura_id FROM detalle_factura WHERE nrofact = #{d["nrodcto"]};
+            SELECT factura_id FROM detalle_factura WHERE nrofact = #{d["nrodcto"]} and concepto_id = #{d["concepto_id"]};
             SQL
             Pago.connection.clear_query_cache
             factura_id = Pago.connection.select_all(query)
@@ -180,8 +181,9 @@ class Pago < ApplicationRecord
           end
         else
           detalle.each do |d|
+            byebug
             query = <<-SQL 
-            SELECT factura_id FROM detalle_factura WHERE nrofact = #{d["nrodcto"]};
+            SELECT factura_id FROM detalle_factura WHERE nrofact = #{d["nrodcto"]} and concepto_id = #{d["concepto_id"]};
             SQL
             Pago.connection.clear_query_cache
             factura_id = Pago.connection.select_all(query)
@@ -511,12 +513,20 @@ class Pago < ApplicationRecord
 
   def self.anular_pago(pago_id)
     estado = Estado.find_by(abreviatura: 'AN').id
+    estado_fact = Estado.find_by(abreviatura: 'PE').id
     dctos = Descuento.where(pago_id: pago_id)
     query = <<-SQL 
     UPDATE pagos set valor = 0, estado_id = #{estado}, observacion = 'ANULADO' WHERE id = #{pago_id}
     UPDATE abonos set saldo = 0, abono = 0 WHERE pago_id = #{pago_id}
     SQL
     Pago.connection.select_all(query)
+    abonos = Abono.where(pago_id: pago_id)
+    abonos.each do |abono|
+      query = <<-SQL 
+      UPDATE facturacion set estado_id = #{estado_fact} WHERE id = #{abono.factura_id}
+      SQL
+      Pago.connection.select_all(query)
+    end
     unless dctos.blank?
       dctos.each do |dcto|
         query = <<-SQL 
