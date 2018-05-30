@@ -1434,7 +1434,7 @@ class Orden < ApplicationRecord
     fechaini = Date.parse f_ini.to_s
     fechafin = Date.parse f_fin.to_s
     query = <<-SQL 
-    SELECT * FROM ordenes WHERE fechatrn >= '#{fechaini}' and fechatrn <= '#{fechafin}' ORDER BY nrorden;
+    SELECT * FROM ordenes WHERE fechatrn >= '#{fechaini}' and fechatrn <= '#{fechafin}' ORDER BY concepto_id;
     SQL
     ordenes = Facturacion.connection.select_all(query)
     entidades = Entidad.all
