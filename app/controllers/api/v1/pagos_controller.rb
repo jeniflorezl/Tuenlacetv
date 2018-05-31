@@ -17,8 +17,7 @@ module Api
                 @detalle_facts = Pago.detalle_facturas(params[:entidad_id])
                 @valor_total = Pago.valor_total(@detalle_facts)
                 @observacion = Pago.observacion_pago(@detalle_facts)
-                @conceptos_pagos = Concepto.where(clase: 'P')
-                @conceptos = Concepto.all
+                @conceptos = Concepto.where(clase: 'P')
                 @cobradores = Entidad.where(funcion_id: 8)
                 @param_cobradores = Parametro.find_by(descripcion: 'Maneja cobradores').valor
                 @formas_pago = FormaPago.all

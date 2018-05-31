@@ -2,6 +2,7 @@ json.detalle_facturas do
     json.array! @detalle_facts do |d|
         json.concepto_id d["concepto_id"]
         json.concepto d["concepto"]
+        json.servicio_id d["servicio_id"]
         json.descripcion d["desc"]
         json.nrodcto d["nrodcto"]
         json.fechatrn d["fechatrn"]
@@ -18,17 +19,11 @@ json.observacion @observacion
 json.valor_total @valor_total
 json.param_cobradores @param_cobradores
 
-json.conceptos_pagos do
-    json.array! @conceptos_pagos do |concepto|
-        json.id concepto.id
-        json.abreviatura concepto.abreviatura
-    end
-end
-
 json.conceptos do
     json.array! @conceptos do |concepto|
         json.id concepto.id
         json.servicio_id concepto.servicio_id
+        json.abreviatura concepto.abreviatura
     end
 end
 

@@ -216,7 +216,7 @@ module Api
                         render :json => { :message1 => message1,
                         :message2 => message2 }.to_json
                     else
-                        render json: { message: "Persona acutalizada con exito" }
+                        render json: { message: "Persona actualizada con exito" }
                     end
                 else
                     render json: { error: "Informacion persona" }

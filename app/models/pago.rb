@@ -436,7 +436,7 @@ class Pago < ApplicationRecord
           concepto = Concepto.find(concepto_id)
           fecha1 = Pago.formato_fecha(f["fechatrn"])
           fecha2 = Pago.formato_fecha(f["fechaven"])
-          detalle_facts[i] = { 'concepto_id' => concepto.id, 'concepto' => concepto.codigo, 
+          detalle_facts[i] = { 'concepto_id' => concepto.id, 'concepto' => concepto.codigo, 'servicio_id' => concepto.servicio_id,
             'desc' => concepto.nombre, 'nrodcto' => f["nrofact"], 'fechatrn' => fecha1, 
             'fechaven' => fecha2, 'valor' => (df["valor"].to_f).round, 'iva' => (df["iva"].to_f).round, 
             'saldo' => (df["valor"].to_f).round + (df["iva"].to_f).round, 'abono' => 0, 'total' => 0 }
@@ -503,19 +503,35 @@ class Pago < ApplicationRecord
   end
 
   def self.observacion_pago(detalle_facts)
-    ordenado = detalle_facts.sort_by { |hsh| hsh[:fechatrn] }
-    fecha_observa = ordenado.last["fechatrn"]
-    fecha_observa = fecha_observa.split("/")
-    f_fact = Time.new(fecha_observa[2], fecha_observa[1], fecha_observa[0])
-    nombre_mes = Facturacion.mes(f_fact.strftime("%B"))
-    observacion = 'PAGA HASTA ' + nombre_mes
+    observacion = ''
+    unless detalle_facts.blank?
+      ordenado = detalle_facts.sort_by { |hsh| hsh[:fechatrn] }
+      fecha_observa = ordenado.last["fechatrn"]
+      fecha_observa = fecha_observa.split("/")
+      f_fact = Time.new(fecha_observa[2], fecha_observa[1], fecha_observa[0])
+      nombre_mes = Facturacion.mes(f_fact.strftime("%B"))
+      observacion = 'PAGA HASTA ' + nombre_mes
+    end
   end
 
   def self.anular_pago(pago_id)
     estado = Estado.find_by(abreviatura: 'AN').id
     estado_fact = Estado.find_by(abreviatura: 'PE').id
     dctos = Descuento.where(pago_id: pago_id)
+    valor_dcto = 0
     query = <<-SQL 
+    SELECT * FROM pagos WHERE id = #{pago_id}
+    SQL
+    pago = Pago.connection.select_all(query)
+    if pago[0]["documento_id"] == 8
+      pago_dcto = Descuento.where(dcto_id: pago[0]["id"])
+      valor_dcto = pago[0]["valor"]
+      query = <<-SQL 
+      UPDATE pagos set valor = valor - #{valor_dcto} WHERE id = #{pago_dcto.pago_id}
+      SQL
+      Pago.connection.select_all(query)
+    end
+    query = <<-SQL
     UPDATE pagos set valor = 0, estado_id = #{estado}, observacion = 'ANULADO' WHERE id = #{pago_id}
     UPDATE abonos set saldo = 0, abono = 0 WHERE pago_id = #{pago_id}
     SQL
