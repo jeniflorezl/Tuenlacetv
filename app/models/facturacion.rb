@@ -838,6 +838,7 @@ class Facturacion < ApplicationRecord
     fecha_inicio = f_inicio.split('/')
     fecha_actual_m = t.strftime "%m"
     fecha_actual_a = t.strftime "%Y"
+    dias_afi = 0
     if fecha_inicio[2] == fecha_actual_a && fecha_inicio[1] == fecha_actual_m
       entidad = Entidad.find(entidad_id)
       fecha1 = Date.parse f_inicio
@@ -869,6 +870,7 @@ class Facturacion < ApplicationRecord
       end
       if servicio_id == serv_tv
         plantilla = PlantillaFact.find_by(entidad_id: entidad_id, concepto_id: concepto_tv.id)
+        fecha_plantilla = Date.parse plantilla.fechaini.to_s
         tarifa = plantilla.tarifa.valor
         i = 0
         j = 0
@@ -918,7 +920,12 @@ class Facturacion < ApplicationRecord
           else
             ultimo = (ultimo[0]["ultimo"]).to_i + 1
           end
-          dias = (fecha2 - fecha1).to_i + 1
+          dias_afi = (fecha1 - fecha_plantilla).to_i
+          if dias_afi > 0
+            dias = (fecha2 - fecha1).to_i + 1
+          else
+            dias = (fecha2 - fecha_plantilla).to_i + 1
+          end
           if dias < 30
             if fecha1.month == 2
               dias = 30
@@ -1030,6 +1037,7 @@ class Facturacion < ApplicationRecord
         return respuesta = 1
       elsif servicio_id == serv_int
         plantilla = PlantillaFact.find_by(entidad_id: entidad_id, concepto_id: concepto_int.id)
+        fecha_plantilla = Date.parse plantilla.fechaini.to_s
         tarifa = plantilla.tarifa.valor
         i = 0
         j = 0
@@ -1079,7 +1087,12 @@ class Facturacion < ApplicationRecord
           else
             ultimo = (ultimo[0]["ultimo"]).to_i + 1
           end
-          dias = (fecha2 - fecha1).to_i + 1
+          dias_afi = (fecha1 - fecha_plantilla).to_i
+          if dias_afi > 0
+            dias = (fecha2 - fecha1).to_i + 1
+          else
+            dias = (fecha2 - fecha_plantilla).to_i + 1
+          end
           if dias < 30
             if fecha1.month == 2
               dias = 30
@@ -1171,6 +1184,7 @@ class Facturacion < ApplicationRecord
           byebug
           tarifa = plantilla.tarifa.valor
           concepto = plantilla.concepto_id
+          fecha_plantilla = Date.parse plantilla.fechaini.to_s
           if concepto == concepto_tv.id
             iva_cpto = iva_tv
             valor = valor_fact
@@ -1228,7 +1242,12 @@ class Facturacion < ApplicationRecord
             else
               ultimo = (ultimo[0]["ultimo"]).to_i + 1
             end
-            dias = (fecha2 - fecha1).to_i + 1
+            dias_afi = (fecha1 - fecha_plantilla).to_i
+            if dias_afi > 0
+              dias = (fecha2 - fecha1).to_i + 1
+            else
+              dias = (fecha2 - fecha_plantilla).to_i + 1
+            end
             if dias < 30
               if fecha1.month == 2
                 dias = 30
@@ -1379,6 +1398,7 @@ class Facturacion < ApplicationRecord
         iva_cpto_dco = cpto_dco.porcentajeIva
         plantilla = PlantillaFact.find_by(entidad_id: entidad_id, concepto_id: cpto_dco.id)
         tarifa = plantilla.tarifa.valor
+        fecha_plantilla = Date.parse plantilla.fechaini.to_s
         i = 0
         j = 0
         unless factura.blank?
@@ -1427,7 +1447,12 @@ class Facturacion < ApplicationRecord
           else
             ultimo = (ultimo[0]["ultimo"]).to_i + 1
           end
-          dias = (fecha2 - fecha1).to_i + 1
+          dias_afi = (fechaini - fecha_plantilla).to_i
+          if dias_afi > 0
+            dias = (fecha2 - fecha1).to_i + 1
+          else
+            dias = (fecha2 - fecha_plantilla).to_i + 1
+          end
           if dias < 30
             if fecha1.month == 2
               dias = 30
@@ -1514,7 +1539,6 @@ class Facturacion < ApplicationRecord
     SELECT * FROM facturacion WHERE fechatrn >= '#{fechaini}' and fechatrn <= '#{fechafin}' ORDER BY nrofact;
     SQL
     facturacion = Facturacion.connection.select_all(query)
-    entidades = Entidad.all
     i = 0
     facturacion.each do |f|
       entidad = Entidad.find(f["entidad_id"])

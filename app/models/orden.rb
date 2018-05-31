@@ -1437,7 +1437,6 @@ class Orden < ApplicationRecord
     SELECT * FROM ordenes WHERE fechatrn >= '#{fechaini}' and fechatrn <= '#{fechafin}' ORDER BY concepto_id;
     SQL
     ordenes = Facturacion.connection.select_all(query)
-    entidades = Entidad.all
     i = 0
     ordenes.each do |o|
       entidad = Entidad.find(o["entidad_id"])

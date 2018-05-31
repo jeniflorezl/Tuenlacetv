@@ -54,7 +54,7 @@ class Pago < ApplicationRecord
     end
     case documento_id
     when 2, 4, 5, 9, 10
-      valor_pago = valor + descuento
+      valor_pago = valor
       pago = Pago.new(entidad_id: entidad_id, documento_id: documento_id, nropago: ultimo, fechatrn: fechatrn,
         valor: valor_pago, estado_id: estado, observacion: observacion, forma_pago_id: forma_pago_id,
         banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
@@ -300,7 +300,7 @@ class Pago < ApplicationRecord
       else
         ultimo = (ultimo[0]["ultimo"]).to_i + 1
       end
-      valor_total = valor + descuento
+      valor_total = valor
       pago = Pago.new(entidad_id: entidad_id, documento_id: documento_id, nropago: ultimo, fechatrn: fechatrn,
         valor: valor_total, estado_id: estado, observacion: observacion, forma_pago_id: forma_pago_id,
         banco_id: banco_id, cobrador_id: cobrador_id, usuario_id: usuario_id)
@@ -347,6 +347,7 @@ class Pago < ApplicationRecord
           end
         end
         while valor > 0
+          byebug
           if valor >= tarifa
             valor_abono = tarifa
           else
@@ -365,6 +366,8 @@ class Pago < ApplicationRecord
           fecha2 = fecha1 + 29
         end
         while descuento > 0
+          ban1 = 0
+          byebug
           dcto_anticipo = Anticipo.where(pago_id: pago_id).last
           if dcto_anticipo.valor < tarifa
             faltante = tarifa - dcto_anticipo.valor
@@ -518,19 +521,6 @@ class Pago < ApplicationRecord
     estado = Estado.find_by(abreviatura: 'AN').id
     estado_fact = Estado.find_by(abreviatura: 'PE').id
     dctos = Descuento.where(pago_id: pago_id)
-    valor_dcto = 0
-    query = <<-SQL 
-    SELECT * FROM pagos WHERE id = #{pago_id}
-    SQL
-    pago = Pago.connection.select_all(query)
-    if pago[0]["documento_id"] == 8
-      pago_dcto = Descuento.where(dcto_id: pago[0]["id"])
-      valor_dcto = pago[0]["valor"]
-      query = <<-SQL 
-      UPDATE pagos set valor = valor - #{valor_dcto} WHERE id = #{pago_dcto.pago_id}
-      SQL
-      Pago.connection.select_all(query)
-    end
     query = <<-SQL
     UPDATE pagos set valor = 0, estado_id = #{estado}, observacion = 'ANULADO' WHERE id = #{pago_id}
     UPDATE abonos set saldo = 0, abono = 0 WHERE pago_id = #{pago_id}
