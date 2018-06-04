@@ -17,6 +17,7 @@ class Orden < ApplicationRecord
     ban1 = 0
     resp = 0
     estado = 0
+    t = Time.now
     tipo_fact_ant = TipoFacturacion.find_by(nombre: 'ANTICIPADA').id
     tipo_fact_ven = TipoFacturacion.find_by(nombre: 'VENCIDA').id
     estado_aplicado = Estado.find_by(abreviatura: 'AP').id
@@ -43,7 +44,7 @@ class Orden < ApplicationRecord
       ultimo = (ultimo[0]["ultimo"]).to_i + 1
     end
     case concepto_id
-    when 6, 7, 16, 17
+    when 5, 6, 7, 8, 9, 12, 13, 16, 17, 18, 19, 27
       if concepto_id == 6 || concepto_id == 16
         concepto_plant = 3
       else
@@ -228,8 +229,8 @@ class Orden < ApplicationRecord
         plan_tv = Plan.find_by(nombre: 'TELEVISION').id
         tarifa_decos = Tarifa.where("zona_id = #{senal.zona_id} and concepto_id = #{concepto_id} and plan_id = #{plan_tv}")
         tarifa_decos.each do |tarifa|
-          if tarifa_decos.valor == valor
-            tarifa_id = tarifa_decos.id
+          if tarifa["valor"] == valor
+            tarifa_id = tarifa["id"]
           end
         end
         if tarifa_id == 0
@@ -242,9 +243,13 @@ class Orden < ApplicationRecord
           end
         end
         plantilla = PlantillaFact.new(entidad_id: entidad_id, concepto_id: concepto_id, estado_id: estado_activo, 
-          tarifa_id: tarifa_id, fechaini: fechatrn, fechafin: @t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: usuario_id)
-        if senal.update(decos: decos)
-          return resp = 1
+          tarifa_id: tarifa_id, fechaini: fechatrn, fechafin: t.strftime("%d/%m/2118 %H:%M:%S"), usuario_id: usuario_id)
+        if plantilla.save
+          if senal.update(decos: decos)
+            return resp = 1
+          else
+            return resp = 2
+          end
         else
           return resp = 2
         end
@@ -289,6 +294,8 @@ class Orden < ApplicationRecord
     observacion = observacion.upcase! unless observacion == observacion.upcase
     solicita = solicita.upcase! unless solicita == solicita.upcase
     solucion = solucion.upcase! unless solucion == solucion.upcase
+    serv_tv = Servicio.find_by(nombre: 'TELEVISION').id
+    serv_int = Servicio.find_by(nombre: 'INTERNET').id
     MvtoRorden.create(registro_orden_id: 4, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
       nrorden: orden[0]["nrorden"], valor: fechaven, usuario_id: usuario_id)
     MvtoRorden.create(registro_orden_id: 5, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
@@ -453,7 +460,7 @@ class Orden < ApplicationRecord
               end
               if concepto.id == 3
                 if senal.entidad.persona.condicionfisica == 'D'
-                  valor_total_fact = valor_mens + iva
+                  valor_total_fact = valor_mens + iva_fact
                   porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
                   descuento = valor_total_fact * (porcentaje.to_f / 100)
                   doc_pago = Documento.find_by(nombre: 'DESCUENTOS').id
@@ -671,7 +678,7 @@ class Orden < ApplicationRecord
               end
               if concepto.id == 3
                 if senal.entidad.persona.condicionfisica == 'D'
-                  valor_total_fact = valor_mens + iva
+                  valor_total_fact = valor_mens + iva_fact
                   porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
                   descuento = valor_total_fact * (porcentaje.to_f / 100)
                   doc_pago = Documento.find_by(nombre: 'DESCUENTOS').id
@@ -897,7 +904,7 @@ class Orden < ApplicationRecord
               end
               if concepto.id == 3
                 if senal.entidad.persona.condicionfisica == 'D'
-                  valor_total_fact = valor_mens + iva
+                  valor_total_fact = valor_mens + iva_fact
                   porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
                   descuento = valor_total_fact * (porcentaje.to_f / 100)
                   doc_pago = Documento.find_by(nombre: 'DESCUENTOS').id
@@ -1131,7 +1138,7 @@ class Orden < ApplicationRecord
               end
               if concepto.id == 3
                 if senal.entidad.persona.condicionfisica == 'D'
-                  valor_total_fact = valor_mens + iva
+                  valor_total_fact = valor_mens + iva_fact
                   porcentaje = Parametro.find_by(descripcion: 'Descuento discapacitados').valor
                   descuento = valor_total_fact * (porcentaje.to_f / 100)
                   doc_pago = Documento.find_by(nombre: 'DESCUENTOS').id
@@ -1212,8 +1219,8 @@ class Orden < ApplicationRecord
                 fact_vent_nrofact = factura[i]["nrofact"]
               end
             end
-            if concepto.id == concepto_tv.id || concepto.id == concepto_int.id
-              if concepto.id == concepto_tv.id
+            if concepto.id == 3 || concepto.id == 4
+              if concepto.id == 3
                 query = <<-SQL 
                 SELECT * FROM anticipos WHERE entidad_id = #{senal.entidad_id} and year(fechatrn) = #{ano} and month(fechatrn) = #{mes} and servicio_id = #{serv_tv};
                 SQL
@@ -1277,6 +1284,7 @@ class Orden < ApplicationRecord
   end
 
   def self.anular_orden(orden, motivo_anulacion, usuario_id)
+    byebug
     resp = 0
     ban = 0
     t = Time.now

@@ -1447,7 +1447,7 @@ class Facturacion < ApplicationRecord
           else
             ultimo = (ultimo[0]["ultimo"]).to_i + 1
           end
-          dias_afi = (fechaini - fecha_plantilla).to_i
+          dias_afi = (fecha1 - fecha_plantilla).to_i
           if dias_afi > 0
             dias = (fecha2 - fecha1).to_i + 1
           else
@@ -1494,6 +1494,7 @@ class Facturacion < ApplicationRecord
   end
 
   def self.anular_factura(entidad_id, concepto_id, nrodcto)
+    byebug
     resp = 0
     estado_anul = Estado.find_by(abreviatura: 'AN').id
     query = <<-SQL 
@@ -1508,14 +1509,18 @@ class Facturacion < ApplicationRecord
     pagos = Facturacion.connection.select_all(query)
     pagos.each do |p|
       query = <<-SQL 
-      SELECT factura_id FROM abonos WHERE pago_id = #{p["id"]};
+      SELECT factura_id, concepto_id FROM abonos WHERE pago_id = #{p["id"]} and abono <> 0;
       SQL
       Facturacion.connection.clear_query_cache
       abonos = Facturacion.connection.select_all(query)
       abonos.each do |a|
-        if a["factura_id"] == factura_id[0]["factura_id"]
+        if a["factura_id"] == factura_id[0]["factura_id"] && a["concepto_id"] == concepto_id
           resp = 1
+          break
         end
+      end
+      if resp == 1
+        break
       end
     end
     if resp != 1
