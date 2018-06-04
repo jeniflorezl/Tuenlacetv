@@ -47,7 +47,7 @@ Documento.create(nombre: 'NOTA CREDITO TELEVISION', abreviatura: 'CRT', clase: '
 Documento.create(nombre: 'NOTA CREDITO INTERNET', abreviatura: 'CRT', clase: 'P', usuario_id: 1)
 Documento.create(nombre: 'NOTA DEBITO TELEVISIÓN', abreviatura: 'DBT', clase: 'P', usuario_id: 1)
 Documento.create(nombre: 'NOTA DEBITO INTERNET', abreviatura: 'DBT', clase: 'P', usuario_id: 1)
-Documento.create(nombre: 'DESCUENTOS', abreviatura: 'DST', clase: '', usuario_id: 1)
+Documento.create(nombre: 'DESCUENTOS', abreviatura: 'DCT', clase: '', usuario_id: 1)
 Documento.create(nombre: 'DESCUENTOS TELEVISION', abreviatura: 'DCT', clase: 'P', usuario_id: 1)
 Documento.create(nombre: 'DESCUENTOS INTERNET', abreviatura: 'DCI', clase: 'P', usuario_id: 1)
 Documento.create(nombre: 'CAUSACIONES', abreviatura: 'CAU', usuario_id: 1)

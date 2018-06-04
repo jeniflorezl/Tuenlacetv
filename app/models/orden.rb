@@ -10,6 +10,7 @@ class Orden < ApplicationRecord
 
   def self.generar_orden(entidad_id, concepto_id, fechatrn, fechaven, valor, observacion, tecnico_id, solicita,
     zonaNue, barrioNue, direccionNue, decos, usuario_id)
+    byebug
     senal = Senal.find_by(entidad_id: entidad_id)
     pref = Resolucion.last.prefijo
     ban = 0
@@ -42,21 +43,21 @@ class Orden < ApplicationRecord
       ultimo = (ultimo[0]["ultimo"]).to_i + 1
     end
     case concepto_id
-    when "6", "7", "16", "17"
-      if concepto_id == "6" || concepto_id == "16"
+    when 6, 7, 16, 17
+      if concepto_id == 6 || concepto_id == 16
         concepto_plant = 3
       else
         concepto_plant = 4
       end
       estado = Estado.find_by(abreviatura: 'A').id
-    when "14", "15"
-      if concepto_id == "14"
+    when 14, 15
+      if concepto_id == 14
         concepto_plant = 3
       else
         concepto_plant = 4
       end
       estado = Estado.find_by(abreviatura: 'C').id
-    when "27"
+    when 27
       concepto_plant = 3
       estado = Estado.find_by(abreviatura: 'A').id
     else
@@ -69,8 +70,8 @@ class Orden < ApplicationRecord
       end
     end
     if ban == 1
-      if concepto_id == "27" || concepto_id == "28"
-        if concepto_id == "28"
+      if concepto_id == 27 || concepto_id == 28
+        if concepto_id == 28
           plantilla_decos = PlantillaFact.find_by(entidad_id: entidad_id, concepto_id: 27)
           if plantilla_decos
             ban1 = 1
@@ -108,7 +109,7 @@ class Orden < ApplicationRecord
         return resp = 2
       end
       case concepto_id
-      when "5", "8", "9", "14", "15", "18", "19"
+      when 5, 8, 9, 14, 15, 18, 19
         if valor > 0
           doc = 1
           concepto = Concepto.find(concepto_id)
@@ -161,7 +162,7 @@ class Orden < ApplicationRecord
         else
           return resp = 1
         end
-      when "12", "13"
+      when 12, 13
         if valor > 0
           doc = 1
           concepto = Concepto.find(concepto_id)
@@ -221,15 +222,10 @@ class Orden < ApplicationRecord
         else
           return resp = 1
         end
-      when "27"
+      when 27
         tarifa_id = 0
         estado_activo = Estado.find_by(abreviatura: 'A').id
-        estado_ord = Estado.find_by(abreviatura: 'AP').id
         plan_tv = Plan.find_by(nombre: 'TELEVISION').id
-        query = <<-SQL 
-        UPDATE ordenes set estado_id = #{estado_ord} WHERE id = #{orden_id};
-        SQL
-        Orden.connection.select_all(query)
         tarifa_decos = Tarifa.where("zona_id = #{senal.zona_id} and concepto_id = #{concepto_id} and plan_id = #{plan_tv}")
         tarifa_decos.each do |tarifa|
           if tarifa_decos.valor == valor
@@ -252,7 +248,7 @@ class Orden < ApplicationRecord
         else
           return resp = 2
         end
-      when "28"
+      when 28
         if plantilla_decos.destroy() && senal.update(decos: 0)
           return resp = 1
         else
@@ -275,9 +271,9 @@ class Orden < ApplicationRecord
     fecha_ven = Date.parse fechaven
     mes = fecha_ven.month
     ano = fecha_ven.year
-    fechaini = '01/#{mes}/#{ano}'
+    fechaini = '01/' + mes.to_s + '/' + ano.to_s
     fechaini = Date.parse fechaini
-    fechafin = '30/#{mes}/#{ano}'
+    fechafin = '30/' + mes.to_s + '/' + ano.to_s
     fechafin = Date.parse fechafin
     pref = Resolucion.last.prefijo
     estado_ord = Estado.find_by(abreviatura: 'AP').id
@@ -337,7 +333,7 @@ class Orden < ApplicationRecord
         end
       end
       doc = 1
-      if orden[0]["concepto_id"] == 7
+      if orden[0]["concepto_id"] == 6
         plantilla_orden = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = 3")
         plantillas = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id <> 4")
       else
@@ -787,7 +783,7 @@ class Orden < ApplicationRecord
         end
       end
       doc = 1
-      if orden[0]["concepto_id"] == 15
+      if orden[0]["concepto_id"] == 14
         plantilla_orden = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = 3")
         plantillas = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id <> 4")
       else
@@ -1007,7 +1003,7 @@ class Orden < ApplicationRecord
         end
       end
       doc = 1
-      if orden[0]["concepto_id"] == 17
+      if orden[0]["concepto_id"] == 16
         plantilla_orden = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id = 3")
         plantillas = PlantillaFact.where("entidad_id = #{orden[0]["entidad_id"]} and concepto_id <> 4")
       else
@@ -1275,19 +1271,22 @@ class Orden < ApplicationRecord
         return false
       end
       return true
+    else
+      return true
     end
   end
 
   def self.anular_orden(orden, motivo_anulacion, usuario_id)
     resp = 0
     ban = 0
+    t = Time.now
+    fecha_anulacion = Date.parse t.to_s
     byebug
     estado_anular = Estado.find_by(abreviatura: 'AN').id
     estado = Estado.find_by(abreviatura: 'AP').id
     if orden[0]["estado_id"] == estado
       return resp = 3
     else
-      
       factura_ord = FacturaOrden.find_by(orden_id: orden[0]["id"])
       if factura_ord.blank?
         ban = 2
@@ -1322,6 +1321,10 @@ class Orden < ApplicationRecord
           SQL
         end
         Orden.connection.select_all(query)
+        MvtoRorden.create(registro_orden_id: 8, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+          nrorden: orden[0]["nrorden"], valor: fecha_anulacion.to_s, usuario_id: usuario_id)
+        MvtoRorden.create(registro_orden_id: 9, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+          nrorden: orden[0]["nrorden"], valor: usuario_id, usuario_id: usuario_id)
         unless motivo_anulacion.blank?
           MvtoRorden.create(registro_orden_id: 10, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
             nrorden: orden[0]["nrorden"], valor: motivo_anulacion, usuario_id: usuario_id)
@@ -1332,6 +1335,10 @@ class Orden < ApplicationRecord
         UPDATE ordenes set estado_id = #{estado_anular}, observacion = 'ANULADA' WHERE id = #{orden[0]["id"]};
         SQL
         Orden.connection.select_all(query)
+        MvtoRorden.create(registro_orden_id: 8, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+          nrorden: orden[0]["nrorden"], valor: fecha_anulacion.to_s, usuario_id: usuario_id)
+        MvtoRorden.create(registro_orden_id: 9, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+          nrorden: orden[0]["nrorden"], valor: usuario_id, usuario_id: usuario_id)
         unless motivo_anulacion.blank?
           MvtoRorden.create(registro_orden_id: 10, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
             nrorden: orden[0]["nrorden"], valor: motivo_anulacion, usuario_id: usuario_id)
@@ -1350,6 +1357,10 @@ class Orden < ApplicationRecord
         end
         plantilla = PlantillaFact.find_by(entidad_id: orden[0]["entidad_id"], concepto_id: concepto_plant)
         if plantilla.update(estado_id: estado)
+          MvtoRorden.create(registro_orden_id: 8, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+            nrorden: orden[0]["nrorden"], valor: fecha_anulacion.to_s, usuario_id: usuario_id)
+          MvtoRorden.create(registro_orden_id: 9, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+            nrorden: orden[0]["nrorden"], valor: usuario_id, usuario_id: usuario_id)
           unless motivo_anulacion.blank?
             MvtoRorden.create(registro_orden_id: 10, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
               nrorden: orden[0]["nrorden"], valor: motivo_anulacion, usuario_id: usuario_id)
@@ -1375,6 +1386,10 @@ class Orden < ApplicationRecord
         Orden.connection.select_all(query)
         traslado = Traslado.find_by(orden_id: orden[0]["id"])
         if traslado.update(direccionNue: 'ANULADA')
+          MvtoRorden.create(registro_orden_id: 8, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+            nrorden: orden[0]["nrorden"], valor: fecha_anulacion.to_s, usuario_id: usuario_id)
+          MvtoRorden.create(registro_orden_id: 9, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+            nrorden: orden[0]["nrorden"], valor: usuario_id, usuario_id: usuario_id)
           unless motivo_anulacion.blank?
             MvtoRorden.create(registro_orden_id: 10, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
               nrorden: orden[0]["nrorden"], valor: motivo_anulacion, usuario_id: usuario_id)
@@ -1398,6 +1413,10 @@ class Orden < ApplicationRecord
           SQL
         end
         Orden.connection.select_all(query)
+        MvtoRorden.create(registro_orden_id: 8, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+          nrorden: orden[0]["nrorden"], valor: fecha_anulacion.to_s, usuario_id: usuario_id)
+        MvtoRorden.create(registro_orden_id: 9, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+          nrorden: orden[0]["nrorden"], valor: usuario_id, usuario_id: usuario_id)
         unless motivo_anulacion.blank?
           MvtoRorden.create(registro_orden_id: 10, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
             nrorden: orden[0]["nrorden"], valor: motivo_anulacion, usuario_id: usuario_id)
@@ -1408,6 +1427,10 @@ class Orden < ApplicationRecord
         UPDATE ordenes set estado_id = #{estado_anular}, observacion = 'ANULADA' WHERE id = #{orden[0]["id"]};
         SQL
         Orden.connection.select_all(query)
+        MvtoRorden.create(registro_orden_id: 8, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+          nrorden: orden[0]["nrorden"], valor: fecha_anulacion.to_s, usuario_id: usuario_id)
+        MvtoRorden.create(registro_orden_id: 9, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
+          nrorden: orden[0]["nrorden"], valor: usuario_id, usuario_id: usuario_id)
         unless motivo_anulacion.blank?
           MvtoRorden.create(registro_orden_id: 10, orden_id: orden[0]["id"], concepto_id: orden[0]["concepto_id"],
             nrorden: orden[0]["nrorden"], valor: motivo_anulacion, usuario_id: usuario_id)
