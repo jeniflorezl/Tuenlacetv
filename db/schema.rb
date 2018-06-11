@@ -744,13 +744,12 @@ ActiveRecord::Schema.define(version: 20180527180839) do
     t.index ["usuario_id"], name: "index_unidades_on_usuario_id"
   end
 
-  create_table "usuario_menu", primary_key: ["modulo", "opcion", "usuario_id"], force: :cascade do |t|
+  create_table "usuario_menu", id: false, force: :cascade do |t|
+    t.integer "nivel", null: false
     t.varchar "modulo", limit: 50, null: false
     t.varchar "opcion", limit: 50, null: false
-    t.bigint "usuario_id", null: false
     t.char "ver", limit: 5, null: false
     t.varchar "titulo", limit: 50
-    t.index ["usuario_id"], name: "index_usuario_menu_on_usuario_id"
   end
 
   create_table "usuarios", force: :cascade do |t|
@@ -934,7 +933,6 @@ ActiveRecord::Schema.define(version: 20180527180839) do
   add_foreign_key "traslados", "zonas", column: "zonaAnt_id"
   add_foreign_key "traslados", "zonas", column: "zonaNue_id"
   add_foreign_key "unidades", "usuarios"
-  add_foreign_key "usuario_menu", "usuarios"
   add_foreign_key "usuarios", "estados"
   add_foreign_key "zonas", "ciudades"
   add_foreign_key "zonas", "usuarios"

@@ -82,7 +82,7 @@ RSpec.describe Api::V1::FacturacionController, type: :request do
         headers = { 
           "Content-Type" => "application/json",
           "Accept" => "application/json"}
-        post "http://localhost:3000/api/v1/facturacion", :params => '{ "tipo_fact_id": 1, "f_elaboracion": "01/03/2018", "f_inicio": "01/03/2018", "f_fin": "30/03/2018", "f_vence": "30/03/2018", "f_corte": "28/03/2018", "f_vencidos": "20/03/2018", "observa": "MENSUALIDAD MARZO", "zona": "Todos", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
+        post "http://localhost:3000/api/v1/facturacion", :params => '{ "tipo_facturacion_id": 1, "f_elaboracion": "01/03/2018", "f_inicio": "01/03/2018", "f_fin": "30/03/2018", "f_vence": "30/03/2018", "f_corte": "28/03/2018", "f_vencidos": "20/03/2018", "observa": "MENSUALIDAD MARZO", "zona": "Todos", "usuario_id": 1, "db": "PRUEBAS" }', :headers => headers
         expect(response).to have_http_status(:unauthorized)
       end
     end

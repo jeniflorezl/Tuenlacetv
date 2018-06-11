@@ -44,8 +44,9 @@ class Orden < ApplicationRecord
       ultimo = (ultimo[0]["ultimo"]).to_i + 1
     end
     case concepto_id
-    when 5, 6, 7, 8, 9, 12, 13, 16, 17, 18, 19, 27
-      if concepto_id == 6 || concepto_id == 16
+    when 5, 6, 7, 8, 9, 12, 13, 16, 17, 18, 19
+      case concepto_id
+      when 5, 6, 8, 12, 16, 18
         concepto_plant = 3
       else
         concepto_plant = 4

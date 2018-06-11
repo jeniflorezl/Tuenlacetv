@@ -592,8 +592,9 @@ class Pago < ApplicationRecord
     dcto = 0
     fechaini = Date.parse f_ini.to_s
     fechafin = Date.parse f_fin.to_s
+    estado = Estado.find_by(abreviatura: 'AN').id
     query = <<-SQL 
-    SELECT * FROM pagos WHERE fechatrn >= '#{fechaini}' and fechatrn <= '#{fechafin}' ORDER BY nropago;
+    SELECT * FROM pagos WHERE fechatrn >= '#{fechaini}' and fechatrn <= '#{fechafin}' and estado_id <> #{estado} and documento_id <> 8 ORDER BY nropago;
     SQL
     pagos = Pago.connection.select_all(query)
     i = 0
@@ -625,7 +626,7 @@ class Pago < ApplicationRecord
       end
       abonos = Abono.where(pago_id: p["id"])
       if abonos.blank?
-        anticipos = Anticipo.where("pago_id = #{p["id"]} and month(fechatrn) = #{f_mes} and year(fechatrn) = #{f_ano}")
+        anticipos = Anticipo.where("pago_id = #{p["id"]} and fechatrn >= '#{fechaini}' and fechatrn <= '#{fechafin}' and factura_id IS NOT NULL")
         anticipos.each do |ant|
           recibos[i] = { 'entidad_id' => p["entidad_id"], 'nombres' => nombres, 
             'valor' => (ant["valor"].to_f).round, 'descuento' => dcto, 
