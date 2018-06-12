@@ -134,13 +134,11 @@ class Facturacion < ApplicationRecord
       ano = fecha1.year
       if documentos.valor == 'S'
         senales.each do |senal|
-          byebug
           facturacion = ''
           abono = ''
           pagado = false
           plantillas = PlantillaFact.where("concepto_id <> #{concepto_int.id} and entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
-            byebug
             ban = 0
             if plantilla.estado_id == estado
               if plantilla.fechaini < f_fin && plantilla.fechafin > f_fin
@@ -562,13 +560,11 @@ class Facturacion < ApplicationRecord
         end
       else
         senales.each do |senal|
-          byebug
           facturacion = ''
           abono = ''
           pagado = false
           plantillas = PlantillaFact.where("entidad_id = #{senal.entidad_id}")
           plantillas.each do |plantilla|
-            byebug
             ban = 0
             concepto = Concepto.find(plantilla.concepto_id)
             observacion_d = concepto.nombre
@@ -830,7 +826,6 @@ class Facturacion < ApplicationRecord
 
   def self.factura_manual(tipo_facturacion, servicio_id, f_elaboracion, f_inicio, f_fin, 
     f_vencimiento, entidad_id, valor_fact, valor_fact2, observa, usuario_id)
-    byebug
     respuesta = 0
     observa = observa.upcase! unless observa == observa.upcase
     t = Time.now
@@ -1181,7 +1176,6 @@ class Facturacion < ApplicationRecord
         valor = 0
         plantillas = PlantillaFact.where("entidad_id = #{entidad_id} and (concepto_id = #{concepto_tv.id} or concepto_id = #{concepto_int.id})")
         plantillas.each do |plantilla|
-          byebug
           tarifa = plantilla.tarifa.valor
           concepto = plantilla.concepto_id
           fecha_plantilla = Date.parse plantilla.fechaini.to_s
@@ -1494,7 +1488,6 @@ class Facturacion < ApplicationRecord
   end
 
   def self.anular_factura(entidad_id, concepto_id, nrodcto)
-    byebug
     resp = 0
     estado_anul = Estado.find_by(abreviatura: 'AN').id
     query = <<-SQL 

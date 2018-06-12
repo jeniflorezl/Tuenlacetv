@@ -15,7 +15,6 @@ class Pago < ApplicationRecord
 
   def self.generar_pago(entidad_id, concepto_id, fechatrn, valor, descuento, observacion, forma_pago_id,
     banco_id, cobrador_id, detalle, usuario_id)
-    byebug
     ban = 0
     ban1 = 0
     abono_fact = 0
@@ -67,7 +66,6 @@ class Pago < ApplicationRecord
         pago_id = (pago_id[0]["id"]).to_i
         if descuento > 0
           detalle.each do |d|
-            byebug
             ban = 0
             ban1 = 0
             query = <<-SQL
@@ -181,7 +179,6 @@ class Pago < ApplicationRecord
           end
         else
           detalle.each do |d|
-            byebug
             query = <<-SQL 
             SELECT factura_id FROM detalle_factura WHERE nrofact = #{d["nrodcto"]} and concepto_id = #{d["concepto_id"]};
             SQL
@@ -261,7 +258,6 @@ class Pago < ApplicationRecord
 
   def self.generar_pago_anticipado(entidad_id, documento_id, servicio_id, fechatrn, fechapxa, valor, descuento, observacion, forma_pago_id,
     banco_id, cobrador_id, usuario_id)
-    byebug
     ban = 0
     ban1 = 0
     resp = 0
@@ -347,7 +343,6 @@ class Pago < ApplicationRecord
           end
         end
         while valor > 0
-          byebug
           if valor >= tarifa
             valor_abono = tarifa
           else
@@ -367,7 +362,6 @@ class Pago < ApplicationRecord
         end
         while descuento > 0
           ban1 = 0
-          byebug
           dcto_anticipo = Anticipo.where(pago_id: pago_id).last
           if dcto_anticipo.valor < tarifa
             faltante = tarifa - dcto_anticipo.valor
@@ -546,7 +540,6 @@ class Pago < ApplicationRecord
   end
 
   def self.anular_pago_anticipado(pago_anticipado)
-    byebug
     ban = 0
     estado = Estado.find_by(abreviatura: 'AN').id
     query = <<-SQL 
@@ -554,7 +547,6 @@ class Pago < ApplicationRecord
     SQL
     pag_anticipado = Pago.connection.select_all(query)
     pag_anticipado.each do |p_ant|
-      byebug
       fechapxa = Date.parse p_ant["fechatrn"].to_s
       query = <<-SQL 
       SELECT * FROM facturacion WHERE year(fechatrn) = #{fechapxa.year} and month(fechatrn) = #{fechapxa.month} and entidad_id = #{pago_anticipado[0]["entidad_id"]};

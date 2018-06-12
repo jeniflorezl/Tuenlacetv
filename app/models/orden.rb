@@ -10,7 +10,6 @@ class Orden < ApplicationRecord
 
   def self.generar_orden(entidad_id, concepto_id, fechatrn, fechaven, valor, observacion, tecnico_id, solicita,
     zonaNue, barrioNue, direccionNue, decos, usuario_id)
-    byebug
     senal = Senal.find_by(entidad_id: entidad_id)
     pref = Resolucion.last.prefijo
     ban = 0
@@ -270,7 +269,6 @@ class Orden < ApplicationRecord
 
   def self.editar_orden(orden, fechaven, solicita, tecnico_id, observacion, detalle, solucion, respuesta, usuario_id)
     t = Time.now
-    byebug
     senal = Senal.find_by(entidad_id: orden[0]["entidad_id"])
     concepto_fact = 0
     concepto_decos = Concepto.find(27)
@@ -325,7 +323,6 @@ class Orden < ApplicationRecord
     end
     case orden[0]["concepto_id"]
     when 6, 7
-      byebug
       facturacion = ''
       facturacion_id = 0
       ban = 0
@@ -351,7 +348,6 @@ class Orden < ApplicationRecord
       if ban == 1
         if senal.tipo_facturacion_id == tipo_fact_ven
           plantillas.each do |plantilla|
-            byebug
             ban = 0
             tarifa = plantilla.tarifa.valor
             fecha_plantilla = Date.parse plantilla.fechaini.to_s
@@ -374,10 +370,8 @@ class Orden < ApplicationRecord
             detallefact = ''
             unless factura.blank?
               factura.each do |row|
-                byebug
                 detallefact = DetalleFactura.where(nrofact: row["nrofact"])
                 detallefact.each do |d|
-                  byebug
                   if d["concepto_id"] == concepto.id
                     fact_tv = 1
                     break
@@ -544,7 +538,6 @@ class Orden < ApplicationRecord
       end
       return true
     when 10, 11
-      byebug
       ban = 0
       facturacion = ''
       facturacion_id = 0
@@ -570,7 +563,6 @@ class Orden < ApplicationRecord
       if ban == 1
         if senal.tipo_facturacion_id == tipo_fact_ant
           plantillas.each do |plantilla|
-            byebug
             ban = 0
             tarifa = plantilla.tarifa.valor
             fecha_plantilla = Date.parse plantilla.fechaini.to_s
@@ -593,10 +585,8 @@ class Orden < ApplicationRecord
             detallefact = ''
             unless factura.blank?
               factura.each do |row|
-                byebug
                 detallefact = DetalleFactura.where(nrofact: row["nrofact"])
                 detallefact.each do |d|
-                  byebug
                   if d["concepto_id"] == concepto.id
                     fact_tv = 1
                     break
@@ -769,7 +759,6 @@ class Orden < ApplicationRecord
         return false
       end
     when 14, 15
-      byebug
       ban = 0
       facturacion = ''
       facturacion_id = 0
@@ -801,7 +790,6 @@ class Orden < ApplicationRecord
       if ban == 1
         if senal.tipo_facturacion_id == tipo_fact_ant
           plantillas.each do |plantilla|
-            byebug
             ban = 0
             tarifa = plantilla.tarifa.valor
             concepto = Concepto.find(plantilla.concepto_id)
@@ -823,10 +811,8 @@ class Orden < ApplicationRecord
             detallefact = ''
             unless factura.blank?
               factura.each do |row|
-                byebug
                 detallefact = DetalleFactura.where(nrofact: row["nrofact"])
                 detallefact.each do |d|
-                  byebug
                   if d["concepto_id"] == concepto.id
                     fact_tv = 1
                     break
@@ -1021,7 +1007,6 @@ class Orden < ApplicationRecord
       if ban == 1
         if senal.tipo_facturacion_id == tipo_fact_ven
           plantillas.each do |plantilla|
-            byebug
             ban = 0
             tarifa = plantilla.tarifa.valor
             fecha_plantilla = Date.parse plantilla.fechaini.to_s
@@ -1044,10 +1029,8 @@ class Orden < ApplicationRecord
             detallefact = ''
             unless factura.blank?
               factura.each do |row|
-                byebug
                 detallefact = DetalleFactura.where(nrofact: row["nrofact"])
                 detallefact.each do |d|
-                  byebug
                   if d["concepto_id"] == concepto.id
                     fact_tv = 1
                     break
@@ -1285,12 +1268,10 @@ class Orden < ApplicationRecord
   end
 
   def self.anular_orden(orden, motivo_anulacion, usuario_id)
-    byebug
     resp = 0
     ban = 0
     t = Time.now
     fecha_anulacion = Date.parse t.to_s
-    byebug
     estado_anular = Estado.find_by(abreviatura: 'AN').id
     estado = Estado.find_by(abreviatura: 'AP').id
     if orden[0]["estado_id"] == estado

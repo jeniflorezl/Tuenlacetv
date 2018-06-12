@@ -66,21 +66,22 @@ prawn_document() do |pdf|
             pdf.draw_text s["correo"], :at =>[415, 645]
         end
         pdf.stroke do
-            pdf.rounded_rectangle  [0, 634], 540, 187, 3
+            pdf.rounded_rectangle  [0, 634], 540, 197, 3
             pdf.horizontal_line 0, 540, :at => 622
-            pdf.horizontal_line 0, 540, :at => 571
-            pdf.horizontal_line 0, 540, :at => 559
-            pdf.horizontal_line 0, 540, :at => 492
-            pdf.vertical_line 634, 447, :at => 380
-            pdf.vertical_line 634, 492, :at => 460
+            pdf.horizontal_line 0, 540, :at => 561
+            pdf.horizontal_line 0, 540, :at => 549
+            pdf.horizontal_line 0, 540, :at => 482
+            pdf.vertical_line 634, 437, :at => 380
+            pdf.vertical_line 634, 482, :at => 460
             pdf.draw_text "CANTIDAD", :at => [5, 625]
             pdf.draw_text "DESCRIPCIÓN DEL SERVICIO", :at => [130, 625]
             pdf.draw_text "VALOR UNITARIO", :at => [387, 625]
             pdf.draw_text "VALOR TOTAL", :at => [472, 625]
-            if s["saldo_int"].blank?
+            unless s["saldo_tv"].blank?
                 saldo = s["saldo_tv"]
-            else
-                saldo = s["saldo_tv"] + s["saldo_int"]
+            end
+            unless s["saldo_int"].blank?
+                saldo += s["saldo_int"]
             end
             saldo_anterior = 0
             valor_total = 0
@@ -112,23 +113,23 @@ prawn_document() do |pdf|
             saldo_anterior = saldo - (total.to_f).round
             @ult_pagos.each do |p|
                 if (s["id"] == p["entidad_id"])
-                    pdf.draw_text "Fecha ultimo pago: ", :at => [5, 578]
-                    pdf.draw_text p["fechatrn"], :at => [78, 578]
-                    pdf.draw_text "$" + '' + p["valor"].to_s, :at => [124, 578]
-                    pdf.draw_text p["observacion"], :at => [160, 578]
+                    pdf.draw_text "Fecha ultimo pago: ", :at => [5, 568]
+                    pdf.draw_text p["fechatrn"], :at => [78, 568]
+                    pdf.draw_text "$" + '' + p["valor"].to_s, :at => [124, 568]
+                    pdf.draw_text p["observacion"], :at => [160, 568]
                 end
             end
-            pdf.draw_text "SON:", :at => [5, 563], :size => 6
-            pdf.draw_text I18n.with_locale(:es) { total.to_words.upcase } + ' PESOS CON CERO CENTAVOS', :at => [23, 563], :size => 6
+            pdf.draw_text "SON:", :at => [5, 553], :size => 6
+            pdf.draw_text I18n.with_locale(:es) { total.to_words.upcase } + ' PESOS CON CERO CENTAVOS', :at => [23, 553], :size => 6
             pdf.font "Helvetica", :style => :bold
-            pdf.draw_text "SUBTOTAL", :at => [384, 562]
-            pdf.draw_text "DESCUENTO", :at => [384, 548]
-            pdf.draw_text "I.V.A", :at => [384, 536]
-            pdf.draw_text "TOTAL FACTURA", :at => [384, 524]
-            pdf.draw_text "SALDO ANTERIOR", :at => [384, 512]
-            pdf.draw_text "TOTAL A PAGAR", :at => [384, 500]
+            pdf.draw_text "SUBTOTAL", :at => [384, 552]
+            pdf.draw_text "DESCUENTO", :at => [384, 538]
+            pdf.draw_text "I.V.A", :at => [384, 526]
+            pdf.draw_text "TOTAL FACTURA", :at => [384, 514]
+            pdf.draw_text "SALDO ANTERIOR", :at => [384, 502]
+            pdf.draw_text "TOTAL A PAGAR", :at => [384, 490]
             pdf.font "Helvetica", :style => :normal
-            pdf.bounding_box([482, 568], :width => 50, :height => 300) do
+            pdf.bounding_box([482, 558], :width => 50, :height => 300) do
                 pdf.text number_to_currency(valor_total, unit: ""), :align => :right
                 pdf.move_down 5
                 pdf.text number_to_currency(descuento, unit: ""), :align => :right
@@ -142,20 +143,20 @@ prawn_document() do |pdf|
                 pdf.text number_to_currency(total, unit: ""), :align => :right, :style => :bold
             end
             pdf.font_size 7
-            pdf.draw_text "La presente FACTURA DE VENTA se asimila en todos los efectos a la LETRA DE CAMBIO (Art 774 Numero 6 del", :at => [5, 550]
-            pdf.draw_text "código de comercio. La firma puesta por tercero en representación, mandato u otra calidad similar a nombre del", :at => [5, 542]
-            pdf.draw_text "comprador implica su obligación de acuerdo al art 640 del Cód de Com e igualmente es constancia de la prestación", :at => [5, 534]
-            pdf.draw_text "real del servicio y entrega del material.", :at => [5, 526]
-            pdf.vertical_line 492, 447, :at => 225
-            pdf.draw_text "Sede Sur: Cll 108 21-10 Provenza Tel: (7)6816770", :at => [5, 482]
-            pdf.draw_text "Sede Oeste: Cll 56 3W-106 Mutis Tel: (7)6419595", :at => [5, 474]
-            pdf.draw_text "Sede Norte: Cll 17 12-31 Kennedy Tel:(7)6400616", :at => [5, 466]
-            pdf.draw_text "Sede Centro: Cll 27 7-59 Girardot Tel:(7)6734371", :at => [5, 458]
+            pdf.draw_text "La presente FACTURA DE VENTA se asimila en todos los efectos a la LETRA DE CAMBIO (Art 774 Numero 6 del", :at => [5, 540]
+            pdf.draw_text "código de comercio. La firma puesta por tercero en representación, mandato u otra calidad similar a nombre del", :at => [5, 532]
+            pdf.draw_text "comprador implica su obligación de acuerdo al art 640 del Cód de Com e igualmente es constancia de la prestación", :at => [5, 524]
+            pdf.draw_text "real del servicio y entrega del material.", :at => [5, 516]
+            pdf.vertical_line 482, 437, :at => 225
+            pdf.draw_text "Sede Sur: Cll 108 21-10 Provenza Tel: (7)6816770", :at => [5, 472]
+            pdf.draw_text "Sede Oeste: Cll 56 3W-106 Mutis Tel: (7)6419595", :at => [5, 464]
+            pdf.draw_text "Sede Norte: Cll 17 12-31 Kennedy Tel:(7)6400616", :at => [5, 456]
+            pdf.draw_text "Sede Centro: Cll 27 7-59 Girardot Tel:(7)6734371", :at => [5, 448]
             pdf.font_size 8
-            pdf.draw_text "FIRMA AUTORIZADA", :at => [260, 483]
-            pdf.horizontal_line 238, 368, :at => 455
-            pdf.draw_text "RECIBIMOS A CONFORMIDAD", :at => [402, 483]
-            pdf.horizontal_line 396, 526, :at => 455
+            pdf.draw_text "FIRMA AUTORIZADA", :at => [260, 473]
+            pdf.horizontal_line 238, 368, :at => 445
+            pdf.draw_text "RECIBIMOS A CONFORMIDAD", :at => [402, 473]
+            pdf.horizontal_line 396, 526, :at => 445
         end 
     end
 end
